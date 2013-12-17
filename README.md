@@ -6,7 +6,7 @@ It is **not intended for running unit tests**, which clearly need to be built ar
 
 Additionally, TestPackage aims to provide more useful and intuitive output than other JUnit runners give, for example making it easier to spot assertion errors and root causes of exceptions at a glance.
 
-![image](docs/demo1.gif)
+![Quick demo](https://bitbucket.org/devservices/testpackage/raw/87d0cff0e573ddd80ec6009ad324a442d6661412/docs/demo1.gif)
 
 ## Why make tests standalone?
 
