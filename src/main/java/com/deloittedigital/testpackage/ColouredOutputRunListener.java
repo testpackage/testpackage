@@ -53,6 +53,8 @@ public class ColouredOutputRunListener extends RunListener {
         failures.addAll(result.getFailures());
 
         System.out.flush();
+        System.out.println();
+        System.out.println();
         System.out.println("*** TESTS COMPLETE");
 
         String passedStatement;
@@ -79,9 +81,11 @@ public class ColouredOutputRunListener extends RunListener {
         ansiPrintf("*** " + passedStatement + ", " + failedStatement + ", " + ignoredStatement, passed, failureCount, ignoredCount);
 
         if (failureCount > 0) {
+            System.out.println();
+            System.out.println();
             System.out.println("Failures:");
             for (Failure failure : failures) {
-                ansiPrintf("    %s: @|bold,red %s|@", failure.getDescription(), indentNewlines(failure.getMessage()));
+                ansiPrintf("    @|yellow %s|@: @|bold,red %s|@", failure.getDescription(), indentNewlines(failure.getMessage()));
                 Throwable exception = failure.getException();
                 Throwable rootCause = Throwables.getRootCause(exception);
 

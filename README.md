@@ -6,6 +6,8 @@ It is **not intended for running unit tests**, which clearly need to be built ar
 
 Additionally, TestPackage aims to provide more useful and intuitive output than other JUnit runners give, for example making it easier to spot assertion errors and root causes of exceptions at a glance.
 
+![image](docs/demo1.gif)
+
 ## Why make tests standalone?
 
 With integration, functional and smoke tests, for example, the following should become possible with standalone test bundles:
@@ -115,7 +117,8 @@ TODO: Example output
 
 #### General
 
- * Release to public Maven repository and make source code public
+ * Attach licence and open source
+ * Release to public Maven repository
  * Add example output to this README.
  * Reduce library dependencies, e.g. remove dependency on jcabi-manifests which brings lots of transitive dependencies.
 
@@ -131,6 +134,8 @@ To install the built TestPackage library to your local (~/.m2) Maven repository 
 
 # Licence and Attributions
 
-Apache 2 Licence (see LICENCE)
+Apache 2 Licence
+
+Copyright, the authors (listed in AUTHORS)
 
 The current version of the library includes a modified excerpt of code from Twitter Commons, used under its Apache 2 licence.
