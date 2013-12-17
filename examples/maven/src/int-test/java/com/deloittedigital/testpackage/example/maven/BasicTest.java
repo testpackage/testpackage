@@ -6,6 +6,8 @@ import static com.deloittedigital.testpackage.VisibleAssertions.assertEquals;
 import static com.deloittedigital.testpackage.VisibleAssertions.assertTrue;
 
 /**
+ * Basic test class to demonstrate passing and failing tests.
+ *
  * @author rnorth
  */
 public class BasicTest {
@@ -15,9 +17,9 @@ public class BasicTest {
         assertTrue("it should be true", true);
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testFalseAssertion() {
-        assertTrue("it should be true", false);
+        assertTrue("it should be false", false);
     }
 
     @Test
@@ -30,28 +32,17 @@ public class BasicTest {
         assertEquals("it should be equal", "A", "A");
     }
 
-    @Test(expected = AssertionError.class)
-    public void testOneNullEqualsAssertion() {
-        assertEquals("it should be equal", "A", null);
-    }
-
-    @Test(expected = AssertionError.class)
-    public void testOneOtherNullEqualsAssertion() {
-        assertEquals("it should be equal", null, "A");
-    }
-
-    @Test(expected = AssertionError.class)
-    public void testNotEqualsAssertion() {
-        assertEquals("it should be equal", "A", "B");
-    }
-
     @Test
-    public void testDeliberateFailure() {
+    public void testDeliberateError() {
         try {
             int a = 7 / 0;
         } catch (Throwable e) {
             throw new RuntimeException("Something went wrong! Oh noes!", e);
         }
+    }
 
+    @Test
+    public void testDeliberateAssertionFailure() {
+        assertEquals("Deliberate assertion failure - it should be equal but is not", 42, 99);
     }
 }
