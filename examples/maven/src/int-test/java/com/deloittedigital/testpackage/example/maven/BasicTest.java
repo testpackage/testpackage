@@ -18,11 +18,6 @@ public class BasicTest {
     }
 
     @Test
-    public void testFalseAssertion() {
-        assertTrue("it should be false", false);
-    }
-
-    @Test
     public void testNullEqualsAssertion() {
         assertEquals("it should be equal", null, null);
     }
