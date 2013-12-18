@@ -1,0 +1,5 @@
+**/*.iws
+**/.gradle
+**/build
+**/target
+examples/maven/dependency-reduced-pom.xml
