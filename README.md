@@ -17,10 +17,11 @@ With integration, functional and smoke tests, for example, the following should 
  * Enabling non-technical staff to run tests in their local environment, as an executable they can double click (perhaps with a GUI displaying results)
  * Clearer versioning of tests alongside releasable artifacts - less indirection
  * Just as application binaries should be build-once-run-many to reduce risk of build-time dependency variation, the same principle can and should be applied to tests where possible.
- 
+ * _Slight_ reduction in the time overhead of running tests, since they do not need to be recompiled for each run (if the tests themselves aren't being changed).
+
 ## Features
 
- * Supports running JUnit tests standalone from the command line
+ * Supports running JUnit tests standalone from the command line (although as standard unadorned JUnit tests they can obviously still be run with other tools, IDEs, etc).
  * Provides `VisibleAssertions` replacement for `org.junit.Assert` which makes it easier to identify causes of assertion errors
  * Pretty, clean output of test failures, focusing on information that is most useful to the developer without displaying huge stack traces
  * JUnit XML report output, compatible with Jenkins (uses code from Twitter Commons, see attributions below)
@@ -101,8 +102,6 @@ Once built, execute the build JAR file (e.g. named `maven-example-1.0-SNAPSHOT.j
 
 Of course, this JAR file can be moved anywhere on the filesystem, deployed to an artifact repository (e.g. with `mvn deploy`)
 
-TODO: Example output
-
 # TODO
 
 #### Features
@@ -124,6 +123,8 @@ TODO: Example output
 
 # Contributing
 
+**Please follow the Fork and Pull model for contributing changes (see [here](https://confluence.atlassian.com/display/BITBUCKET/Fork+a+Repo,+Compare+Code,+and+Create+a+Pull+Request) for a detailed explanation).**
+
 While the example project given is a Maven project, TestPackage itself is built with Gradle. Use the Gradle build wrapper and build as follows:
 
 	./gradlew build
@@ -134,7 +135,17 @@ To install the built TestPackage library to your local (~/.m2) Maven repository 
 
 # Licence and Attributions
 
-Apache 2 Licence
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
 Copyright, the authors (listed in AUTHORS)
 
