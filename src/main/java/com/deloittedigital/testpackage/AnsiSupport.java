@@ -25,10 +25,6 @@ import static org.fusesource.jansi.Ansi.ansi;
  */
 public class AnsiSupport {
 
-    static {
-        initialize();
-    }
-
     protected synchronized static void initialize() {
         AnsiConsole.systemInstall();
     }

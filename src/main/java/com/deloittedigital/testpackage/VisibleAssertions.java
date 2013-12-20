@@ -48,10 +48,12 @@ public class VisibleAssertions extends AnsiSupport {
     }
 
     private static void pass(String message) {
+        initialize();
         ansiPrintf("        @|green " + TICK_MARK + " " + message + " |@");
     }
 
     private static void fail(String message, String hint) {
+        initialize();
         ansiPrintf("        @|red " + CROSS_MARK + " " + message + " |@");
 
         if (hint != null) {

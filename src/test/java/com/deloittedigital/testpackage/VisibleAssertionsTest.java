@@ -16,7 +16,6 @@
 
 package com.deloittedigital.testpackage;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static com.deloittedigital.testpackage.VisibleAssertions.assertEquals;
@@ -25,51 +24,59 @@ import static com.deloittedigital.testpackage.VisibleAssertions.assertTrue;
 /**
  * @author rnorth
  */
-public class VisibleAssertionsTest {
+public class VisibleAssertionsTest extends StreamCaptureBaseTest {
 
     @Test
     public void testTrueAssertion() {
         assertTrue("it should be true", true);
+        assert getCapturedStdOut().contains("✔ it should be true");
     }
 
     @Test(expected = AssertionError.class)
     public void testFalseAssertion() {
         assertTrue("it should be true", false);
+        assert getCapturedStdOut().contains("✘ it should be true");
     }
 
     @Test
     public void testNullEqualsAssertion() {
         assertEquals("it should be equal", null, null);
+        assert getCapturedStdOut().contains("✔ it should be equal");
     }
 
     @Test
     public void testEqualsAssertion() {
         assertEquals("it should be equal", "A", "A");
+        assert getCapturedStdOut().contains("✔ it should be equal");
     }
 
     @Test(expected = AssertionError.class)
     public void testOneNullEqualsAssertion() {
         assertEquals("it should be equal", "A", null);
+        assert getCapturedStdOut().contains("✘ it should be equal");
+        assert getCapturedStdOut().contains("'A' does not equal 'null'");
     }
 
     @Test(expected = AssertionError.class)
     public void testOneOtherNullEqualsAssertion() {
         assertEquals("it should be equal", null, "A");
+        assert getCapturedStdOut().contains("✘ it should be equal");
+        assert getCapturedStdOut().contains("'null' does not equal 'A'");
     }
 
     @Test(expected = AssertionError.class)
     public void testNotEqualsAssertion() {
         assertEquals("it should be equal", "A", "B");
+        assert getCapturedStdOut().contains("✘ it should be equal");
+        assert getCapturedStdOut().contains("'A' does not equal 'B'");
     }
 
-    @Test @Ignore
+    @Test(expected = RuntimeException.class)
     public void testDeliberateFailure() {
-        //assertEquals("this is a deliberate failure", "a", "b");
         try {
             int a = 7 /0;
         } catch (Throwable e) {
             throw new RuntimeException("Wrapping exception", e);
         }
-
     }
 }
