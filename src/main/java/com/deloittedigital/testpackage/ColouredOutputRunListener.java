@@ -18,14 +18,12 @@ package com.deloittedigital.testpackage;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
 import java.util.List;
-import java.util.Map;
 
 import static com.deloittedigital.testpackage.AnsiSupport.ansiPrintf;
 
@@ -33,6 +31,7 @@ import static com.deloittedigital.testpackage.AnsiSupport.ansiPrintf;
  *
  * @author rnorth
  */
+@SuppressWarnings("UseOfSystemOutOrSystemErr")
 public class ColouredOutputRunListener extends RunListener {
 
     @Override
@@ -40,6 +39,7 @@ public class ColouredOutputRunListener extends RunListener {
         System.out.println(">> " + description.getTestClass().getSimpleName() + "." + description.getMethodName() + ":");
     }
 
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Override
     public void testRunFinished(Result result) throws Exception {
 
@@ -48,7 +48,6 @@ public class ColouredOutputRunListener extends RunListener {
         int ignoredCount = result.getIgnoreCount();
         int passed = testCount - failureCount;
         List<Failure> failures = Lists.newArrayList();
-        Map<String, Long> runTimings = Maps.newHashMap();
 
         failures.addAll(result.getFailures());
 

@@ -59,8 +59,12 @@ public class TestPackage {
         }
 
         JUnitCore core = new JUnitCore();
+
         File targetDir = new File("target");
-        targetDir.mkdirs();
+        boolean mkdirs = targetDir.mkdirs();
+        if (!mkdirs) {
+            throw new TestPackageException("Could not create target directory: " + targetDir);
+        }
         RunListener antXmlRunListener = new AntJunitXmlReportListener(targetDir, new StreamSource() {
             @Override
             public byte[] readOut(Class<?> testClass) throws IOException {
@@ -72,7 +76,9 @@ public class TestPackage {
                 return new byte[0];
             }
         });
+
         RunListener colouredOutputRunListener = new ColouredOutputRunListener();
+
         core.addListener(antXmlRunListener);
         core.addListener(colouredOutputRunListener);
 
@@ -105,7 +111,7 @@ public class TestPackage {
             }
             return (String) attributes;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new TestPackageException("Error loading MANIFEST.MF at URL: " + resource, e);
         }
     }
 

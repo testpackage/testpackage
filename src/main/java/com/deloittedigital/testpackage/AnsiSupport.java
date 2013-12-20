@@ -23,6 +23,7 @@ import static org.fusesource.jansi.Ansi.ansi;
 /**
  * @author rnorth
  */
+@SuppressWarnings("UseOfSystemOutOrSystemErr")
 public class AnsiSupport {
 
     protected synchronized static void initialize() {
