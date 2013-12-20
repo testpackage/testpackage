@@ -1,4 +1,4 @@
-package com.deloittedigital.testpackage;
+package com.deloittedigital.testpackage.test;
 
 import org.junit.Test;
 

@@ -17,8 +17,8 @@
 package com.deloittedigital.testpackage;
 
 import com.google.common.collect.Sets;
+import com.google.common.io.Resources;
 import com.google.common.reflect.ClassPath;
-import com.jcabi.manifests.Manifests;
 import com.twitter.common.testing.runner.AntJunitXmlReportListener;
 import com.twitter.common.testing.runner.StreamSource;
 import org.junit.runner.JUnitCore;
@@ -28,7 +28,9 @@ import org.junit.runner.notification.RunListener;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Set;
+import java.util.jar.Manifest;
 
 import static com.deloittedigital.testpackage.AnsiSupport.ansiPrintf;
 import static com.deloittedigital.testpackage.AnsiSupport.initialize;
@@ -42,6 +44,12 @@ public class TestPackage {
 
         initialize();
 
+        int exitCode = new TestPackage().run();
+
+        System.exit(exitCode);
+    }
+
+    int run() throws IOException {
         String testPackage = getTestPackage();
 
         Set<Class<?>> testClasses = Sets.newHashSet();
@@ -51,7 +59,9 @@ public class TestPackage {
         }
 
         JUnitCore core = new JUnitCore();
-        RunListener antXmlRunListener = new AntJunitXmlReportListener(new File("target"), new StreamSource() {
+        File targetDir = new File("target");
+        targetDir.mkdirs();
+        RunListener antXmlRunListener = new AntJunitXmlReportListener(targetDir, new StreamSource() {
             @Override
             public byte[] readOut(Class<?> testClass) throws IOException {
                 return new byte[0];
@@ -75,15 +85,28 @@ public class TestPackage {
 
         if (failureCount > 0 || passed == 0) {
             ansiPrintf("@|red FAILED|@");
-            System.exit(1);
+            return 1;
         } else {
             ansiPrintf("@|green OK|@");
-            System.exit(0);
+            return 0;
         }
     }
 
+
     private static String getTestPackage() {
-        return Manifests.read("TestPackage-Package");
+
+        URL resource = Resources.getResource("META-INF/MANIFEST.MF");
+        try {
+            Manifest manifest = new Manifest(resource.openStream());
+            Object attributes = manifest.getMainAttributes().get("TestPackage-Package");
+
+            if (attributes == null) {
+                return System.getProperty("package");
+            }
+            return (String) attributes;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
