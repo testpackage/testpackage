@@ -16,9 +16,6 @@
 
 package com.deloittedigital.testpackage;
 
-import com.google.common.collect.Sets;
-import com.google.common.io.Resources;
-import com.google.common.reflect.ClassPath;
 import com.twitter.common.testing.runner.AntJunitXmlReportListener;
 import com.twitter.common.testing.runner.StreamSource;
 import org.junit.runner.JUnitCore;
@@ -29,7 +26,7 @@ import org.junit.runner.notification.RunListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Set;
+import java.util.Enumeration;
 import java.util.jar.Manifest;
 
 import static com.deloittedigital.testpackage.AnsiSupport.ansiPrintf;
@@ -40,6 +37,8 @@ import static com.deloittedigital.testpackage.AnsiSupport.initialize;
  */
 public class TestPackage {
 
+    protected TestSequencer testSequencer = new TestSequencer();
+
     public static void main(String[] args) throws IOException {
 
         initialize();
@@ -49,21 +48,17 @@ public class TestPackage {
         System.exit(exitCode);
     }
 
-    int run() throws IOException {
+    public int run() throws IOException {
         String testPackage = getTestPackage();
 
-        Set<Class<?>> testClasses = Sets.newHashSet();
-        ClassPath classpath = ClassPath.from(TestPackage.class.getClassLoader());
-        for (ClassPath.ClassInfo classInfo : classpath.getTopLevelClasses(testPackage)) {
-            testClasses.add(classInfo.load());
-        }
+        Request request = testSequencer.sequenceTests(testPackage);
 
         JUnitCore core = new JUnitCore();
 
         File targetDir = new File("target");
         boolean mkdirs = targetDir.mkdirs();
-        if (!mkdirs) {
-            throw new TestPackageException("Could not create target directory: " + targetDir);
+        if (!(targetDir.exists() || mkdirs)) {
+            throw new TestPackageException("Could not create target directory: " + targetDir.getAbsolutePath());
         }
         RunListener antXmlRunListener = new AntJunitXmlReportListener(targetDir, new StreamSource() {
             @Override
@@ -82,7 +77,6 @@ public class TestPackage {
         core.addListener(antXmlRunListener);
         core.addListener(colouredOutputRunListener);
 
-        Request request = Request.classes(testClasses.toArray(new Class[testClasses.size()]));
         Result result = core.run(request);
 
         int failureCount = result.getFailureCount();
@@ -101,17 +95,20 @@ public class TestPackage {
 
     private static String getTestPackage() {
 
-        URL resource = Resources.getResource("META-INF/MANIFEST.MF");
         try {
-            Manifest manifest = new Manifest(resource.openStream());
-            Object attributes = manifest.getMainAttributes().get("TestPackage-Package");
-
-            if (attributes == null) {
-                return System.getProperty("package");
+            Enumeration<URL> resources = TestPackage.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
+            while (resources.hasMoreElements()) {
+                URL url = resources.nextElement();
+                Manifest manifest = new Manifest(url.openStream());
+                String attributes = manifest.getMainAttributes().getValue("TestPackage-Package");
+                if (attributes != null) {
+                    return attributes;
+                }
             }
-            return (String) attributes;
+
+            return System.getProperty("package");
         } catch (IOException e) {
-            throw new TestPackageException("Error loading MANIFEST.MF at URL: " + resource, e);
+            throw new TestPackageException("Error loading MANIFEST.MF", e);
         }
     }
 
