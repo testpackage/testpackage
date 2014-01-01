@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import static com.deloittedigital.testpackage.VisibleAssertions.assertEquals;
+import static com.deloittedigital.testpackage.VisibleAssertions.assertTrue;
 
 /**
  * Created by richardnorth on 01/01/2014.
@@ -45,6 +46,25 @@ public class TestHistoryRepositoryTest {
         assertEquals("a recently-failed test method has an incremented count", runsSinceLastFailures.get("methodName(ClassName)"), 1);
         assertEquals("a just-failed test class has a count of zero", runsSinceLastFailures.get("JustFailedClass"), 0);
         assertEquals("a just-failed test method has a count of zero", runsSinceLastFailures.get("justFailedMethod(JustFailedClass)"), 0);
+
+    }
+
+    @Test
+    public void testFileCreation() throws IOException {
+        File tempFile = File.createTempFile("testhistory", ".txt");
+        tempFile.delete();
+
+        TestHistoryRepository repository = new TestHistoryRepository(tempFile.getAbsolutePath());
+        repository.save();
+
+        assertTrue("repository file is always created upon save even when there are no failed tests", tempFile.exists());
+        tempFile.delete();
+
+        repository.markFailure("Foo", "bar(Foo)");
+        repository.save();
+
+        assertTrue("repository file is created upon save when there is a failed test", tempFile.exists());
+
 
     }
 }

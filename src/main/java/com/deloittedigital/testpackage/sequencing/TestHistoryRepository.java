@@ -16,31 +16,36 @@ import java.util.Map;
  */
 public class TestHistoryRepository {
 
+    private static final int FAILURE_JUST_NOW = -1;
     private final File backingFile;
     private final Map<String, Integer> runsSinceLastFailures;
 
     public TestHistoryRepository(String path) throws IOException {
         backingFile = new File(path);
 
-        runsSinceLastFailures = Files.readLines(backingFile, Charsets.UTF_8, new LineProcessor<Map<String, Integer>>() {
+        if (backingFile.exists()) {
+            runsSinceLastFailures = Files.readLines(backingFile, Charsets.UTF_8, new LineProcessor<Map<String, Integer>>() {
 
-            private Map<String, Integer> map = Maps.newHashMap();
+                private Map<String, Integer> map = Maps.newHashMap();
 
-            @Override
-            public boolean processLine(String line) throws IOException {
-                String[] splitLine = line.split("\\s+");
-                String description = splitLine[0];
-                String runsSinceLastFailure = splitLine[1];
+                @Override
+                public boolean processLine(String line) throws IOException {
+                    String[] splitLine = line.split("\\s+");
+                    String description = splitLine[0];
+                    String runsSinceLastFailure = splitLine[1];
 
-                map.put(description, Integer.valueOf(runsSinceLastFailure));
-                return true;
-            }
+                    map.put(description, Integer.valueOf(runsSinceLastFailure));
+                    return true;
+                }
 
-            @Override
-            public Map<String, Integer> getResult() {
-                return map;
-            }
-        });
+                @Override
+                public Map<String, Integer> getResult() {
+                    return map;
+                }
+            });
+        } else {
+            runsSinceLastFailures = Maps.newHashMap();
+        }
     }
 
     public Map<String, Integer> getRunsSinceLastFailures() {
@@ -59,7 +64,7 @@ public class TestHistoryRepository {
                 // Increment the run count since all failures
                 int runsSinceFailure = entry.getValue() + 1;
 
-                writer.write(String.format("%s        %d\n", entry.getKey(), runsSinceFailure));
+                writer.write(String.format("%s\t%d\n", entry.getKey(), runsSinceFailure));
             }
         } finally {
             if (writer != null) {
@@ -71,7 +76,7 @@ public class TestHistoryRepository {
     }
 
     public void markFailure(String classDescription, String methodDescription) {
-        runsSinceLastFailures.put(classDescription, -1);
-        runsSinceLastFailures.put(methodDescription, -1);
+        runsSinceLastFailures.put(classDescription, FAILURE_JUST_NOW);
+        runsSinceLastFailures.put(methodDescription, FAILURE_JUST_NOW);
     }
 }
