@@ -30,7 +30,7 @@ public class TestHistoryRepository {
 
                 @Override
                 public boolean processLine(String line) throws IOException {
-                    String[] splitLine = line.split("\\s+");
+                    String[] splitLine = line.split("\\s{4}");
                     String description = splitLine[0];
                     String runsSinceLastFailure = splitLine[1];
 
@@ -64,7 +64,7 @@ public class TestHistoryRepository {
                 // Increment the run count since all failures
                 int runsSinceFailure = entry.getValue() + 1;
 
-                writer.write(String.format("%s\t%d\n", entry.getKey(), runsSinceFailure));
+                writer.write(String.format("%s    %d\n", entry.getKey(), runsSinceFailure));
             }
         } finally {
             if (writer != null) {

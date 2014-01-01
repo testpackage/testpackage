@@ -1,2 +1,2 @@
-ClassName                0
+ClassName    0
 methodName(ClassName)    0

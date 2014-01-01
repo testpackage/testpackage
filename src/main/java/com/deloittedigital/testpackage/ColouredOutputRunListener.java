@@ -34,6 +34,25 @@ import static com.deloittedigital.testpackage.AnsiSupport.ansiPrintf;
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public class ColouredOutputRunListener extends RunListener {
 
+    private final boolean failFast;
+
+    public ColouredOutputRunListener(boolean failFast) {
+        this.failFast = failFast;
+    }
+
+    @Override
+    public void testFailure(Failure failure) throws Exception {
+        if (failFast) {
+            System.out.flush();
+            System.out.println();
+            System.out.println();
+            System.out.println("*** TESTS ABORTED");
+            ansiPrintf("*** @|bg_red Fail-fast triggered by test failure:|@");
+
+            reportFailure(failure);
+        }
+    }
+
     @Override
     public void testStarted(Description description) throws Exception {
         System.out.println(">> " + description.getTestClass().getSimpleName() + "." + description.getMethodName() + ":");
@@ -84,23 +103,33 @@ public class ColouredOutputRunListener extends RunListener {
             System.out.println();
             System.out.println("Failures:");
             for (Failure failure : failures) {
-                ansiPrintf("    @|yellow %s|@: @|bold,red %s: %s|@", failure.getDescription(), failure.getException().getClass().getSimpleName(), indentNewlines(failure.getMessage()));
-                Throwable exception = failure.getException();
-                Throwable rootCause = Throwables.getRootCause(exception);
-
-                if (exception.equals(rootCause)) {
-                    System.out.printf("        At %s\n\n", rootCause.getStackTrace()[0]);
-                } else {
-                    System.out.printf("        At %s\n", exception.getStackTrace()[0]);
-                    ansiPrintf("      Root cause: @|bold,red %s: %s|@", rootCause.getClass().getSimpleName(), indentNewlines(rootCause.getMessage()));
-                    System.out.printf("        At %s\n\n", rootCause.getStackTrace()[0]);
-                }
+                reportFailure(failure);
             }
         }
         System.out.flush();
     }
 
+    private void reportFailure(Failure failure) {
+        ansiPrintf("    @|yellow %s|@: @|bold,red %s: %s|@", failure.getDescription(), failure.getException().getClass().getSimpleName(), indentNewlines(failure.getMessage()));
+        Throwable exception = failure.getException();
+        Throwable rootCause = Throwables.getRootCause(exception);
+
+        if (exception.equals(rootCause)) {
+            System.out.printf("        At %s\n\n", rootCause.getStackTrace()[0]);
+        } else {
+            System.out.printf("        At %s\n", exception.getStackTrace()[0]);
+            ansiPrintf("      Root cause: @|bold,red %s: %s|@", rootCause.getClass().getSimpleName(), indentNewlines(rootCause.getMessage()));
+            System.out.printf("        At %s\n\n", rootCause.getStackTrace()[0]);
+        }
+        System.out.flush();
+    }
+
     private static String indentNewlines(String textWithPossibleNewlines) {
+
+        if (textWithPossibleNewlines == null) {
+            textWithPossibleNewlines = "";
+        }
+
         return textWithPossibleNewlines.replaceAll("\\n", "\n      ");
     }
 }

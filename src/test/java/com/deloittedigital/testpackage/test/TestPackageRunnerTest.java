@@ -1,6 +1,6 @@
-package com.deloittedigital.testpackage;
+package com.deloittedigital.testpackage.test;
 
-import com.deloittedigital.testpackage.test.StreamCaptureBaseTest;
+import com.deloittedigital.testpackage.TestPackage;
 import com.google.common.io.Files;
 import org.junit.After;
 import org.junit.Before;

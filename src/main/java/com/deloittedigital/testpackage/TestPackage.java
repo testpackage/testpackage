@@ -16,14 +16,16 @@
 
 package com.deloittedigital.testpackage;
 
+import com.deloittedigital.testpackage.failfast.FailFastRunListener;
+import com.deloittedigital.testpackage.junitcore.FailFastSupportCore;
 import com.deloittedigital.testpackage.sequencing.TestHistoryRepository;
 import com.deloittedigital.testpackage.sequencing.TestHistoryRunListener;
 import com.twitter.common.testing.runner.AntJunitXmlReportListener;
 import com.twitter.common.testing.runner.StreamSource;
-import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
+import org.junit.runner.notification.StoppedByUserException;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +42,7 @@ import static com.deloittedigital.testpackage.AnsiSupport.initialize;
 public class TestPackage {
 
     protected TestSequencer testSequencer = new TestSequencer();
+    public boolean failFast = false;
 
     public static void main(String[] args) throws IOException {
 
@@ -60,7 +63,7 @@ public class TestPackage {
 
         Request request = testSequencer.sequenceTests(testHistoryRepository.getRunsSinceLastFailures(), testPackage);
 
-        JUnitCore core = new JUnitCore();
+        FailFastSupportCore core = new FailFastSupportCore();
 
         File targetDir = new File("target");
         boolean mkdirs = targetDir.mkdirs();
@@ -79,20 +82,29 @@ public class TestPackage {
             }
         });
 
-        RunListener colouredOutputRunListener = new ColouredOutputRunListener();
+        RunListener colouredOutputRunListener = new ColouredOutputRunListener(failFast);
 
         core.addListener(antXmlRunListener);
         core.addListener(colouredOutputRunListener);
         core.addListener(testHistoryRunListener);
 
-        Result result = core.run(request);
+        if (failFast) {
+            core.addListener(new FailFastRunListener(core.getNotifier()));
+        }
+
+        Result result;
+        try {
+            result = core.run(request);
+        } catch (StoppedByUserException e) {
+            ansiPrintf("@|red FAILED|@");
+            return 1;
+        } finally {
+            testHistoryRepository.save();
+        }
 
         int failureCount = result.getFailureCount();
         int testCount = result.getRunCount();
         int passed = testCount - failureCount;
-
-        testHistoryRepository.save();
-
         if (failureCount > 0 || passed == 0) {
             ansiPrintf("@|red FAILED|@");
             return 1;
