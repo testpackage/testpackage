@@ -26,6 +26,10 @@ import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.StoppedByUserException;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.ExampleMode;
+import org.kohsuke.args4j.Option;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,15 +46,41 @@ import static com.deloittedigital.testpackage.AnsiSupport.initialize;
 public class TestPackage {
 
     protected TestSequencer testSequencer = new TestSequencer();
+
+    @Option(name = "--failfast", aliases = "-ff", usage = "Fail Fast: Causes test run to be aborted at the first test failure")
     public boolean failFast = false;
 
     public static void main(String[] args) throws IOException {
 
         initialize();
 
-        int exitCode = new TestPackage().run();
+        int exitCode = new TestPackage().doMain(args);
 
         System.exit(exitCode);
+    }
+
+    private int doMain(String[] args) throws IOException {
+
+        CmdLineParser cmdLineParser = new CmdLineParser(this);
+        try {
+            cmdLineParser.parseArgument(args);
+        } catch (CmdLineException e) {
+            // if there's a problem in the command line,
+            // you'll get this exception. this will report
+            // an error message.
+            System.err.println(e.getMessage());
+            System.err.println("java -jar JARFILE [options...] arguments...");
+            // print the list of available options
+            cmdLineParser.printUsage(System.err);
+            System.err.println();
+
+            // print option sample. This is useful some time
+            System.err.println("  Example: java -jar JARFILE" + cmdLineParser.printExample(ExampleMode.ALL));
+
+            return -1;
+        }
+
+        return run();
     }
 
     public int run() throws IOException {
