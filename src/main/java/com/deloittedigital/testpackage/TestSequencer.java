@@ -5,6 +5,8 @@ import com.google.common.reflect.ClassPath;
 import org.junit.runner.Request;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -13,6 +15,10 @@ import java.util.Set;
 public class TestSequencer {
 
     public Request sequenceTests(String... testPackageNames) throws IOException {
+        return sequenceTests(Collections.<String, Integer>emptyMap(), testPackageNames);
+    }
+
+    public Request sequenceTests(Map<String, Integer> runsSinceLastFailures, String... testPackageNames) throws IOException {
         Set<Class<?>> testClasses = Sets.newHashSet();
 
         for (String testPackageName : testPackageNames) {
@@ -21,6 +27,10 @@ public class TestSequencer {
                 testClasses.add(classInfo.load());
             }
         }
-        return Request.classes(testClasses.toArray(new Class[testClasses.size()]));
+        Request unsortedClassRequest = Request.classes(testClasses.toArray(new Class[testClasses.size()]));
+        Request sortedRequest = unsortedClassRequest.sortWith(new RecentFailurePrioritisationRequestComparator(runsSinceLastFailures));
+
+        return sortedRequest;
     }
+
 }

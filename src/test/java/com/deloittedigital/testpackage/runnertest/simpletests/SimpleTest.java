@@ -8,7 +8,12 @@ import org.junit.Test;
 public class SimpleTest {
 
     @Test
-    public void testTrue() {
+    public void testTrue2() {
+        assert true;
+    }
+
+    @Test
+    public void testTrue1() {
         assert true;
     }
 }

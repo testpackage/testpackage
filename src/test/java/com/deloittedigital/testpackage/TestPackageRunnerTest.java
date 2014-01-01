@@ -26,7 +26,7 @@ public class TestPackageRunnerTest extends StreamCaptureBaseTest {
         VisibleAssertions.assertEquals("exit code should be zero for a successful run", exitCode, 0);
         VisibleAssertions.assertTrue("stdout should contain the test name", capturedStdOut.contains(">> SimpleTest.testTrue"));
         VisibleAssertions.assertTrue("stdout should contain 'TESTS COMPLETE'", capturedStdOut.contains("TESTS COMPLETE"));
-        VisibleAssertions.assertTrue("stdout should contain '1 passed'", capturedStdOut.contains("1 passed"));
+        VisibleAssertions.assertTrue("stdout should contain '2 passed'", capturedStdOut.contains("2 passed"));
         VisibleAssertions.assertTrue("stdout should contain '0 failed'", capturedStdOut.contains("0 failed"));
         VisibleAssertions.assertTrue("stdout should contain '0 ignored'", capturedStdOut.contains("0 ignored"));
         VisibleAssertions.assertTrue("stdout should contain 'OK'", capturedStdOut.contains("OK"));
