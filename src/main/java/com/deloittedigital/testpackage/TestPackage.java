@@ -16,6 +16,8 @@
 
 package com.deloittedigital.testpackage;
 
+import com.deloittedigital.testpackage.sequencing.TestHistoryRepository;
+import com.deloittedigital.testpackage.sequencing.TestHistoryRunListener;
 import com.twitter.common.testing.runner.AntJunitXmlReportListener;
 import com.twitter.common.testing.runner.StreamSource;
 import org.junit.runner.JUnitCore;
@@ -49,9 +51,14 @@ public class TestPackage {
     }
 
     public int run() throws IOException {
+
+        new File(".testpackage").mkdir();
+        TestHistoryRepository testHistoryRepository = new TestHistoryRepository(".testpackage/history.txt");
+        TestHistoryRunListener testHistoryRunListener = new TestHistoryRunListener(testHistoryRepository);
+
         String testPackage = getTestPackage();
 
-        Request request = testSequencer.sequenceTests(testPackage);
+        Request request = testSequencer.sequenceTests(testHistoryRepository.getRunsSinceLastFailures(), testPackage);
 
         JUnitCore core = new JUnitCore();
 
@@ -76,12 +83,15 @@ public class TestPackage {
 
         core.addListener(antXmlRunListener);
         core.addListener(colouredOutputRunListener);
+        core.addListener(testHistoryRunListener);
 
         Result result = core.run(request);
 
         int failureCount = result.getFailureCount();
         int testCount = result.getRunCount();
         int passed = testCount - failureCount;
+
+        testHistoryRepository.save();
 
         if (failureCount > 0 || passed == 0) {
             ansiPrintf("@|red FAILED|@");

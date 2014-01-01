@@ -29,12 +29,12 @@ import static com.deloittedigital.testpackage.VisibleAssertions.assertTrue;
 public class BasicTest {
 
     @Test
-    public void testTrueAssertion() {
+    public void testBasicTrueAssertion() {
         assertTrue("it should be true", true);
     }
 
     @Test
-    public void testNullEqualsAssertion() {
+    public void testBasicNullEqualsAssertion() {
         assertEquals("it should be equal", null, null);
     }
 
