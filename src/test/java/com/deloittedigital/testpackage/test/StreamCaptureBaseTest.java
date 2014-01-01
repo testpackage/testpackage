@@ -28,7 +28,7 @@ public abstract class StreamCaptureBaseTest {
     }
 
     @Before
-    public void setup() throws IOException {
+    public void setupStreamCapturing() throws IOException {
         outBaos = new ByteArrayOutputStream();
         errBaos = new ByteArrayOutputStream();
         outInterceptor = new PrintStream(new TeeOutputStream(outBaos, originalOut));
