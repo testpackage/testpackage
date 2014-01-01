@@ -20,21 +20,20 @@ import com.deloittedigital.testpackage.failfast.FailFastRunListener;
 import com.deloittedigital.testpackage.junitcore.FailFastSupportCore;
 import com.deloittedigital.testpackage.sequencing.TestHistoryRepository;
 import com.deloittedigital.testpackage.sequencing.TestHistoryRunListener;
+import com.google.common.collect.Lists;
 import com.twitter.common.testing.runner.AntJunitXmlReportListener;
 import com.twitter.common.testing.runner.StreamSource;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.StoppedByUserException;
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.ExampleMode;
-import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.jar.Manifest;
 
 import static com.deloittedigital.testpackage.AnsiSupport.ansiPrintf;
@@ -49,6 +48,9 @@ public class TestPackage {
 
     @Option(name = "--failfast", aliases = "-ff", usage = "Fail Fast: Causes test run to be aborted at the first test failure")
     public boolean failFast = false;
+
+    @Argument
+    private List<String> testPackageNames = Lists.newArrayList();
 
     public static void main(String[] args) throws IOException {
 
@@ -69,13 +71,13 @@ public class TestPackage {
             // you'll get this exception. this will report
             // an error message.
             System.err.println(e.getMessage());
-            System.err.println("java -jar JARFILE [options...] arguments...");
+            System.err.println("java -jar JARFILE [options...] packagenames...");
             // print the list of available options
             cmdLineParser.printUsage(System.err);
             System.err.println();
 
             // print option sample. This is useful some time
-            System.err.println("  Example: java -jar JARFILE" + cmdLineParser.printExample(ExampleMode.ALL));
+            System.err.println("  Example: java -jar JARFILE" + cmdLineParser.printExample(ExampleMode.ALL) + " packagenames");
 
             return -1;
         }
@@ -89,9 +91,9 @@ public class TestPackage {
         TestHistoryRepository testHistoryRepository = new TestHistoryRepository(".testpackage/history.txt");
         TestHistoryRunListener testHistoryRunListener = new TestHistoryRunListener(testHistoryRepository);
 
-        String testPackage = getTestPackage();
+        getTestPackage();
 
-        Request request = testSequencer.sequenceTests(testHistoryRepository.getRunsSinceLastFailures(), testPackage);
+        Request request = testSequencer.sequenceTests(testHistoryRepository.getRunsSinceLastFailures(), testPackageNames.toArray(new String[testPackageNames.size()]));
 
         FailFastSupportCore core = new FailFastSupportCore();
 
@@ -145,8 +147,14 @@ public class TestPackage {
     }
 
 
-    private static String getTestPackage() {
+    private void getTestPackage() {
 
+        if (testPackageNames.size() != 0) {
+            // command-line arguments always preferred
+            return;
+        }
+
+        // Check the JAR manifest
         try {
             Enumeration<URL> resources = TestPackage.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
             while (resources.hasMoreElements()) {
@@ -154,14 +162,17 @@ public class TestPackage {
                 Manifest manifest = new Manifest(url.openStream());
                 String attributes = manifest.getMainAttributes().getValue("TestPackage-Package");
                 if (attributes != null) {
-                    return attributes;
+                    testPackageNames.add(attributes);
+                    return;
                 }
             }
 
-            return System.getProperty("package");
         } catch (IOException e) {
             throw new TestPackageException("Error loading MANIFEST.MF", e);
         }
+
+        // Fall back to system property
+        testPackageNames.add(System.getProperty("package"));
     }
 
 }
