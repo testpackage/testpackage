@@ -25,6 +25,8 @@ With integration, functional and smoke tests, for example, the following should 
  * Provides `VisibleAssertions` replacement for `org.junit.Assert` which makes it easier to identify causes of assertion errors
  * Pretty, clean output of test failures, focusing on information that is most useful to the developer without displaying huge stack traces
  * JUnit XML report output, compatible with Jenkins (uses code from Twitter Commons, see attributions below)
+ * Fast-fast mode, which aborts the test run when the first test failure happens
+ * Test prioritisation, which runs recently failed tests first, on the basis that these are most likely to identify persistent problems. This can be particularly powerful when used with fail-fast mode.
 
 ## How do I use it?
 
@@ -100,7 +102,20 @@ Once built, execute the build JAR file (e.g. named `maven-example-1.0-SNAPSHOT.j
 
 	java -jar target/maven-example-1.0-SNAPSHOT.jar
 
-Of course, this JAR file can be moved anywhere on the filesystem, deployed to an artifact repository (e.g. with `mvn deploy`)
+Of course, this JAR file can be moved anywhere on the filesystem, deployed to an artifact repository etc (e.g. with `mvn deploy`).
+
+While the above runs with sensible defaults, the following arguments may be passed at the command line to customise behaviour:
+
+#####Options
+
+    --failfast or -ff:      Enables fail-fast mode
+
+#####Arguments
+
+The full package names which should be searched (non-recursively) for test classes
+
+#####Usage
+    java -jar JARFILE [OPTIONS] [ARGUMENTS]
 
 # TODO
 
@@ -108,8 +123,6 @@ Of course, this JAR file can be moved anywhere on the filesystem, deployed to an
  
  * Complete `VisibleAssertions` to provide fuller coverage of `org.junit.Assert`
  * Test sharding, e.g. for running a fraction of tests concurrently using separate CI slaves
- * Toggleable Fail-fast mode
- * Retention of historic failure rates per test, and sorting of tests so that high-risk tests run earliest (particularly useful with fail fast mode)
  * Capture of stdout/stderr in JUnit XML output
  * Simple Swing-based UI to display logs when JAR is executed in a GUI environment rather than a terminal
  
@@ -119,7 +132,7 @@ Of course, this JAR file can be moved anywhere on the filesystem, deployed to an
  * Attach licence and open source
  * Release to public Maven repository
  * Add example output to this README.
- * Reduce library dependencies, e.g. remove dependency on jcabi-manifests which brings lots of transitive dependencies.
+ * Reduce library dependencies
 
 # Contributing
 
@@ -128,6 +141,12 @@ Of course, this JAR file can be moved anywhere on the filesystem, deployed to an
 While the example project given is a Maven project, TestPackage itself is built with Gradle. Use the Gradle build wrapper and build as follows:
 
 	./gradlew build
+
+To run tests:
+
+    ./gradlew test --info
+
+*Please note that when running tests there will be 'failures' and assertion errors in stdout. This is because the unit tests have to test that output looks correct when failures occur. The overall result of the unit tests should still be a pass, though.*
 
 To install the built TestPackage library to your local (~/.m2) Maven repository run:
 

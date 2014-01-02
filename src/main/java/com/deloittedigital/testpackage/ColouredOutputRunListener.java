@@ -18,28 +18,48 @@ package com.deloittedigital.testpackage;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
 import java.util.List;
-import java.util.Map;
 
 import static com.deloittedigital.testpackage.AnsiSupport.ansiPrintf;
 
 /**
+ * A JUnit run listener which generates user-facing output on System.out to indicate progress of a test run.
  *
  * @author rnorth
  */
+@SuppressWarnings("UseOfSystemOutOrSystemErr")
 public class ColouredOutputRunListener extends RunListener {
+
+    private final boolean failFast;
+
+    public ColouredOutputRunListener(boolean failFast) {
+        this.failFast = failFast;
+    }
+
+    @Override
+    public void testFailure(Failure failure) throws Exception {
+        if (failFast) {
+            System.out.flush();
+            System.out.println();
+            System.out.println();
+            System.out.println("*** TESTS ABORTED");
+            ansiPrintf("*** @|bg_red Fail-fast triggered by test failure:|@");
+
+            reportFailure(failure);
+        }
+    }
 
     @Override
     public void testStarted(Description description) throws Exception {
         System.out.println(">> " + description.getTestClass().getSimpleName() + "." + description.getMethodName() + ":");
     }
 
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Override
     public void testRunFinished(Result result) throws Exception {
 
@@ -48,7 +68,6 @@ public class ColouredOutputRunListener extends RunListener {
         int ignoredCount = result.getIgnoreCount();
         int passed = testCount - failureCount;
         List<Failure> failures = Lists.newArrayList();
-        Map<String, Long> runTimings = Maps.newHashMap();
 
         failures.addAll(result.getFailures());
 
@@ -85,23 +104,33 @@ public class ColouredOutputRunListener extends RunListener {
             System.out.println();
             System.out.println("Failures:");
             for (Failure failure : failures) {
-                ansiPrintf("    @|yellow %s|@: @|bold,red %s: %s|@", failure.getDescription(), failure.getException().getClass().getSimpleName(), indentNewlines(failure.getMessage()));
-                Throwable exception = failure.getException();
-                Throwable rootCause = Throwables.getRootCause(exception);
-
-                if (exception.equals(rootCause)) {
-                    System.out.printf("        At %s\n\n", rootCause.getStackTrace()[0]);
-                } else {
-                    System.out.printf("        At %s\n", exception.getStackTrace()[0]);
-                    ansiPrintf("      Root cause: @|bold,red %s: %s|@", rootCause.getClass().getSimpleName(), indentNewlines(rootCause.getMessage()));
-                    System.out.printf("        At %s\n\n", rootCause.getStackTrace()[0]);
-                }
+                reportFailure(failure);
             }
         }
         System.out.flush();
     }
 
+    private void reportFailure(Failure failure) {
+        ansiPrintf("    @|yellow %s|@: @|bold,red %s: %s|@", failure.getDescription(), failure.getException().getClass().getSimpleName(), indentNewlines(failure.getMessage()));
+        Throwable exception = failure.getException();
+        Throwable rootCause = Throwables.getRootCause(exception);
+
+        if (exception.equals(rootCause)) {
+            System.out.printf("        At %s\n\n", rootCause.getStackTrace()[0]);
+        } else {
+            System.out.printf("        At %s\n", exception.getStackTrace()[0]);
+            ansiPrintf("      Root cause: @|bold,red %s: %s|@", rootCause.getClass().getSimpleName(), indentNewlines(rootCause.getMessage()));
+            System.out.printf("        At %s\n\n", rootCause.getStackTrace()[0]);
+        }
+        System.out.flush();
+    }
+
     private static String indentNewlines(String textWithPossibleNewlines) {
+
+        if (textWithPossibleNewlines == null) {
+            return "";
+        }
+
         return textWithPossibleNewlines.replaceAll("\\n", "\n      ");
     }
 }

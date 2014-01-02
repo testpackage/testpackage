@@ -1,0 +1,2 @@
+com.deloittedigital.testpackage.runnertest.failureprioritisationtests.zzz_JustFailedTest    0
+testTrue(com.deloittedigital.testpackage.runnertest.failureprioritisationtests.zzz_JustFailedTest)    0
