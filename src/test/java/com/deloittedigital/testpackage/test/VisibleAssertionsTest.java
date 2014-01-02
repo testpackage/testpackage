@@ -76,7 +76,7 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
         try {
             int a = 7 /0;
         } catch (Throwable e) {
-            throw new RuntimeException("Wrapping exception", e);
+            throw new RuntimeException("A generic exception which wraps the root cause", e);
         }
     }
 }

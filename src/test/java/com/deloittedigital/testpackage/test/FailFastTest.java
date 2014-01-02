@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static com.deloittedigital.testpackage.VisibleAssertions.assertEquals;
 import static com.deloittedigital.testpackage.VisibleAssertions.assertTrue;
 
 /**
@@ -27,8 +28,11 @@ public class FailFastTest extends StreamCaptureBaseTest {
         testPackage.run();
 
         String capturedStdOut = getCapturedStdOut();
-        assertTrue("stdout should contain '1 passed'", capturedStdOut.contains("1 passed"));
-        assertTrue("stdout should contain '1 failed'", capturedStdOut.contains("1 failed"));
+        int aaa_position = capturedStdOut.indexOf("aaa_FailingTest");
+        int zzz_position = capturedStdOut.indexOf("zzz_PassingTest");
+        assertTrue("one test is expected to have failed", capturedStdOut.contains("1 failed"));
+        assertTrue("one test is expected to have passed", capturedStdOut.contains("1 passed"));
+        assertTrue("the passing test ran after the failing test had already failed", aaa_position < zzz_position);
     }
 
     @Test
@@ -36,10 +40,11 @@ public class FailFastTest extends StreamCaptureBaseTest {
 
         TestPackage testPackage = new TestPackage();
         testPackage.failFast = true;
-        testPackage.run();
+        int exitCode = testPackage.run();
 
         String capturedStdOut = getCapturedStdOut();
-        assertTrue("stdout should NOT contain '1 passed'", !capturedStdOut.contains("1 passed"));
+        assertTrue("no test should have passed", !capturedStdOut.contains("1 passed") && !capturedStdOut.contains("zzz_PassingTest"));
         assertTrue("stdout should contain 'TESTS ABORTED'", capturedStdOut.contains("TESTS ABORTED"));
+        assertEquals("the exit code should be 1", exitCode, 1);
     }
 }

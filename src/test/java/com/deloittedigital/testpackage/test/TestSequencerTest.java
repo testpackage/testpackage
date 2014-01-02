@@ -35,9 +35,9 @@ public class TestSequencerTest {
         Request request = new TestSequencer().sequenceTests(runsSinceLastFailures, "com.deloittedigital.testpackage.runnertest.failureprioritisationtests");
 
         assertEquals("the request contains the right number of test methods", request.getRunner().testCount(), 3);
-        assertEquals("the request has a just-failed test method first", request.getRunner().getDescription().getChildren().get(0).getChildren().get(0).getDisplayName(), "testTrue(com.deloittedigital.testpackage.runnertest.failureprioritisationtests.zzz_JustFailedTest)");
-        assertEquals("the request has a never-failed test method which is a sibling of the just-failed method next", request.getRunner().getDescription().getChildren().get(0).getChildren().get(1).getDisplayName(), "testThatHasNotFailed(com.deloittedigital.testpackage.runnertest.failureprioritisationtests.zzz_JustFailedTest)");
-        assertEquals("the request has a never-failed test method from a separate class last", request.getRunner().getDescription().getChildren().get(1).getChildren().get(0).getDisplayName(), "testTrue(com.deloittedigital.testpackage.runnertest.failureprioritisationtests.aaa_NoRecentFailuresTest)");
+        assertEquals("the first test method is one which has faield most recently", request.getRunner().getDescription().getChildren().get(0).getChildren().get(0).getDisplayName(), "testTrue(com.deloittedigital.testpackage.runnertest.failureprioritisationtests.zzz_JustFailedTest)");
+        assertEquals("the second test method is one which hasn't ever failed but belongs to the same class as the first", request.getRunner().getDescription().getChildren().get(0).getChildren().get(1).getDisplayName(), "testThatHasNotFailed(com.deloittedigital.testpackage.runnertest.failureprioritisationtests.zzz_JustFailedTest)");
+        assertEquals("the last test method is one which has never failed and belongs to class with no historical failures", request.getRunner().getDescription().getChildren().get(1).getChildren().get(0).getDisplayName(), "testTrue(com.deloittedigital.testpackage.runnertest.failureprioritisationtests.aaa_NoRecentFailuresTest)");
 
     }
 }
