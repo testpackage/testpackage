@@ -40,6 +40,14 @@ import static com.deloittedigital.testpackage.AnsiSupport.ansiPrintf;
 import static com.deloittedigital.testpackage.AnsiSupport.initialize;
 
 /**
+ * TestPackage main class - should be referenced from a JAR manifest as the Main Class and run from the shell.
+ * </p>
+ * See @Option-annotated fields for command line switches.
+ * </p>
+ * If any command line arguments are passed, these are used as the Java package names which should be searched
+ * for test classes (not recursive). Otherwise, an attribute named 'TestPackage-Package' is used to identify
+ * the right test package name, or failing that, a system property called 'package' is used.
+ *
  * @author rnorth
  */
 public class TestPackage {
@@ -87,8 +95,13 @@ public class TestPackage {
 
     public int run() throws IOException {
 
-        new File(".testpackage").mkdir();
-        TestHistoryRepository testHistoryRepository = new TestHistoryRepository(".testpackage/history.txt");
+        TestHistoryRepository testHistoryRepository = null;
+        try {
+            new File(".testpackage").mkdir();
+            testHistoryRepository = new TestHistoryRepository(".testpackage/history.txt");
+        } catch (IOException e) {
+            throw new TestPackageException("Could not create or open test history repository file at .testpackage/history.txt!", e);
+        }
         TestHistoryRunListener testHistoryRunListener = new TestHistoryRunListener(testHistoryRepository);
 
         getTestPackage();
@@ -128,6 +141,7 @@ public class TestPackage {
         try {
             result = core.run(request);
         } catch (StoppedByUserException e) {
+            // Thrown in fail-fast mode
             ansiPrintf("@|red FAILED|@");
             return 1;
         } finally {

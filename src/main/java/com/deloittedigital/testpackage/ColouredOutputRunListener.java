@@ -28,6 +28,7 @@ import java.util.List;
 import static com.deloittedigital.testpackage.AnsiSupport.ansiPrintf;
 
 /**
+ * A JUnit run listener which generates user-facing output on System.out to indicate progress of a test run.
  *
  * @author rnorth
  */
@@ -127,7 +128,7 @@ public class ColouredOutputRunListener extends RunListener {
     private static String indentNewlines(String textWithPossibleNewlines) {
 
         if (textWithPossibleNewlines == null) {
-            textWithPossibleNewlines = "";
+            return "";
         }
 
         return textWithPossibleNewlines.replaceAll("\\n", "\n      ");

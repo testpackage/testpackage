@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
+ * Stores historic 'runs since last failure' counts on the filesystem for
+ * persistence between test runs.
+ *
  * Created by richardnorth on 01/01/2014.
  */
 public class TestHistoryRepository {
@@ -20,6 +23,10 @@ public class TestHistoryRepository {
     private final File backingFile;
     private final Map<String, Integer> runsSinceLastFailures;
 
+    /**
+     * @param path relative or absolute path of the backing file where the historic data should be stored
+     * @throws IOException
+     */
     public TestHistoryRepository(String path) throws IOException {
         backingFile = new File(path);
 
@@ -48,10 +55,18 @@ public class TestHistoryRepository {
         }
     }
 
+    /**
+     *
+     * @return an immutable copy of a map from test class/method description to the count of how many runs since last failure.
+     */
     public Map<String, Integer> getRunsSinceLastFailures() {
         return ImmutableMap.copyOf(runsSinceLastFailures);
     }
 
+    /**
+     * Save the current state of historic data to the repository's backing file.
+     * @throws IOException
+     */
     public void save() throws IOException {
 
         backingFile.delete();
@@ -71,10 +86,13 @@ public class TestHistoryRepository {
                 writer.close();
             }
         }
-
-
     }
 
+    /**
+     * Mark a test class and method description as having just failed.
+     * @param classDescription      a class description (i.e. the fully qualified class name)
+     * @param methodDescription     a method description (i.e. as returned by Description#getDisplayName())
+     */
     public void markFailure(String classDescription, String methodDescription) {
         runsSinceLastFailures.put(classDescription, FAILURE_JUST_NOW);
         runsSinceLastFailures.put(methodDescription, FAILURE_JUST_NOW);
