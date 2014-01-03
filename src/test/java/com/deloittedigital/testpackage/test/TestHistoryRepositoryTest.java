@@ -21,8 +21,8 @@ public class TestHistoryRepositoryTest {
         TestHistoryRepository repository = new TestHistoryRepository("src/test/resources/historysample1.txt");
 
         Map<String, Integer> runsSinceLastFailures = repository.getRunsSinceLastFailures();
-        assertEquals("a just-failed test class gets marked with 0 runs since last failure", runsSinceLastFailures.get("com.deloittedigital.testpackage.runnertest.failureprioritisationtests.zzz_JustFailedTest"), 0);
-        assertEquals("a just-failed test method gets marked with 0 runs since last failure", runsSinceLastFailures.get("testTrue(com.deloittedigital.testpackage.runnertest.failureprioritisationtests.zzz_JustFailedTest)"), 0);
+        assertEquals("a just-failed test class gets marked with 0 runs since last failure", 0, runsSinceLastFailures.get("com.deloittedigital.testpackage.runnertest.failureprioritisationtests.zzz_JustFailedTest"));
+        assertEquals("a just-failed test method gets marked with 0 runs since last failure", 0, runsSinceLastFailures.get("testTrue(com.deloittedigital.testpackage.runnertest.failureprioritisationtests.zzz_JustFailedTest)"));
     }
 
     @Test
@@ -33,8 +33,8 @@ public class TestHistoryRepositoryTest {
 
         TestHistoryRepository repository = new TestHistoryRepository(tempFile.getAbsolutePath());
         Map<String, Integer> runsSinceLastFailures = repository.getRunsSinceLastFailures();
-        assertEquals("a just-failed test class starts with a count of zero", runsSinceLastFailures.get("ClassName"), 0);
-        assertEquals("a just-failed test method starts with a count of zero", runsSinceLastFailures.get("methodName(ClassName)"), 0);
+        assertEquals("a just-failed test class starts with a count of zero", 0, runsSinceLastFailures.get("ClassName"));
+        assertEquals("a just-failed test method starts with a count of zero", 0, runsSinceLastFailures.get("methodName(ClassName)"));
 
         repository.markFailure("JustFailedClass", "justFailedMethod(JustFailedClass)");
 
@@ -42,10 +42,10 @@ public class TestHistoryRepositoryTest {
 
         repository = new TestHistoryRepository(tempFile.getAbsolutePath());
         runsSinceLastFailures = repository.getRunsSinceLastFailures();
-        assertEquals("the test class 'runs since last failure' has been incremented if it didn't fail this time", runsSinceLastFailures.get("ClassName"), 1);
-        assertEquals("the test method 'runs since last failure' has been incremented if it didn't fail this time", runsSinceLastFailures.get("methodName(ClassName)"), 1);
-        assertEquals("a just-failed test class has a count of zero", runsSinceLastFailures.get("JustFailedClass"), 0);
-        assertEquals("a just-failed test method has a count of zero", runsSinceLastFailures.get("justFailedMethod(JustFailedClass)"), 0);
+        assertEquals("the test class 'runs since last failure' has been incremented if it didn't fail this time", 1, runsSinceLastFailures.get("ClassName"));
+        assertEquals("the test method 'runs since last failure' has been incremented if it didn't fail this time", 1, runsSinceLastFailures.get("methodName(ClassName)"));
+        assertEquals("a just-failed test class has a count of zero", 0, runsSinceLastFailures.get("JustFailedClass"));
+        assertEquals("a just-failed test method has a count of zero", 0, runsSinceLastFailures.get("justFailedMethod(JustFailedClass)"));
 
     }
 

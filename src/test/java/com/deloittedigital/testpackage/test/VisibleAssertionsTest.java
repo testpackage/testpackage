@@ -31,9 +31,13 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
         assert getCapturedStdOut().contains("✔ it should be true");
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testFalseAssertion() {
-        assertTrue("it should be true", false);
+        try {
+            assertTrue("it should be true", false);
+            failIfReachedHere();
+        } catch (AssertionError expected) {
+        }
         assert getCapturedStdOut().contains("✘ it should be true");
     }
 
@@ -49,25 +53,37 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
         assert getCapturedStdOut().contains("✔ it should be equal");
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testOneNullEqualsAssertion() {
-        assertEquals("it should be equal", "A", null);
+        try {
+            assertEquals("it should be equal", null, "A");
+            failIfReachedHere();
+        } catch (AssertionError expected) {
+        }
         assert getCapturedStdOut().contains("✘ it should be equal");
-        assert getCapturedStdOut().contains("'A' does not equal 'null'");
+        assert getCapturedStdOut().contains("'A' does not equal expected 'null'");
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testOneOtherNullEqualsAssertion() {
-        assertEquals("it should be equal", null, "A");
+        try {
+            assertEquals("it should be equal", "A", null);
+            failIfReachedHere();
+        } catch (AssertionError expected) {
+        }
         assert getCapturedStdOut().contains("✘ it should be equal");
-        assert getCapturedStdOut().contains("'null' does not equal 'A'");
+        assert getCapturedStdOut().contains("'null' does not equal expected 'A'");
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testNotEqualsAssertion() {
-        assertEquals("it should be equal", "A", "B");
+        try {
+            assertEquals("it should be equal", "B", "A");
+            failIfReachedHere();
+        } catch (AssertionError expected) {
+        }
         assert getCapturedStdOut().contains("✘ it should be equal");
-        assert getCapturedStdOut().contains("'A' does not equal 'B'");
+        assert getCapturedStdOut().contains("'A' does not equal expected 'B'");
     }
 
     @Test(expected = RuntimeException.class)
@@ -85,9 +101,13 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
         assert getCapturedStdOut().contains("✔ a null thing should be null");
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testFailingNullAssertion() {
-        assertNull("a null thing should be null", "a non-null thing");
+        try {
+            assertNull("a null thing should be null", "a non-null thing");
+            failIfReachedHere();
+        } catch (AssertionError expected) {
+        }
         assert getCapturedStdOut().contains("✘ a null thing should be null");
     }
 
@@ -97,15 +117,23 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
         assert getCapturedStdOut().contains("✔ a not-null thing should be not-null");
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testFailingNotNullAssertion() {
-        assertNotNull("a not-null thing should be not-null", null);
+        try {
+            assertNotNull("a not-null thing should be not-null", null);
+            failIfReachedHere();
+        } catch (AssertionError expected) {
+        }
         assert getCapturedStdOut().contains("✘ a not-null thing should be not-null");
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testFail() {
-        fail("a failure reason");
+        try {
+            fail("a failure reason");
+            failIfReachedHere();
+        } catch (AssertionError expected) {
+        }
         assert getCapturedStdOut().contains("✘ a failure reason");
     }
 
@@ -113,14 +141,22 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
     public void testSameAssertion() {
         Object o1 = "A";
         Object o2 = o1;
-        assertSame("it should be the same", o1, o2);
+        assertSame("it should be the same", o2, o1);
         assert getCapturedStdOut().contains("✔ it should be the same");
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testFailingSameAssertion() {
-        assertEquals("it should be the same", "A", "B");
+        try {
+            assertSame("it should be the same", "A", "B");
+            failIfReachedHere();
+        } catch (AssertionError expected) {
+        }
         assert getCapturedStdOut().contains("✘ it should be the same");
-        assert getCapturedStdOut().contains("'A' is not the same (!=) as 'B'");
+        assert getCapturedStdOut().contains("'B' is not the same (!=) as expected 'A'");
+    }
+
+    private void failIfReachedHere() {
+        throw new IllegalStateException();
     }
 }

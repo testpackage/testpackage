@@ -37,13 +37,13 @@ public class VisibleAssertions extends AnsiSupport {
         }
     }
 
-    public static void assertEquals(String message, Object a, Object b) {
-        if (a == null && b == null) {
+    public static void assertEquals(String message, Object expected, Object actual) {
+        if (expected == null && actual == null) {
             pass(message);
-        } else if (a != null && a.equals(b)) {
+        } else if (expected != null && expected.equals(actual)) {
             pass(message);
         } else {
-            fail(message, "'" + a + "' does not equal '" + b + "'");
+            fail(message, "'" + actual + "' does not equal expected '" + expected + "'");
         }
     }
 
@@ -63,11 +63,11 @@ public class VisibleAssertions extends AnsiSupport {
         }
     }
 
-    public static void assertSame(String message, Object a, Object b) {
-        if (a == b) {
+    public static void assertSame(String message, Object expected, Object actual) {
+        if (expected == actual) {
             pass(message);
         } else {
-            fail(message, "'" + a + "' is not the same (!=) as '" + b + "'");
+            fail(message, "'" + actual + "' is not the same (!=) as expected '" + expected + "'");
         }
     }
 
