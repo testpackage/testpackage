@@ -18,8 +18,7 @@ package com.deloittedigital.testpackage.test;
 
 import org.junit.Test;
 
-import static com.deloittedigital.testpackage.VisibleAssertions.assertEquals;
-import static com.deloittedigital.testpackage.VisibleAssertions.assertTrue;
+import static com.deloittedigital.testpackage.VisibleAssertions.*;
 
 /**
  * @author rnorth
@@ -78,5 +77,50 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
         } catch (Throwable e) {
             throw new RuntimeException("A generic exception which wraps the root cause", e);
         }
+    }
+
+    @Test
+    public void testNullAssertion() {
+        assertNull("a null thing should be null", null);
+        assert getCapturedStdOut().contains("✔ a null thing should be null");
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testFailingNullAssertion() {
+        assertNull("a null thing should be null", "a non-null thing");
+        assert getCapturedStdOut().contains("✘ a null thing should be null");
+    }
+
+    @Test
+    public void testNotNullAssertion() {
+        assertNotNull("a not-null thing should be not-null", "a non-null thing");
+        assert getCapturedStdOut().contains("✔ a not-null thing should be not-null");
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testFailingNotNullAssertion() {
+        assertNotNull("a not-null thing should be not-null", null);
+        assert getCapturedStdOut().contains("✘ a not-null thing should be not-null");
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testFail() {
+        fail("a failure reason");
+        assert getCapturedStdOut().contains("✘ a failure reason");
+    }
+
+    @Test
+    public void testSameAssertion() {
+        Object o1 = "A";
+        Object o2 = o1;
+        assertSame("it should be the same", o1, o2);
+        assert getCapturedStdOut().contains("✔ it should be the same");
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testFailingSameAssertion() {
+        assertEquals("it should be the same", "A", "B");
+        assert getCapturedStdOut().contains("✘ it should be the same");
+        assert getCapturedStdOut().contains("'A' is not the same (!=) as 'B'");
     }
 }

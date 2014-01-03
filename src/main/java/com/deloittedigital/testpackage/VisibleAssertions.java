@@ -47,6 +47,34 @@ public class VisibleAssertions extends AnsiSupport {
         }
     }
 
+    public static void assertNull(String message, Object o) {
+        if (o == null) {
+            pass(message);
+        } else {
+            fail(message, "'" + o + "' is not null");
+        }
+    }
+
+    public static void assertNotNull(String message, Object o) {
+        if (o != null) {
+            pass(message);
+        } else {
+            fail(message, null);
+        }
+    }
+
+    public static void assertSame(String message, Object a, Object b) {
+        if (a == b) {
+            pass(message);
+        } else {
+            fail(message, "'" + a + "' is not the same (!=) as '" + b + "'");
+        }
+    }
+
+    public static void fail(String message) {
+        fail(message, null);
+    }
+
     private static void pass(String message) {
         initialize();
         ansiPrintf("        @|green " + TICK_MARK + " " + message + " |@");
@@ -62,5 +90,4 @@ public class VisibleAssertions extends AnsiSupport {
 
         throw new AssertionError(message);
     }
-
 }
