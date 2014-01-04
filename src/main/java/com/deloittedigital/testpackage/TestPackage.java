@@ -142,7 +142,7 @@ public class TestPackage {
             result = core.run(request);
         } catch (StoppedByUserException e) {
             // Thrown in fail-fast mode
-            ansiPrintf("@|red FAILED|@");
+            ansiPrintf("@|red FAILED|@\n");
             return 1;
         } finally {
             testHistoryRepository.save();
@@ -152,10 +152,10 @@ public class TestPackage {
         int testCount = result.getRunCount();
         int passed = testCount - failureCount;
         if (failureCount > 0 || passed == 0) {
-            ansiPrintf("@|red FAILED|@");
+            ansiPrintf("@|red FAILED|@\n");
             return 1;
         } else {
-            ansiPrintf("@|green OK|@");
+            ansiPrintf("@|green OK|@\n");
             return 0;
         }
     }

@@ -97,17 +97,17 @@ public class VisibleAssertions extends AnsiSupport {
 
     private static void pass(String message) {
         initialize();
-        ansiPrintf("        @|green " + TICK_MARK + " " + message + " |@");
+        ansiPrintf("        @|green " + TICK_MARK + " " + message + " |@\n");
     }
 
     private static void fail(String message, String hint) {
         initialize();
-        ansiPrintf("        @|red " + CROSS_MARK + " " + message + " |@");
+        ansiPrintf("        @|red " + CROSS_MARK + " " + message + " |@\n");
 
         if (hint == null) {
             throw new AssertionError(message);
         } else {
-            ansiPrintf("            @|yellow " + hint + " |@");
+            ansiPrintf("            @|yellow " + hint + " |@\n");
             throw new AssertionError(message + ": " + hint);
         }
 
