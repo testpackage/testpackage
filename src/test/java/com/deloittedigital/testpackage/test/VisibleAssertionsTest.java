@@ -19,6 +19,8 @@ package com.deloittedigital.testpackage.test;
 import org.junit.Test;
 
 import static com.deloittedigital.testpackage.VisibleAssertions.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 
 /**
  * @author rnorth
@@ -155,6 +157,24 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
         assert getCapturedStdOut().contains("✘ it should be the same");
         assert getCapturedStdOut().contains("'B' is not the same (!=) as expected 'A'");
     }
+
+    @Test
+    public void testThatAssertionWithDescription() {
+        assertThat("the string", "expected value", is(equalTo("expected value")));
+        assert getCapturedStdOut().contains("✔ the string is \"expected value\"");
+    }
+
+    @Test
+    public void testFailingThatAssertionWithDescription() {
+        try {
+            assertThat("the string", "actual value", is(equalTo("expected value")));
+            failIfReachedHere();
+        } catch (AssertionError expected) {
+        }
+        assert getCapturedStdOut().contains("✘ assertion on the string failed");
+        assert getCapturedStdOut().contains("asserted that it is \"expected value\" but was \"actual value\"");
+    }
+
 
     private void failIfReachedHere() {
         throw new IllegalStateException();

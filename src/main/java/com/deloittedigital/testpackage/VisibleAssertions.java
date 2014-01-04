@@ -16,6 +16,10 @@
 
 package com.deloittedigital.testpackage;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.StringDescription;
+
 /**
  * @author rnorth
  */
@@ -75,6 +79,22 @@ public class VisibleAssertions extends AnsiSupport {
         fail(message, null);
     }
 
+    public static <T> void assertThat(String whatTheObjectIs, T actual, Matcher<? super T> matcher) {
+        Description description = new StringDescription();
+        if (matcher.matches(actual)) {
+            description.appendText(whatTheObjectIs);
+            description.appendText(" ");
+            matcher.describeTo(description);
+            pass(description.toString());
+        } else {
+            description.appendText("asserted that it ")
+                    .appendDescriptionOf(matcher)
+                    .appendText(" but ");
+            matcher.describeMismatch(actual, description);
+            fail("assertion on " + whatTheObjectIs + " failed", description.toString());
+        }
+    }
+
     private static void pass(String message) {
         initialize();
         ansiPrintf("        @|green " + TICK_MARK + " " + message + " |@");
@@ -84,10 +104,12 @@ public class VisibleAssertions extends AnsiSupport {
         initialize();
         ansiPrintf("        @|red " + CROSS_MARK + " " + message + " |@");
 
-        if (hint != null) {
+        if (hint == null) {
+            throw new AssertionError(message);
+        } else {
             ansiPrintf("            @|yellow " + hint + " |@");
+            throw new AssertionError(message + ": " + hint);
         }
 
-        throw new AssertionError(message);
     }
 }
