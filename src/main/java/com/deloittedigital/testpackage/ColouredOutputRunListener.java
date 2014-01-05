@@ -16,8 +16,10 @@
 
 package com.deloittedigital.testpackage;
 
+import com.deloittedigital.testpackage.streams.StreamCapture;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import org.fusesource.jansi.Ansi;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
@@ -35,7 +37,12 @@ import static com.deloittedigital.testpackage.AnsiSupport.ansiPrintf;
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public class ColouredOutputRunListener extends RunListener {
 
+    private static final String TICK_MARK = "\u2714";
+    private static final String CROSS_MARK = "\u2718";
+
     private final boolean failFast;
+    private StreamCapture streamCapture;
+    private Description currentDescription;
 
     public ColouredOutputRunListener(boolean failFast) {
         this.failFast = failFast;
@@ -43,6 +50,23 @@ public class ColouredOutputRunListener extends RunListener {
 
     @Override
     public void testFailure(Failure failure) throws Exception {
+
+        streamCapture.restore();
+
+        System.out.print(Ansi.ansi().eraseLine(Ansi.Erase.ALL).restorCursorPosition());
+        ansiPrintf(" @|red " + CROSS_MARK + " %s.%s |@\n", currentDescription.getTestClass().getSimpleName(), currentDescription.getMethodName());
+
+        if (streamCapture.getStdOut().length() > 0) {
+            System.out.println("   STDOUT:");
+            System.out.print(streamCapture.getStdOut());
+        }
+
+        if (streamCapture.getStdErr().length() > 0) {
+            System.out.println("\n   STDERR:");
+            System.out.print(streamCapture.getStdErr());
+        }
+
+
         if (failFast) {
             System.out.flush();
             System.out.println();
@@ -56,7 +80,21 @@ public class ColouredOutputRunListener extends RunListener {
 
     @Override
     public void testStarted(Description description) throws Exception {
-        System.out.println(">> " + description.getTestClass().getSimpleName() + "." + description.getMethodName() + ":");
+        System.out.print(Ansi.ansi().saveCursorPosition());
+        System.out.print(">> " + description.getTestClass().getSimpleName() + "." + description.getMethodName() + ":");
+        System.out.flush();
+
+        streamCapture = StreamCapture.grabStreams(false);
+        currentDescription = description;
+    }
+
+    @Override
+    public void testFinished(Description description) throws Exception {
+
+        streamCapture.restore();
+
+        System.out.print(Ansi.ansi().eraseLine(Ansi.Erase.ALL).restorCursorPosition());
+        ansiPrintf(" @|green " + TICK_MARK + " %s.%s |@\n", description.getTestClass().getSimpleName(), description.getMethodName());
     }
 
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
