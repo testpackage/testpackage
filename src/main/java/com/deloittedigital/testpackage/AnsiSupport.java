@@ -31,6 +31,6 @@ public class AnsiSupport {
     }
 
     public static void ansiPrintf(String s, Object... args) {
-        System.out.println(ansi().render(String.format(s, args)));
+        System.out.printf(ansi().render(s).toString(), args);
     }
 }

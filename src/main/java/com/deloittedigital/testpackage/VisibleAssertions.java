@@ -16,6 +16,10 @@
 
 package com.deloittedigital.testpackage;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.StringDescription;
+
 /**
  * @author rnorth
  */
@@ -37,30 +41,75 @@ public class VisibleAssertions extends AnsiSupport {
         }
     }
 
-    public static void assertEquals(String message, Object a, Object b) {
-        if (a == null && b == null) {
+    public static void assertEquals(String message, Object expected, Object actual) {
+        if (expected == null && actual == null) {
             pass(message);
-        } else if (a != null && a.equals(b)) {
+        } else if (expected != null && expected.equals(actual)) {
             pass(message);
         } else {
-            fail(message, "'" + a + "' does not equal '" + b + "'");
+            fail(message, "'" + actual + "' does not equal expected '" + expected + "'");
+        }
+    }
+
+    public static void assertNull(String message, Object o) {
+        if (o == null) {
+            pass(message);
+        } else {
+            fail(message, "'" + o + "' is not null");
+        }
+    }
+
+    public static void assertNotNull(String message, Object o) {
+        if (o != null) {
+            pass(message);
+        } else {
+            fail(message, null);
+        }
+    }
+
+    public static void assertSame(String message, Object expected, Object actual) {
+        if (expected == actual) {
+            pass(message);
+        } else {
+            fail(message, "'" + actual + "' is not the same (!=) as expected '" + expected + "'");
+        }
+    }
+
+    public static void fail(String message) {
+        fail(message, null);
+    }
+
+    public static <T> void assertThat(String whatTheObjectIs, T actual, Matcher<? super T> matcher) {
+        Description description = new StringDescription();
+        if (matcher.matches(actual)) {
+            description.appendText(whatTheObjectIs);
+            description.appendText(" ");
+            matcher.describeTo(description);
+            pass(description.toString());
+        } else {
+            description.appendText("asserted that it ")
+                    .appendDescriptionOf(matcher)
+                    .appendText(" but ");
+            matcher.describeMismatch(actual, description);
+            fail("assertion on " + whatTheObjectIs + " failed", description.toString());
         }
     }
 
     private static void pass(String message) {
         initialize();
-        ansiPrintf("        @|green " + TICK_MARK + " " + message + " |@");
+        ansiPrintf("        @|green " + TICK_MARK + " " + message + " |@\n");
     }
 
     private static void fail(String message, String hint) {
         initialize();
-        ansiPrintf("        @|red " + CROSS_MARK + " " + message + " |@");
+        ansiPrintf("        @|red " + CROSS_MARK + " " + message + " |@\n");
 
-        if (hint != null) {
-            ansiPrintf("            @|yellow " + hint + " |@");
+        if (hint == null) {
+            throw new AssertionError(message);
+        } else {
+            ansiPrintf("            @|yellow " + hint + " |@\n");
+            throw new AssertionError(message + ": " + hint);
         }
 
-        throw new AssertionError(message);
     }
-
 }

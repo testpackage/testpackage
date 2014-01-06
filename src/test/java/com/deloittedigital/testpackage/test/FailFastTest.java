@@ -45,6 +45,6 @@ public class FailFastTest extends StreamCaptureBaseTest {
         String capturedStdOut = getCapturedStdOut();
         assertTrue("no test should have passed", !capturedStdOut.contains("1 passed") && !capturedStdOut.contains("zzz_PassingTest"));
         assertTrue("stdout should contain 'TESTS ABORTED'", capturedStdOut.contains("TESTS ABORTED"));
-        assertEquals("the exit code should be 1", exitCode, 1);
+        assertEquals("the exit code should be 1", 1, exitCode);
     }
 }

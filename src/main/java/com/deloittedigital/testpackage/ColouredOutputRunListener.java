@@ -48,7 +48,7 @@ public class ColouredOutputRunListener extends RunListener {
             System.out.println();
             System.out.println();
             System.out.println("*** TESTS ABORTED");
-            ansiPrintf("*** @|bg_red Fail-fast triggered by test failure:|@");
+            ansiPrintf("*** @|bg_red Fail-fast triggered by test failure:|@\n");
 
             reportFailure(failure);
         }
@@ -111,7 +111,7 @@ public class ColouredOutputRunListener extends RunListener {
     }
 
     private void reportFailure(Failure failure) {
-        ansiPrintf("    @|yellow %s|@: @|bold,red %s: %s|@", failure.getDescription(), failure.getException().getClass().getSimpleName(), indentNewlines(failure.getMessage()));
+        ansiPrintf("    @|yellow %s|@: @|bold,red %s: %s|@\n", failure.getDescription(), failure.getException().getClass().getSimpleName(), indentNewlines(failure.getMessage()));
         Throwable exception = failure.getException();
         Throwable rootCause = Throwables.getRootCause(exception);
 
@@ -119,7 +119,7 @@ public class ColouredOutputRunListener extends RunListener {
             System.out.printf("        At %s\n\n", rootCause.getStackTrace()[0]);
         } else {
             System.out.printf("        At %s\n", exception.getStackTrace()[0]);
-            ansiPrintf("      Root cause: @|bold,red %s: %s|@", rootCause.getClass().getSimpleName(), indentNewlines(rootCause.getMessage()));
+            ansiPrintf("      Root cause: @|bold,red %s: %s|@\n", rootCause.getClass().getSimpleName(), indentNewlines(rootCause.getMessage()));
             System.out.printf("        At %s\n\n", rootCause.getStackTrace()[0]);
         }
         System.out.flush();
