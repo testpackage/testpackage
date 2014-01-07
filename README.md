@@ -35,7 +35,7 @@ With integration, functional and smoke tests, for example, the following should 
 **TestPackage library dependency**
 
 	    <dependency>
-            <groupId>com.deloittedigital</groupId>
+            <groupId>org.testpackage.</groupId>
             <artifactId>testpackage</artifactId>
         </dependency>
 
@@ -58,10 +58,10 @@ _Note that **TestPackage-Package** must be set to the package where test classes
 		                            implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 		                        <manifestEntries>
 		                            <Main-Class>
-		                            	com.deloittedigital.testpackage.TestPackage
+		                            	org.testpackage.TestPackage
 		                           	 </Main-Class>
 		                            <TestPackage-Package>
-		                            	com.deloittedigital.testpackage.example.maven
+		                            	org.testpackage.example.maven
 		                            </TestPackage-Package>
 		                        </manifestEntries>
 		                    </transformer>

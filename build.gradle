@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'idea'
 
-group = 'com.deloittedigital'
+group = 'org.testpackage'
 version = '1.0.0-SNAPSHOT'
 
 description = """"""
@@ -25,7 +25,7 @@ dependencies {
 
 test {
     filter {
-        includeTestsMatching 'com.deloittedigital.testpackage.test.*'
+        includeTestsMatching 'org.testpackage.test.*'
     }
 }
 
