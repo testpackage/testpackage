@@ -29,22 +29,26 @@ import static com.deloittedigital.testpackage.VisibleAssertions.assertTrue;
 public class BasicTest {
 
     @Test
-    public void testBasicTrueAssertion() {
+    public void testBasicTrueAssertion() throws InterruptedException {
         assertTrue("it should be true", true);
+        Thread.sleep(400L);
     }
 
     @Test
-    public void testBasicNullEqualsAssertion() {
+    public void testBasicNullEqualsAssertion() throws InterruptedException {
+        Thread.sleep(400L);
         assertEquals("it should be equal", null, null);
     }
 
     @Test
-    public void testEqualsAssertion() {
+    public void testEqualsAssertion() throws InterruptedException {
+        Thread.sleep(400L);
         assertEquals("it should be equal", "A", "A");
     }
 
     @Test
-    public void testDeliberateError() {
+    public void testDeliberateError() throws InterruptedException {
+        Thread.sleep(400L);
         try {
             int a = 7 / 0;
         } catch (Throwable e) {
@@ -53,7 +57,8 @@ public class BasicTest {
     }
 
     @Test
-    public void testDeliberateAssertionFailure() {
+    public void testDeliberateAssertionFailure() throws InterruptedException {
+        Thread.sleep(400L);
         assertEquals("Deliberate assertion failure - it should be equal but is not", 42, 99);
     }
 }

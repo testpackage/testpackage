@@ -16,8 +16,10 @@
 
 package com.deloittedigital.testpackage;
 
+import com.deloittedigital.testpackage.streams.StreamCapture;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import org.fusesource.jansi.Ansi;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
@@ -35,14 +37,52 @@ import static com.deloittedigital.testpackage.AnsiSupport.ansiPrintf;
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public class ColouredOutputRunListener extends RunListener {
 
+    private static final String TICK_MARK = "\u2714";
+    private static final String CROSS_MARK = "\u2718";
+
     private final boolean failFast;
+    private StreamCapture streamCapture;
+    private Description currentDescription;
+    private long currentTestStartTime;
+    private boolean currentTestDidFail = false;
 
     public ColouredOutputRunListener(boolean failFast) {
         this.failFast = failFast;
     }
 
     @Override
+    public void testStarted(Description description) throws Exception {
+        System.out.print(Ansi.ansi().saveCursorPosition());
+        System.out.print(">>  " + description.getTestClass().getSimpleName() + "." + description.getMethodName() + ":");
+        System.out.flush();
+
+        currentTestStartTime = System.currentTimeMillis();
+        currentTestDidFail = false;
+
+        streamCapture = StreamCapture.grabStreams(false);
+        currentDescription = description;
+    }
+
+    @Override
     public void testFailure(Failure failure) throws Exception {
+
+        currentTestDidFail = true;
+
+        streamCapture.restore();
+
+        replaceTestMethodPlaceholder(false);
+
+        if (streamCapture.getStdOut().length() > 0) {
+            System.out.println("   STDOUT:");
+            System.out.print(streamCapture.getStdOut());
+        }
+
+        if (streamCapture.getStdErr().length() > 0) {
+            System.out.println("\n   STDERR:");
+            System.out.print(streamCapture.getStdErr());
+        }
+
+
         if (failFast) {
             System.out.flush();
             System.out.println();
@@ -55,8 +95,12 @@ public class ColouredOutputRunListener extends RunListener {
     }
 
     @Override
-    public void testStarted(Description description) throws Exception {
-        System.out.println(">> " + description.getTestClass().getSimpleName() + "." + description.getMethodName() + ":");
+    public void testFinished(Description description) throws Exception {
+
+        streamCapture.restore();
+        if (!currentTestDidFail) {
+            replaceTestMethodPlaceholder(true);
+        }
     }
 
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
@@ -132,5 +176,20 @@ public class ColouredOutputRunListener extends RunListener {
         }
 
         return textWithPossibleNewlines.replaceAll("\\n", "\n      ");
+    }
+
+    private void replaceTestMethodPlaceholder(boolean success) {
+        long elapsedTime = System.currentTimeMillis() - currentTestStartTime;
+        System.out.print(Ansi.ansi().eraseLine(Ansi.Erase.ALL).restorCursorPosition());
+        String colour;
+        String symbol;
+        if (success) {
+            colour = "green";
+            symbol = TICK_MARK;
+        } else {
+            colour = "red";
+            symbol = CROSS_MARK;
+        }
+        ansiPrintf(" @|"+colour+" %s  %s.%s|@ @|blue (%d ms)|@\n", symbol, currentDescription.getTestClass().getSimpleName(), currentDescription.getMethodName(), elapsedTime);
     }
 }
