@@ -32,7 +32,7 @@ public class TestPackageRunnerTest extends StreamCaptureBaseTest {
         String capturedStdOut = getCapturedStdOut();
 
         assertEquals("exit code should be zero for a successful run", 0, exitCode);
-        assertTrue("stdout should contain the test name", capturedStdOut.contains(">> SimpleTest.testTrue"));
+        assertTrue("stdout should contain the test name", capturedStdOut.contains(">>  SimpleTest.testTrue"));
         assertTrue("stdout should contain 'TESTS COMPLETE'", capturedStdOut.contains("TESTS COMPLETE"));
         assertTrue("stdout should contain '2 passed'", capturedStdOut.contains("2 passed"));
         assertTrue("stdout should contain '0 failed'", capturedStdOut.contains("0 failed"));

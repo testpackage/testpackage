@@ -43,18 +43,34 @@ public class ColouredOutputRunListener extends RunListener {
     private final boolean failFast;
     private StreamCapture streamCapture;
     private Description currentDescription;
+    private long currentTestStartTime;
+    private boolean currentTestDidFail = false;
 
     public ColouredOutputRunListener(boolean failFast) {
         this.failFast = failFast;
     }
 
     @Override
+    public void testStarted(Description description) throws Exception {
+        System.out.print(Ansi.ansi().saveCursorPosition());
+        System.out.print(">>  " + description.getTestClass().getSimpleName() + "." + description.getMethodName() + ":");
+        System.out.flush();
+
+        currentTestStartTime = System.currentTimeMillis();
+        currentTestDidFail = false;
+
+        streamCapture = StreamCapture.grabStreams(false);
+        currentDescription = description;
+    }
+
+    @Override
     public void testFailure(Failure failure) throws Exception {
+
+        currentTestDidFail = true;
 
         streamCapture.restore();
 
-        System.out.print(Ansi.ansi().eraseLine(Ansi.Erase.ALL).restorCursorPosition());
-        ansiPrintf(" @|red " + CROSS_MARK + " %s.%s |@\n", currentDescription.getTestClass().getSimpleName(), currentDescription.getMethodName());
+        replaceTestMethodPlaceholder(false);
 
         if (streamCapture.getStdOut().length() > 0) {
             System.out.println("   STDOUT:");
@@ -79,22 +95,12 @@ public class ColouredOutputRunListener extends RunListener {
     }
 
     @Override
-    public void testStarted(Description description) throws Exception {
-        System.out.print(Ansi.ansi().saveCursorPosition());
-        System.out.print(">> " + description.getTestClass().getSimpleName() + "." + description.getMethodName() + ":");
-        System.out.flush();
-
-        streamCapture = StreamCapture.grabStreams(false);
-        currentDescription = description;
-    }
-
-    @Override
     public void testFinished(Description description) throws Exception {
 
         streamCapture.restore();
-
-        System.out.print(Ansi.ansi().eraseLine(Ansi.Erase.ALL).restorCursorPosition());
-        ansiPrintf(" @|green " + TICK_MARK + " %s.%s |@\n", description.getTestClass().getSimpleName(), description.getMethodName());
+        if (!currentTestDidFail) {
+            replaceTestMethodPlaceholder(true);
+        }
     }
 
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
@@ -170,5 +176,20 @@ public class ColouredOutputRunListener extends RunListener {
         }
 
         return textWithPossibleNewlines.replaceAll("\\n", "\n      ");
+    }
+
+    private void replaceTestMethodPlaceholder(boolean success) {
+        long elapsedTime = System.currentTimeMillis() - currentTestStartTime;
+        System.out.print(Ansi.ansi().eraseLine(Ansi.Erase.ALL).restorCursorPosition());
+        String colour;
+        String symbol;
+        if (success) {
+            colour = "green";
+            symbol = TICK_MARK;
+        } else {
+            colour = "red";
+            symbol = CROSS_MARK;
+        }
+        ansiPrintf(" @|"+colour+" %s  %s.%s|@ @|blue (%d ms)|@\n", symbol, currentDescription.getTestClass().getSimpleName(), currentDescription.getMethodName(), elapsedTime);
     }
 }
