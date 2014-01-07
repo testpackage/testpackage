@@ -155,7 +155,8 @@ public class ColouredOutputRunListener extends RunListener {
     }
 
     private void reportFailure(Failure failure) {
-        ansiPrintf("    @|yellow %s|@: @|bold,red %s: %s|@\n", failure.getDescription(), failure.getException().getClass().getSimpleName(), indentNewlines(failure.getMessage()));
+        ansiPrintf("    @|red %s|@:\n", failure.getDescription());
+        ansiPrintf("      @|yellow %s: %s|@\n", failure.getException().getClass().getSimpleName(), indentNewlines(failure.getMessage()));
         Throwable exception = failure.getException();
         Throwable rootCause = Throwables.getRootCause(exception);
 
@@ -163,7 +164,7 @@ public class ColouredOutputRunListener extends RunListener {
             System.out.printf("        At %s\n\n", rootCause.getStackTrace()[0]);
         } else {
             System.out.printf("        At %s\n", exception.getStackTrace()[0]);
-            ansiPrintf("      Root cause: @|bold,red %s: %s|@\n", rootCause.getClass().getSimpleName(), indentNewlines(rootCause.getMessage()));
+            ansiPrintf("      Root cause: @|yellow %s: %s|@\n", rootCause.getClass().getSimpleName(), indentNewlines(rootCause.getMessage()));
             System.out.printf("        At %s\n\n", rootCause.getStackTrace()[0]);
         }
         System.out.flush();
