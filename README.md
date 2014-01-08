@@ -6,7 +6,7 @@ It is **not intended for running unit tests**, which clearly need to be built ar
 
 Additionally, TestPackage aims to provide more useful and intuitive output than other JUnit runners give, for example making it easier to spot assertion errors and root causes of exceptions at a glance.
 
-![Quick demo](https://bitbucket.org/devservices/testpackage/raw/f24de2cfdff691b03436ec78d6d2799261550f8a/docs/demo1.gif)
+![Quick demo](docs/demo1.gif)
 
 ## Why make tests standalone?
 
@@ -25,7 +25,7 @@ With integration, functional and smoke tests, for example, the following should 
  * Provides `VisibleAssertions` replacement for `org.junit.Assert` which makes it easier to identify causes of assertion errors
  * Pretty, clean output of test failures, focusing on information that is most useful to the developer without displaying huge stack traces
  * JUnit XML report output, compatible with Jenkins (uses code from Twitter Commons, see attributions below)
- * Fast-fast mode, which aborts the test run when the first test failure happens
+ * Fail-fast mode, which aborts the test run when the first test failure happens
  * Test prioritisation, which runs recently failed tests first, on the basis that these are most likely to identify persistent problems. This can be particularly powerful when used with fail-fast mode.
 
 ## How do I use it?
@@ -117,22 +117,9 @@ The full package names which should be searched (non-recursively) for test class
 #####Usage
     java -jar JARFILE [OPTIONS] [ARGUMENTS]
 
-# TODO
+# TODO and issues
 
-#### Features
- 
- * Complete `VisibleAssertions` to provide fuller coverage of `org.junit.Assert`
- * Test sharding, e.g. for running a fraction of tests concurrently using separate CI slaves
- * Capture of stdout/stderr in JUnit XML output
- * Simple Swing-based UI to display logs when JAR is executed in a GUI environment rather than a terminal
- 
-
-#### General
-
- * Attach licence and open source
- * Release to public Maven repository
- * Add example output to this README.
- * Reduce library dependencies
+See the [issue tracker](https://github.com/testpackage/testpackage/issues) on Github.
 
 # Contributing
 
