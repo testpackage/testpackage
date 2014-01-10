@@ -1,11 +1,12 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'idea'
+apply plugin: 'signing'
 
 group = 'org.testpackage'
-version = '1.0.0-SNAPSHOT'
+version = '0.1.0'
 
-description = """"""
+description = """Command line JUnit test runner for standalone testing"""
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
@@ -31,4 +32,65 @@ test {
 
 task wrapper(type: Wrapper) {
     gradleVersion = '1.10'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives jar
+
+    archives javadocJar
+    archives sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+              authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.project {
+               name 'TestPackage'
+               packaging 'jar'
+               description 'Command line JUnit test runner for standalone testing'
+               url 'https://github.com/testpackage/testpackage'
+
+               scm {
+                   url 'scm:git@github.com:testpackage/testpackage.git'
+                   connection 'scm:git@github.com:testpackage/testpackage.git'
+                   developerConnection 'scm:git@github.com:testpackage/testpackage.git'
+               }
+
+               licenses {
+                   license {
+                       name 'The Apache Software License, Version 2.0'
+                       url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                       distribution 'repo'
+                   }
+               }
+
+               developers {
+                   developer {
+                       id 'rnorth'
+                       name 'Richard North'
+                   }
+               }
+           }
+        }
+    }
 }
