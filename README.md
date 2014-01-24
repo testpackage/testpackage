@@ -1,4 +1,7 @@
-# TestPackage
+# TestPackage 
+
+[![Build Status](https://travis-ci.org/testpackage/testpackage.png?branch=master)](https://travis-ci.org/testpackage/testpackage)
+
 
 TestPackage is a simple Java library designed to make it easy to bundle JUnit tests in standalone executable JAR form, rather than the traditional model of running them from an Ant/Maven/Gradle build script. 
 
