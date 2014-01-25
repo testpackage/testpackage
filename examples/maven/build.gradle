@@ -1,0 +1,30 @@
+apply plugin:'maven'
+
+description 'Maven example'
+
+task buildExamples(type: Exec, dependsOn: ':install') {
+    logging.captureStandardOutput(LogLevel.INFO)
+    commandLine 'mvn', 'clean', 'package'
+}
+
+task checkExamples(type: Exec, dependsOn: buildExamples) {
+    commandLine 'java', '-jar', 'target/maven-example-1.0-SNAPSHOT.jar'
+    standardOutput = new ByteArrayOutputStream()
+    ignoreExitValue = true
+
+    doLast {
+        assert execResult.exitValue == 1
+        def stdout = standardOutput.toString()
+
+        assert stdout.contains('>>  BasicTest.testDeliberateAssertionFailure: ✘  BasicTest.testDeliberateAssertionFailure')
+        assert stdout.contains('>>  BasicTest.testDeliberateError: ✘  BasicTest.testDeliberateError')
+        assert stdout.contains('>>  BasicTest.testEqualsAssertion: ✔  BasicTest.testEqualsAssertion')
+        assert stdout.contains('STDOUT:\n' + '        ✘ Deliberate assertion failure')
+        assert stdout.contains('3 passed, 2 failed, 0 ignored')
+        assert stdout.contains('FAILED')
+    }
+}
+
+task check(dependsOn: checkExamples) {
+
+}
