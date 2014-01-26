@@ -11,9 +11,9 @@ public class StreamCaptureSystemTest extends StreamCaptureBaseTest {
     public void testStreamCapture() {
         System.out.println("Hello world");
 
-        assert getCapturedStdOut().contains("Hello world");
+        assert getCapturedStdOut ().contains("Hello world");
 
         System.err.println("Goodbye world");
-        assert getCapturedStdErr().equals("Goodbye world\n");
+        assert getCapturedStdErr ().equals("Goodbye world\n");
     }
 }

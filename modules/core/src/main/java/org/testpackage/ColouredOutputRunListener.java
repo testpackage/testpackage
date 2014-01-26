@@ -191,6 +191,6 @@ public class ColouredOutputRunListener extends RunListener {
             colour = "red";
             symbol = CROSS_MARK;
         }
-        ansiPrintf(" @|"+colour+" %s  %s.%s|@ @|blue (%d ms)|@\n", symbol, currentDescription.getTestClass().getSimpleName(), currentDescription.getMethodName(), elapsedTime);
+        ansiPrintf(" @|" + colour + " %s  %s.%s|@ @|blue (%d ms)|@\n", symbol, currentDescription.getTestClass().getSimpleName(), currentDescription.getMethodName(), elapsedTime);
     }
 }
