@@ -89,7 +89,9 @@ public class TestPackage {
         }
 
         // read the properties from the file provided and set them as system properties
-        try (final InputStream propertiesStream = new FileInputStream(propertiesFile)) {
+        InputStream propertiesStream = null;
+        try {
+            propertiesStream = new FileInputStream(propertiesFile);
             final Properties properties = new Properties();
 
             if (propertiesFile.getName().toLowerCase().endsWith(".xml")) {
@@ -112,6 +114,15 @@ public class TestPackage {
 
         } catch (IOException e) {
             throw new TestPackageException(String.format("Could not read properties file %s", propertiesFile.getAbsolutePath()), e);
+
+        } finally {
+            if (null != propertiesStream) {
+                try {
+                    propertiesStream.close();
+                } catch (IOException e) {
+                    // sink this
+                }
+            }
         }
     }
 
