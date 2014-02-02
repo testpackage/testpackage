@@ -113,6 +113,8 @@ While the above runs with sensible defaults, the following arguments may be pass
 
     --failfast or -ff:      Enables fail-fast mode
 
+    --propertiesfile PROPERTIESFILE or -P PROPERTIESFILE:   Set or override Java system properties from file
+
 #####Arguments
 
 The full package names which should be searched (non-recursively) for test classes
