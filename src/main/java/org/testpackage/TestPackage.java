@@ -29,12 +29,13 @@ import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.StoppedByUserException;
 import org.kohsuke.args4j.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
 import java.util.jar.Manifest;
+import java.util.logging.Logger;
 
 import static org.testpackage.AnsiSupport.ansiPrintf;
 import static org.testpackage.AnsiSupport.initialize;
@@ -52,6 +53,8 @@ import static org.testpackage.AnsiSupport.initialize;
  */
 public class TestPackage {
 
+    private static final Logger LOGGER = Logger.getLogger(TestPackage.class.getSimpleName());
+
     protected TestSequencer testSequencer = new TestSequencer();
 
     @Option(name = "--failfast", aliases = "-ff", usage = "Fail Fast: Causes test run to be aborted at the first test failure")
@@ -67,6 +70,60 @@ public class TestPackage {
         int exitCode = new TestPackage().doMain(args);
 
         System.exit(exitCode);
+    }
+
+    /**
+     * Sets or overrides system properties from the specified file.
+     * <p/>
+     * This is invoked before TestPackage itself is completely initialised so that, in theory, you could use
+     * a file to set system properties for TestPackage itself, rather than passing them all as command line arguments.
+     * <p/>
+     * Using a capitalised 'P' for the alias for consistency with other common Java projects that do this.
+     *
+     * @param propertiesFile
+     */
+    @Option(name = "--propertiesfile", aliases = "-P", usage = "Properties File: Sets or overrides system properties from a file")
+    public void setPropertiesFile(File propertiesFile) {
+        if (!propertiesFile.canRead()) {
+            throw new TestPackageException(String.format("Could not read properties file %s", propertiesFile.getAbsolutePath()));
+        }
+
+        // read the properties from the file provided and set them as system properties
+        InputStream propertiesStream = null;
+        try {
+            propertiesStream = new FileInputStream(propertiesFile);
+            final Properties properties = new Properties();
+
+            if (propertiesFile.getName().toLowerCase().endsWith(".xml")) {
+                LOGGER.finest("Attempting to read properties file with XML format");
+                properties.loadFromXML(propertiesStream);
+
+            } else {
+                LOGGER.finest("Attempting to read properties file with simple format");
+                properties.load(propertiesStream);
+            }
+
+            /**
+             * Don't use System.setProperties() as that will cause <i>all</i> System
+             * properties to be overridden.
+             */
+            for (Object keyObj : properties.keySet()) {
+                final String key = (String) keyObj;
+                System.setProperty(key, properties.getProperty(key));
+            }
+
+        } catch (IOException e) {
+            throw new TestPackageException(String.format("Could not read properties file %s", propertiesFile.getAbsolutePath()), e);
+
+        } finally {
+            if (null != propertiesStream) {
+                try {
+                    propertiesStream.close();
+                } catch (IOException e) {
+                    // sink this
+                }
+            }
+        }
     }
 
     private int doMain(String[] args) throws IOException {
