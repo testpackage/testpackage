@@ -16,16 +16,20 @@
 
 package org.testpackage;
 
-import org.testpackage.streams.StreamCapture;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.twitter.common.testing.runner.StreamSource;
 import org.fusesource.jansi.Ansi;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
+import org.testpackage.streams.StreamCapture;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import static org.testpackage.AnsiSupport.ansiPrintf;
 
@@ -35,7 +39,7 @@ import static org.testpackage.AnsiSupport.ansiPrintf;
  * @author rnorth
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
-public class ColouredOutputRunListener extends RunListener {
+public class ColouredOutputRunListener extends RunListener implements StreamSource {
 
     private static final String TICK_MARK = "\u2714";
     private static final String CROSS_MARK = "\u2718";
@@ -45,6 +49,9 @@ public class ColouredOutputRunListener extends RunListener {
     private Description currentDescription;
     private long currentTestStartTime;
     private boolean currentTestDidFail = false;
+
+    private Map<Class, String> stdOutStreamStore = Maps.newHashMap();
+    private Map<Class, String> stdErrStreamStore = Maps.newHashMap();
 
     public ColouredOutputRunListener(boolean failFast) {
         this.failFast = failFast;
@@ -96,6 +103,9 @@ public class ColouredOutputRunListener extends RunListener {
 
     @Override
     public void testFinished(Description description) throws Exception {
+
+        stdOutStreamStore.put(description.getTestClass(), streamCapture.getStdOut());
+        stdErrStreamStore.put(description.getTestClass(), streamCapture.getStdErr());
 
         streamCapture.restore();
         if (!currentTestDidFail) {
@@ -192,5 +202,23 @@ public class ColouredOutputRunListener extends RunListener {
             symbol = CROSS_MARK;
         }
         ansiPrintf(" @|"+colour+" %s  %s.%s|@ @|blue (%d ms)|@\n", symbol, currentDescription.getTestClass().getSimpleName(), currentDescription.getMethodName(), elapsedTime);
+    }
+
+    @Override
+    public byte[] readOut(Class<?> testClass) throws IOException {
+        if (this.stdOutStreamStore.get(testClass) != null) {
+            return this.stdOutStreamStore.get(testClass).getBytes();
+        } else {
+            return new byte[0];
+        }
+    }
+
+    @Override
+    public byte[] readErr(Class<?> testClass) throws IOException {
+        if (this.stdErrStreamStore.get(testClass) != null) {
+            return this.stdErrStreamStore.get(testClass).getBytes();
+        } else {
+            return new byte[0];
+        }
     }
 }

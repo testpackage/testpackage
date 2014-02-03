@@ -172,19 +172,9 @@ public class TestPackage {
         if (!(targetDir.exists() || mkdirs)) {
             throw new TestPackageException("Could not create target directory: " + targetDir.getAbsolutePath());
         }
-        RunListener antXmlRunListener = new AntJunitXmlReportListener(targetDir, new StreamSource() {
-            @Override
-            public byte[] readOut(Class<?> testClass) throws IOException {
-                return new byte[0];
-            }
 
-            @Override
-            public byte[] readErr(Class<?> testClass) throws IOException {
-                return new byte[0];
-            }
-        });
-
-        RunListener colouredOutputRunListener = new ColouredOutputRunListener(failFast);
+        ColouredOutputRunListener colouredOutputRunListener = new ColouredOutputRunListener(failFast);
+        RunListener antXmlRunListener = new AntJunitXmlReportListener(targetDir, colouredOutputRunListener);
 
         core.addListener(antXmlRunListener);
         core.addListener(colouredOutputRunListener);

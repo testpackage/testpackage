@@ -61,4 +61,10 @@ public class BasicTest {
         Thread.sleep(400L);
         assertEquals("Deliberate assertion failure - it should be equal but is not", 42, 99);
     }
+
+    @Test
+    public void testStreamCaptureExample() {
+        System.out.println("A message on stdout");
+        System.err.println("A message on stderr");
+    }
 }
