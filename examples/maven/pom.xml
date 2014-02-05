@@ -19,7 +19,6 @@
             <plugin>
                 <groupId>org.testpackage</groupId>
                 <artifactId>testpackage-maven-plugin</artifactId>
-                <version>0.1.1-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -28,6 +27,7 @@
                         </goals>
                         <configuration>
                             <package-name>org.testpackage.example.maven</package-name>
+                            <flags>-Xmx2G</flags>
                         </configuration>
                     </execution>
                 </executions>

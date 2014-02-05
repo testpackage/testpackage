@@ -42,37 +42,29 @@ With integration, functional and smoke tests, for example, the following should 
             <artifactId>testpackage</artifactId>
         </dependency>
 
-**Maven Shade plugin to compile test sources, dependencies and TestPackage into a single executable JAR**
+**TestPackage maven plugin to compile test sources, dependencies and TestPackage into a single executable JAR**
 
-_Note that **TestPackage-Package** must be set to the package where test classes reside. Other configuration remains as-is._
+The TestPackage maven plugin wraps two other powerful plugins (Shade and Really-executable-jar) with a simpler configuration interface.
+Whilst it is perfectly possible to use the shade plugin directly if you need to customise the built JAR, in many
+cases it may be preferable to just use the TestPackage maven plugin.
+_Note that **package-name** must be set to the package where test classes reside. Other configuration remains as-is._
 
 		<plugin>
-		    <groupId>org.apache.maven.plugins</groupId>
-		    <artifactId>maven-shade-plugin</artifactId>
-		    <executions>
-		        <execution>
-		            <phase>package</phase>
-		            <goals>
-		                <goal>shade</goal>
-		            </goals>
-		            <configuration>
-		                <transformers>
-		                    <transformer
-		                            implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-		                        <manifestEntries>
-		                            <Main-Class>
-		                            	org.testpackage.TestPackage
-		                           	 </Main-Class>
-		                            <TestPackage-Package>
-		                            	org.testpackage.example.maven
-		                            </TestPackage-Package>
-		                        </manifestEntries>
-		                    </transformer>
-		                </transformers>
-		            </configuration>
-		        </execution>
-		    </executions>
-		</plugin>
+            <groupId>org.testpackage</groupId>
+            <artifactId>testpackage-maven-plugin</artifactId>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>fatjar</goal>
+                    </goals>
+                    <configuration>
+                        <package-name>org.testpackage.example.maven</package-name>
+                        <flags>-Xmx2G</flags>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
 
 **Configuration of integration test source location (not needed if you don't mind keeping integration test sources under src/main/java)**
 
@@ -101,9 +93,14 @@ With the configuration outlined above, simply run `mvn clean package` to produce
 
 ### Running the tests
 
-Once built, execute the build JAR file (e.g. named `maven-example-1.0-SNAPSHOT.jar`) by running:
+Once built, execute the build JAR file (e.g. named `maven-example-1.0-SNAPSHOT.jar`) by running it directly - the
+TestPackage maven plugin makes the JAR executable:
 
-	java -jar target/maven-example-1.0-SNAPSHOT.jar
+	target/maven-example-1.0-SNAPSHOT.jar
+
+Alternatively it may be run using:
+
+    java -jar target/maven-example-1.0-SNAPSHOT.jar
 
 Of course, this JAR file can be moved anywhere on the filesystem, deployed to an artifact repository etc (e.g. with `mvn deploy`).
 
@@ -118,7 +115,7 @@ While the above runs with sensible defaults, the following arguments may be pass
 The full package names which should be searched (non-recursively) for test classes
 
 #####Usage
-    java -jar JARFILE [OPTIONS] [ARGUMENTS]
+    JARFILE [OPTIONS] [ARGUMENTS]
 
 # TODO and issues
 
