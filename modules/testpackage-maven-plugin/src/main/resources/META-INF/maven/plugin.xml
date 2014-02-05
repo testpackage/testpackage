@@ -1,0 +1,72 @@
+<plugin xmlns="http://maven.apache.org/PLUGIN/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/PLUGIN/1.0.0 http://maven.apache.org/xsd/plugin-1.0.0.xsd">
+  <description/>
+  <groupId>org.testpackage</groupId>
+  <artifactId>testpackage-maven-plugin</artifactId>
+  <version>0.1.1-SNAPSHOT</version>
+  <goalPrefix/>
+  <isolatedRealm/>
+  <inheritedByDefault/>
+
+  <mojos>
+    <mojo>
+      <goal/>
+      <description/>
+      <implementation/>
+      <language/>
+      <phase/>
+      <executePhase/>
+      <executeGoal/>
+      <executeLifecycle/>
+      <requiresDependencyResolution/>
+      <requiresDependencyCollection/>
+      <requiresDirectInvocation/>
+      <requiresProject/>
+      <requiresReports/>
+      <requiresOnline/>
+      <aggregator/>
+      <inheritedByDefault/>
+      <threadSafe/>
+      <instantiationStrategy/>
+      <executionStrategy/>
+      <since/>
+      <deprecated/>
+      <configurator/>
+      <composer/>
+
+      <parameters>
+        <parameter>
+          <name/>
+          <alias/>
+          <type/>
+          <required/>
+          <editable/>
+          <implementation/>
+          <description/>
+          <since/>
+          <deprecated/>
+        </parameter>
+      </parameters>
+      <configuration>
+        <paramName implementation=.. default-value=.. />
+      </configuration>
+
+      <requirements>
+        <requirement>
+          <role/>
+          <role-hint/>
+          <field-name/>
+        </requirement>
+      </requirements>
+    </mojo>
+  </mojos>
+
+  <dependencies>
+    <dependency>
+      <groupId/>
+      <artifactId/>
+      <version/>
+      <type/>
+    </dependency>
+  </dependencies>
+</plugin>
