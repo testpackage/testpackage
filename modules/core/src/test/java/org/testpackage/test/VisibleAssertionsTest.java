@@ -30,7 +30,7 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
     @Test
     public void testTrueAssertion() {
         assertTrue("it should be true", true);
-        assert getCapturedStdOut().contains("✔ it should be true");
+        assert getCapturedStdOut ().contains("✔ it should be true");
     }
 
     @Test
@@ -40,19 +40,19 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
             failIfReachedHere();
         } catch (AssertionError expected) {
         }
-        assert getCapturedStdOut().contains("✘ it should be true");
+        assert getCapturedStdOut ().contains("✘ it should be true");
     }
 
     @Test
     public void testNullEqualsAssertion() {
         assertEquals("it should be equal", null, null);
-        assert getCapturedStdOut().contains("✔ it should be equal");
+        assert getCapturedStdOut ().contains("✔ it should be equal");
     }
 
     @Test
     public void testEqualsAssertion() {
         assertEquals("it should be equal", "A", "A");
-        assert getCapturedStdOut().contains("✔ it should be equal");
+        assert getCapturedStdOut ().contains("✔ it should be equal");
     }
 
     @Test
@@ -62,8 +62,8 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
             failIfReachedHere();
         } catch (AssertionError expected) {
         }
-        assert getCapturedStdOut().contains("✘ it should be equal");
-        assert getCapturedStdOut().contains("'A' does not equal expected 'null'");
+        assert getCapturedStdOut ().contains("✘ it should be equal");
+        assert getCapturedStdOut ().contains("'A' does not equal expected 'null'");
     }
 
     @Test
@@ -73,8 +73,8 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
             failIfReachedHere();
         } catch (AssertionError expected) {
         }
-        assert getCapturedStdOut().contains("✘ it should be equal");
-        assert getCapturedStdOut().contains("'null' does not equal expected 'A'");
+        assert getCapturedStdOut ().contains("✘ it should be equal");
+        assert getCapturedStdOut ().contains("'null' does not equal expected 'A'");
     }
 
     @Test
@@ -84,14 +84,14 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
             failIfReachedHere();
         } catch (AssertionError expected) {
         }
-        assert getCapturedStdOut().contains("✘ it should be equal");
-        assert getCapturedStdOut().contains("'A' does not equal expected 'B'");
+        assert getCapturedStdOut ().contains("✘ it should be equal");
+        assert getCapturedStdOut ().contains("'A' does not equal expected 'B'");
     }
 
     @Test(expected = RuntimeException.class)
     public void testDeliberateFailure() {
         try {
-            int a = 7 /0;
+            int a = 7 / 0;
         } catch (Throwable e) {
             throw new RuntimeException("A generic exception which wraps the root cause", e);
         }
@@ -100,7 +100,7 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
     @Test
     public void testNullAssertion() {
         assertNull("a null thing should be null", null);
-        assert getCapturedStdOut().contains("✔ a null thing should be null");
+        assert getCapturedStdOut ().contains("✔ a null thing should be null");
     }
 
     @Test
@@ -110,13 +110,13 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
             failIfReachedHere();
         } catch (AssertionError expected) {
         }
-        assert getCapturedStdOut().contains("✘ a null thing should be null");
+        assert getCapturedStdOut ().contains("✘ a null thing should be null");
     }
 
     @Test
     public void testNotNullAssertion() {
         assertNotNull("a not-null thing should be not-null", "a non-null thing");
-        assert getCapturedStdOut().contains("✔ a not-null thing should be not-null");
+        assert getCapturedStdOut ().contains("✔ a not-null thing should be not-null");
     }
 
     @Test
@@ -126,7 +126,7 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
             failIfReachedHere();
         } catch (AssertionError expected) {
         }
-        assert getCapturedStdOut().contains("✘ a not-null thing should be not-null");
+        assert getCapturedStdOut ().contains("✘ a not-null thing should be not-null");
     }
 
     @Test
@@ -136,7 +136,7 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
             failIfReachedHere();
         } catch (AssertionError expected) {
         }
-        assert getCapturedStdOut().contains("✘ a failure reason");
+        assert getCapturedStdOut ().contains("✘ a failure reason");
     }
 
     @Test
@@ -144,7 +144,7 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
         Object o1 = "A";
         Object o2 = o1;
         assertSame("it should be the same", o2, o1);
-        assert getCapturedStdOut().contains("✔ it should be the same");
+        assert getCapturedStdOut ().contains("✔ it should be the same");
     }
 
     @Test
@@ -154,14 +154,14 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
             failIfReachedHere();
         } catch (AssertionError expected) {
         }
-        assert getCapturedStdOut().contains("✘ it should be the same");
-        assert getCapturedStdOut().contains("'B' is not the same (!=) as expected 'A'");
+        assert getCapturedStdOut ().contains("✘ it should be the same");
+        assert getCapturedStdOut ().contains("'B' is not the same (!=) as expected 'A'");
     }
 
     @Test
     public void testThatAssertionWithDescription() {
         assertThat("the string", "expected value", is(equalTo("expected value")));
-        assert getCapturedStdOut().contains("✔ the string is \"expected value\"");
+        assert getCapturedStdOut ().contains("✔ the string is \"expected value\"");
     }
 
     @Test
@@ -171,8 +171,8 @@ public class VisibleAssertionsTest extends StreamCaptureBaseTest {
             failIfReachedHere();
         } catch (AssertionError expected) {
         }
-        assert getCapturedStdOut().contains("✘ assertion on the string failed");
-        assert getCapturedStdOut().contains("asserted that it is \"expected value\" but was \"actual value\"");
+        assert getCapturedStdOut ().contains("✘ assertion on the string failed");
+        assert getCapturedStdOut ().contains("asserted that it is \"expected value\" but was \"actual value\"");
     }
 
 

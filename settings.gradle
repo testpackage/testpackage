@@ -1,3 +1,1 @@
-rootProject.name = 'testpackage'
-
-include ':examples:maven'
+include ':modules:core', ':modules:testpackage-maven-plugin', ':examples:maven'
