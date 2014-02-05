@@ -7,9 +7,6 @@ allprojects {
 
     description = """Command line JUnit test runner for standalone testing"""
 
-    sourceCompatibility = 1.6
-    targetCompatibility = 1.6
-
     repositories {
 
         mavenCentral()
@@ -38,37 +35,37 @@ uploadArchives {
                     project.hasProperty('sonatypePassword')) {
 
                 repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                  authentication(userName: sonatypeUsername, password: sonatypePassword)
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
                 }
             }
 
             pom.project {
-               name 'TestPackage'
-               packaging 'jar'
-               description 'Command line JUnit test runner for standalone testing'
-               url 'https://github.com/testpackage/testpackage'
+                name 'TestPackage'
+                packaging 'jar'
+                description 'Command line JUnit test runner for standalone testing'
+                url 'https://github.com/testpackage/testpackage'
 
-               scm {
-                   url 'scm:git@github.com:testpackage/testpackage.git'
-                   connection 'scm:git@github.com:testpackage/testpackage.git'
-                   developerConnection 'scm:git@github.com:testpackage/testpackage.git'
-               }
+                scm {
+                    url 'scm:git@github.com:testpackage/testpackage.git'
+                    connection 'scm:git@github.com:testpackage/testpackage.git'
+                    developerConnection 'scm:git@github.com:testpackage/testpackage.git'
+                }
 
-               licenses {
-                   license {
-                       name 'The Apache Software License, Version 2.0'
-                       url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                       distribution 'repo'
-                   }
-               }
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
 
-               developers {
-                   developer {
-                       id 'rnorth'
-                       name 'Richard North'
-                   }
-               }
-           }
+                developers {
+                    developer {
+                        id 'rnorth'
+                        name 'Richard North'
+                    }
+                }
+            }
         }
     }
 }

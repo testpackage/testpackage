@@ -2,7 +2,7 @@ apply plugin:'maven'
 
 description 'Maven example'
 
-task buildExamples(type: Exec, dependsOn: ':modules:core:install') {
+task buildExamples(type: Exec, dependsOn: [':modules:core:install', ':modules:testpackage-maven-plugin:install']) {
     logging.captureStandardOutput(LogLevel.INFO)
     commandLine 'mvn', 'clean', 'package'
 }
