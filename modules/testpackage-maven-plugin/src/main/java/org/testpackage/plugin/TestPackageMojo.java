@@ -20,6 +20,9 @@ public class TestPackageMojo extends AbstractMojo {
     @Parameter(alias = "package-name")
     private String packageName;
 
+    @Parameter(defaultValue = "-Xmx1G")
+    private String flags;
+
     @Component
     private MavenProject mavenProject;
 
@@ -50,6 +53,23 @@ public class TestPackageMojo extends AbstractMojo {
                                         )
                                 )
                         )
+                ),
+                executionEnvironment(
+                        mavenProject,
+                        mavenSession,
+                        pluginManager
+                )
+        );
+
+        executeMojo(
+                plugin(
+                        groupId("org.skife.maven"),
+                        artifactId("really-executable-jar-maven-plugin"),
+                        version("1.1.0")
+                ),
+                "really-executable-jar",
+                configuration(
+                        element("flags", flags)
                 ),
                 executionEnvironment(
                         mavenProject,
