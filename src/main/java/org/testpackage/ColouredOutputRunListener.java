@@ -67,13 +67,20 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
         if (!quiet) {
             System.out.print(Ansi.ansi().saveCursorPosition());
             System.out.print(">>  " + description.getTestClass().getSimpleName() + "." + description.getMethodName() + ":");
+            if (verbose) {
+                // Add newline so that tee-d stdout/err appear on the line below. In non-verbose mode we omit
+                //  the newline so that this placeholder can be erased on completion of the test method.
+                System.out.println();
+            }
             System.out.flush();
         }
 
         currentTestStartTime = System.currentTimeMillis();
         currentTestDidFail = false;
 
-        streamCapture = StreamCapture.grabStreams(false);
+        // Tee output if not running in verbose mode, so that it is output in realtime
+        boolean teeOutput = verbose && !quiet;
+        streamCapture = StreamCapture.grabStreams(teeOutput);
         currentDescription = description;
     }
 
@@ -86,13 +93,13 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
 
         replaceTestMethodPlaceholder(false);
 
-        if (verbose || !quiet && streamCapture.getStdOut().length() > 0) {
-            System.out.println("   STDOUT:");
+        if (!quiet && !verbose && streamCapture.getStdOut().length() > 0) {
+            System.out.println("    STDOUT:");
             System.out.print(streamCapture.getStdOut());
         }
 
-        if (verbose || !quiet && streamCapture.getStdErr().length() > 0) {
-            System.out.println("\n   STDERR:");
+        if (!quiet && !verbose && streamCapture.getStdErr().length() > 0) {
+            System.out.println("\n    STDERR:");
             System.out.print(streamCapture.getStdErr());
         }
 
@@ -121,13 +128,13 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
                 replaceTestMethodPlaceholder(true);
             }
 
-            if (verbose && streamCapture.getStdOut().length() > 0) {
-                System.out.println("   STDOUT:");
+            if (!quiet && !verbose && streamCapture.getStdOut().length() > 0) {
+                System.out.println("    STDOUT:");
                 System.out.print(streamCapture.getStdOut());
             }
 
-            if (verbose && streamCapture.getStdErr().length() > 0) {
-                System.out.println("\n   STDERR:");
+            if (!quiet && !verbose && streamCapture.getStdErr().length() > 0) {
+                System.out.println("\n    STDERR:");
                 System.out.print(streamCapture.getStdErr());
             }
         }
