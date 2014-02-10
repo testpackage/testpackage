@@ -45,6 +45,9 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
     private static final String CROSS_MARK = "\u2718";
 
     private final boolean failFast;
+    private final boolean verbose;
+    private final boolean quiet;
+
     private StreamCapture streamCapture;
     private Description currentDescription;
     private long currentTestStartTime;
@@ -53,20 +56,31 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
     private Map<Class, String> stdOutStreamStore = Maps.newHashMap();
     private Map<Class, String> stdErrStreamStore = Maps.newHashMap();
 
-    public ColouredOutputRunListener(boolean failFast) {
+    public ColouredOutputRunListener(boolean failFast, boolean verbose, boolean quiet) {
         this.failFast = failFast;
+        this.verbose = verbose;
+        this.quiet = quiet;
     }
 
     @Override
     public void testStarted(Description description) throws Exception {
-        System.out.print(Ansi.ansi().saveCursorPosition());
-        System.out.print(">>  " + description.getTestClass().getSimpleName() + "." + description.getMethodName() + ":");
-        System.out.flush();
+        if (!quiet) {
+            System.out.print(Ansi.ansi().saveCursorPosition());
+            System.out.print(">>  " + description.getTestClass().getSimpleName() + "." + description.getMethodName() + ":");
+            if (verbose) {
+                // Add newline so that tee-d stdout/err appear on the line below. In non-verbose mode we omit
+                //  the newline so that this placeholder can be erased on completion of the test method.
+                System.out.println();
+            }
+            System.out.flush();
+        }
 
         currentTestStartTime = System.currentTimeMillis();
         currentTestDidFail = false;
 
-        streamCapture = StreamCapture.grabStreams(false);
+        // Tee output if not running in verbose mode, so that it is output in realtime
+        boolean teeOutput = verbose && !quiet;
+        streamCapture = StreamCapture.grabStreams(teeOutput);
         currentDescription = description;
     }
 
@@ -79,13 +93,13 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
 
         replaceTestMethodPlaceholder(false);
 
-        if (streamCapture.getStdOut().length() > 0) {
-            System.out.println("   STDOUT:");
+        if (!quiet && !verbose && streamCapture.getStdOut().length() > 0) {
+            System.out.println("    STDOUT:");
             System.out.print(streamCapture.getStdOut());
         }
 
-        if (streamCapture.getStdErr().length() > 0) {
-            System.out.println("\n   STDERR:");
+        if (!quiet && !verbose && streamCapture.getStdErr().length() > 0) {
+            System.out.println("\n    STDERR:");
             System.out.print(streamCapture.getStdErr());
         }
 
@@ -109,7 +123,20 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
 
         streamCapture.restore();
         if (!currentTestDidFail) {
-            replaceTestMethodPlaceholder(true);
+
+            if (!quiet) {
+                replaceTestMethodPlaceholder(true);
+            }
+
+            if (!quiet && !verbose && streamCapture.getStdOut().length() > 0) {
+                System.out.println("    STDOUT:");
+                System.out.print(streamCapture.getStdOut());
+            }
+
+            if (!quiet && !verbose && streamCapture.getStdErr().length() > 0) {
+                System.out.println("\n    STDERR:");
+                System.out.print(streamCapture.getStdErr());
+            }
         }
     }
 
@@ -153,7 +180,7 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
 
         ansiPrintf("*** " + passedStatement + ", " + failedStatement + ", " + ignoredStatement, passed, failureCount, ignoredCount);
 
-        if (failureCount > 0) {
+        if (failureCount > 0 && !quiet) {
             System.out.println();
             System.out.println();
             System.out.println("Failures:");
