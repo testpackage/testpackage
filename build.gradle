@@ -3,7 +3,7 @@ allprojects {
     apply plugin: 'signing'
 
     group = 'org.testpackage'
-    version = '0.1.1-SNAPSHOT'
+    version = '0.1.1'
 
     description = """Command line JUnit test runner for standalone testing"""
 
