@@ -45,6 +45,9 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
     private static final String CROSS_MARK = "\u2718";
 
     private final boolean failFast;
+    private final boolean verbose;
+    private final boolean quiet;
+
     private StreamCapture streamCapture;
     private Description currentDescription;
     private long currentTestStartTime;
@@ -53,15 +56,19 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
     private Map<Class, String> stdOutStreamStore = Maps.newHashMap();
     private Map<Class, String> stdErrStreamStore = Maps.newHashMap();
 
-    public ColouredOutputRunListener(boolean failFast) {
+    public ColouredOutputRunListener(boolean failFast, boolean verbose, boolean quiet) {
         this.failFast = failFast;
+        this.verbose = verbose;
+        this.quiet = quiet;
     }
 
     @Override
     public void testStarted(Description description) throws Exception {
-        System.out.print(Ansi.ansi().saveCursorPosition());
-        System.out.print(">>  " + description.getTestClass().getSimpleName() + "." + description.getMethodName() + ":");
-        System.out.flush();
+        if (!quiet) {
+            System.out.print(Ansi.ansi().saveCursorPosition());
+            System.out.print(">>  " + description.getTestClass().getSimpleName() + "." + description.getMethodName() + ":");
+            System.out.flush();
+        }
 
         currentTestStartTime = System.currentTimeMillis();
         currentTestDidFail = false;
@@ -79,12 +86,12 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
 
         replaceTestMethodPlaceholder(false);
 
-        if (streamCapture.getStdOut().length() > 0) {
+        if (verbose || !quiet && streamCapture.getStdOut().length() > 0) {
             System.out.println("   STDOUT:");
             System.out.print(streamCapture.getStdOut());
         }
 
-        if (streamCapture.getStdErr().length() > 0) {
+        if (verbose || !quiet && streamCapture.getStdErr().length() > 0) {
             System.out.println("\n   STDERR:");
             System.out.print(streamCapture.getStdErr());
         }
@@ -109,7 +116,20 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
 
         streamCapture.restore();
         if (!currentTestDidFail) {
-            replaceTestMethodPlaceholder(true);
+
+            if (!quiet) {
+                replaceTestMethodPlaceholder(true);
+            }
+
+            if (verbose && streamCapture.getStdOut().length() > 0) {
+                System.out.println("   STDOUT:");
+                System.out.print(streamCapture.getStdOut());
+            }
+
+            if (verbose && streamCapture.getStdErr().length() > 0) {
+                System.out.println("\n   STDERR:");
+                System.out.print(streamCapture.getStdErr());
+            }
         }
     }
 
@@ -153,7 +173,7 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
 
         ansiPrintf("*** " + passedStatement + ", " + failedStatement + ", " + ignoredStatement, passed, failureCount, ignoredCount);
 
-        if (failureCount > 0) {
+        if (failureCount > 0 && !quiet) {
             System.out.println();
             System.out.println();
             System.out.println("Failures:");

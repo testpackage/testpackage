@@ -16,20 +16,22 @@
 
 package org.testpackage;
 
-import org.testpackage.failfast.FailFastRunListener;
-import org.testpackage.junitcore.FailFastSupportCore;
-import org.testpackage.sequencing.TestHistoryRepository;
-import org.testpackage.sequencing.TestHistoryRunListener;
 import com.google.common.collect.Lists;
 import com.twitter.common.testing.runner.AntJunitXmlReportListener;
-import com.twitter.common.testing.runner.StreamSource;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.StoppedByUserException;
 import org.kohsuke.args4j.*;
+import org.testpackage.failfast.FailFastRunListener;
+import org.testpackage.junitcore.FailFastSupportCore;
+import org.testpackage.sequencing.TestHistoryRepository;
+import org.testpackage.sequencing.TestHistoryRunListener;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
@@ -59,6 +61,12 @@ public class TestPackage {
 
     @Option(name = "--failfast", aliases = "-ff", usage = "Fail Fast: Causes test run to be aborted at the first test failure")
     public boolean failFast = false;
+
+    @Option(name = "--quiet", aliases = "-q", usage = "Quiet mode: suppress all output except for test result and counts of pass/failed/ignored tests")
+    public boolean quiet = false;
+
+    @Option(name = "--verbose", aliases = "-v", usage = "Verbose mode: display all test output, even for passing tests")
+    public boolean verbose = false;
 
     @Argument
     private List<String> testPackageNames = Lists.newArrayList();
@@ -152,6 +160,8 @@ public class TestPackage {
 
     public int run() throws IOException {
 
+        validateSettings();
+
         TestHistoryRepository testHistoryRepository = null;
         try {
             new File(".testpackage").mkdir();
@@ -173,7 +183,7 @@ public class TestPackage {
             throw new TestPackageException("Could not create target directory: " + targetDir.getAbsolutePath());
         }
 
-        ColouredOutputRunListener colouredOutputRunListener = new ColouredOutputRunListener(failFast);
+        ColouredOutputRunListener colouredOutputRunListener = new ColouredOutputRunListener(failFast, verbose, quiet);
         RunListener antXmlRunListener = new AntJunitXmlReportListener(targetDir, colouredOutputRunListener);
 
         core.addListener(antXmlRunListener);
@@ -207,6 +217,12 @@ public class TestPackage {
         }
     }
 
+    private void validateSettings() {
+        if (this.quiet && this.verbose) {
+            throw new TestPackageException("Quiet and Verbose flags cannot be used simultaneously");
+        }
+    }
+
 
     private void getTestPackage() {
 
@@ -233,7 +249,16 @@ public class TestPackage {
         }
 
         // Fall back to system property
-        testPackageNames.add(System.getProperty("package"));
+        String packageNameSystemProperty = System.getProperty("package");
+        if (packageNameSystemProperty != null) {
+            testPackageNames.add(packageNameSystemProperty);
+        }
+
+        if (testPackageNames.size() == 0) {
+            throw new TestPackageException("No package names were set for packages to scan for test classes. " +
+                    "Either pass a command line argument, set a system property called 'package', " +
+                    "or set an attribute in the built test package JAR's MANIFEST named 'TestPackage-Package'.");
+        }
     }
 
 }
