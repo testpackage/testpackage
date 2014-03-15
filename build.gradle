@@ -1,6 +1,15 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.7'
+    }
+}
+
+
 allprojects {
-    apply plugin: 'maven'
-    apply plugin: 'signing'
 
     group = 'org.testpackage'
     version = '0.1.1'
@@ -12,60 +21,40 @@ allprojects {
         mavenCentral()
     }
 
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+    project.ext {
+        pomProject = {
 
-                if (project.hasProperty('sonatypeUsername') &&
-                        project.hasProperty('sonatypePassword')) {
+            name 'TestPackage'
+            packaging 'jar'
+            description 'Command line JUnit test runner for standalone testing'
+            url 'https://github.com/testpackage/testpackage'
 
-                    repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                        authentication(userName: sonatypeUsername, password: sonatypePassword)
-                    }
+            scm {
+                url 'scm:git@github.com:testpackage/testpackage.git'
+                connection 'scm:git@github.com:testpackage/testpackage.git'
+                developerConnection 'scm:git@github.com:testpackage/testpackage.git'
+            }
+
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
                 }
+            }
 
-                pom.project {
-                    name 'TestPackage'
-                    packaging 'jar'
-                    description 'Command line JUnit test runner for standalone testing'
-                    url 'https://github.com/testpackage/testpackage'
-
-                    scm {
-                        url 'scm:git@github.com:testpackage/testpackage.git'
-                        connection 'scm:git@github.com:testpackage/testpackage.git'
-                        developerConnection 'scm:git@github.com:testpackage/testpackage.git'
-                    }
-
-                    licenses {
-                        license {
-                            name 'The Apache Software License, Version 2.0'
-                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                            distribution 'repo'
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id 'rnorth'
-                            name 'Richard North'
-                        }
-                    }
+            developers {
+                developer {
+                    id 'rnorth'
+                    name 'Richard North'
                 }
             }
         }
     }
 }
 
+
+
 task wrapper(type: Wrapper) {
     gradleVersion = '1.10'
-}
-
-if (project.hasProperty('signing.keyId') &&
-        project.hasProperty('signing.password') &&
-        project.hasProperty('signing.secretKeyRingFile')) {
-
-    signing {
-        sign configurations.archives
-    }
 }
