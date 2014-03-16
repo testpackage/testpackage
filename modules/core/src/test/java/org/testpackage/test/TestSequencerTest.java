@@ -84,5 +84,8 @@ public class TestSequencerTest {
 
         assertEquals("sharding does not prevent tests from being prioritised", "testB(" + SHARDING_TESTS_PACKAGE + ".FirstTest)", request.getRunner().getDescription().getChildren().get(0).getChildren().get(0).getDisplayName());
         assertEquals("sharding does not prevent tests from being prioritised", "testA(" + SHARDING_TESTS_PACKAGE + ".FirstTest)", request.getRunner().getDescription().getChildren().get(0).getChildren().get(1).getDisplayName());
+
+        request = new TestSequencer(7, 10).sequenceTests(SHARDING_TESTS_PACKAGE);
+        assertTrue("when there are not enough tests, there is no error", !request.getRunner().getDescription().getChildren().toString().contains("initializationError"));
     }
 }
