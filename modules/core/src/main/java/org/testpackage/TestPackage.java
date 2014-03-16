@@ -57,8 +57,6 @@ public class TestPackage {
 
     private static final Logger LOGGER = Logger.getLogger(TestPackage.class.getSimpleName());
 
-    protected TestSequencer testSequencer = new TestSequencer();
-
     @Option(name = "--failfast", aliases = "-ff", usage = "Fail Fast: Causes test run to be aborted at the first test failure")
     public boolean failFast = false;
 
@@ -67,6 +65,12 @@ public class TestPackage {
 
     @Option(name = "--verbose", aliases = "-v", usage = "Verbose mode: display all test output, even for passing tests")
     public boolean verbose = false;
+
+    @Option(name = "--shard", usage = "The index of this test shard (default: 0)")
+    private int shardIndex = 0;
+
+    @Option(name = "--numShards", usage = "The total number of shards that tests should be distributed across (default: 1)")
+    private int numberOfShards = 1;
 
     @Argument
     private List<String> testPackageNames = Lists.newArrayList();
@@ -162,7 +166,7 @@ public class TestPackage {
 
         validateSettings();
 
-        TestHistoryRepository testHistoryRepository = null;
+        TestHistoryRepository testHistoryRepository;
         try {
             new File(".testpackage").mkdir();
             testHistoryRepository = new TestHistoryRepository(".testpackage/history.txt");
@@ -173,6 +177,11 @@ public class TestPackage {
 
         getTestPackage();
 
+        if (numberOfShards > 1 && !quiet) {
+            ansiPrintf("@|blue Tests will be sharded; this is shard index: %d, number of shards is: %d|@\n", this.shardIndex, this.numberOfShards);
+        }
+
+        TestSequencer testSequencer = new TestSequencer(shardIndex, numberOfShards);
         Request request = testSequencer.sequenceTests(testHistoryRepository.getRunsSinceLastFailures(), testPackageNames.toArray(new String[testPackageNames.size()]));
 
         FailFastSupportCore core = new FailFastSupportCore();
@@ -221,6 +230,10 @@ public class TestPackage {
         if (this.quiet && this.verbose) {
             throw new TestPackageException("Quiet and Verbose flags cannot be used simultaneously");
         }
+
+        if (this.shardIndex < 0 || this.shardIndex >= this.numberOfShards) {
+            throw new TestPackageException("Shard index should be in the range 0.." + (this.numberOfShards - 1));
+        }
     }
 
 
@@ -259,6 +272,14 @@ public class TestPackage {
                     "Either pass a command line argument, set a system property called 'package', " +
                     "or set an attribute in the built test package JAR's MANIFEST named 'TestPackage-Package'.");
         }
+    }
+
+    public void setShardIndex(int shardIndex) {
+        this.shardIndex = shardIndex;
+    }
+
+    public void setNumberOfShards(int numberOfShards) {
+        this.numberOfShards = numberOfShards;
     }
 
 }
