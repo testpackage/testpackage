@@ -175,7 +175,7 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
         } else if (ignoredCount > 0) {
             ignoredStatement = "@|bg_yellow %d ignored|@";
         } else {
-            ignoredStatement = "0 ignored";
+            ignoredStatement = "0 ignored\n";
         }
 
         ansiPrintf("*** " + passedStatement + ", " + failedStatement + ", " + ignoredStatement, passed, failureCount, ignoredCount);
