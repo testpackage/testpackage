@@ -1,10 +1,12 @@
 package org.testpackage;
 
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.ClassPath;
 import org.junit.runner.Request;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -48,16 +50,18 @@ public class TestSequencer {
                 testClasses.add(classInfo.load());
             }
         }
-        Request unsortedClassRequest = Request.classes(testClasses.toArray(new Class[testClasses.size()]));
 
         // Before filtering, sort into a consistent order
-        Request lexicographicallySortedClassRequest = unsortedClassRequest.sortWith(new LexicographicRequestComparator());
+        Collections.sort(testClasses, new LexicographicRequestComparator());
 
         // Filter, in case of sharding
-        Request shardedClassRequest = lexicographicallySortedClassRequest.filterWith(new ShardingFilter(thisShardIndex, numberOfShards, testClasses));
+        Collection<Class<?>> shardFilteredTestClasses = Collections2.filter(testClasses, new ShardingFilter(thisShardIndex, numberOfShards));
+
+        // Convert to a JUnit request
+        Request unprioritised = Request.classes(shardFilteredTestClasses.toArray(new Class[shardFilteredTestClasses.size()]));
 
         // Re-sort according to test priority (run recently-failed tests first)
-        Request sortedRequest = shardedClassRequest.sortWith(new RecentFailurePrioritisationRequestComparator(runsSinceLastFailures));
+        Request sortedRequest = unprioritised.sortWith(new RecentFailurePrioritisationRequestComparator(runsSinceLastFailures));
 
         return sortedRequest;
     }
