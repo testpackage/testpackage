@@ -217,7 +217,7 @@ public class TestPackage {
         int failureCount = result.getFailureCount();
         int testCount = result.getRunCount();
         int passed = testCount - failureCount;
-        if (failureCount > 0 || passed == 0) {
+        if (failureCount > 0) {
             ansiPrintf("@|red FAILED|@\n");
             return 1;
         } else {

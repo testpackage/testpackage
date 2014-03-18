@@ -1,12 +1,10 @@
 package org.testpackage;
 
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.ClassPath;
 import org.junit.runner.Request;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +53,10 @@ public class TestSequencer {
         Collections.sort(testClasses, new LexicographicRequestComparator());
 
         // Filter, in case of sharding
-        Collection<Class<?>> shardFilteredTestClasses = Collections2.filter(testClasses, new ShardingFilter(thisShardIndex, numberOfShards));
+        List<Class<?>> shardFilteredTestClasses = Lists.newArrayList();
+        for (int i=thisShardIndex; i < testClasses.size(); i += numberOfShards) {
+            shardFilteredTestClasses.add(testClasses.get(i));
+        }
 
         // Convert to a JUnit request
         Request unprioritised = Request.classes(shardFilteredTestClasses.toArray(new Class[shardFilteredTestClasses.size()]));
