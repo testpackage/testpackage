@@ -13,6 +13,7 @@ public class GreedyApproximateTestSubsetOptimizer {
 
     private Integer targetTestCount;
     private Double targetCoverage;
+    private Integer targetCost;
 
     public TestSubsetOptimizerResult solve(Set<TestWithCoverage> coverageSets) {
 
@@ -24,12 +25,28 @@ public class GreedyApproximateTestSubsetOptimizer {
             solveForTargetTestCount(remainingCandidates, selections, covered);
         } else if (targetCoverage != null) {
             solveForTargetCoverage(remainingCandidates, selections, covered);
+        } else if (targetCost != null) {
+            solveForTargetCost(remainingCandidates, selections, covered);
         } else {
             throw new IllegalStateException("A target test count or coverage must be set");
         }
 
 
         return new TestSubsetOptimizerResult(selections, covered);
+    }
+
+    private void solveForTargetCost(List<TestWithCoverage> remainingCandidates, List<TestWithCoverage> selections, BitSet covered) {
+        int costSoFar = 0;
+        while (!remainingCandidates.isEmpty()) {
+            search(remainingCandidates, selections, covered);
+
+            costSoFar += selections.get(selections.size() - 1).getCost();
+            if (costSoFar > targetCost) {
+                selections.remove(selections.size() - 1);
+                break;
+            }
+        }
+
     }
 
     private void solveForTargetCoverage(List<TestWithCoverage> remainingCandidates, List<TestWithCoverage> selections, BitSet covered) {
@@ -86,6 +103,11 @@ public class GreedyApproximateTestSubsetOptimizer {
 
     public GreedyApproximateTestSubsetOptimizer withTargetTestCoverage(double targetCoverage) {
         this.targetCoverage = targetCoverage;
+        return this;
+    }
+
+    public GreedyApproximateTestSubsetOptimizer withTargetCost(int targetCost) {
+        this.targetCost = targetCost;
         return this;
     }
 }

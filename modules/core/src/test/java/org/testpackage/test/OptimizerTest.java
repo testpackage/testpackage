@@ -96,6 +96,26 @@ public class OptimizerTest {
         stopTime("Picking tests with " + targetCoverage + " coverage");
     }
 
+    @Test
+    public void testDesiredCost() {
+
+        startTime();
+
+        final double targetCoverage = 0.9;
+        final int targetCost = 700000;
+        TestSubsetOptimizerResult result = new GreedyApproximateTestSubsetOptimizer()
+                                                    .withTargetCost(targetCost)
+                                                    .solve(COVERAGE_SETS);
+
+        System.out.printf("The best coverage (%g%%) with target cost %d was achieved with %d tests %s\n",
+                100 * ((double) result.getCoveredLines()) / COVERED_LINES,
+                targetCost,
+                result.getSelections().size(),
+                result.getSelections());
+
+        stopTime("Picking tests with " + targetCoverage + " coverage");
+    }
+
 
     /*
      * Simple timing functions
