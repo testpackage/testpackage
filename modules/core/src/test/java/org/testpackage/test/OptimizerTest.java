@@ -1,16 +1,16 @@
 package org.testpackage.test;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.testpackage.optimization.GreedyApproximateTestSubsetOptimizer;
 import org.testpackage.optimization.TestSubsetOptimizerResult;
 import org.testpackage.optimization.TestWithCoverage;
 
 import java.util.BitSet;
-import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
-import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Math.abs;
 
 /**
@@ -20,11 +20,11 @@ public class OptimizerTest {
 
     private static final int TEST_COUNT = 100;
     private static final int COVERED_LINES = 1000000;
-    private List<TestWithCoverage> coverageSets = newArrayList();
-    private long startTime;
+    private static final Set<TestWithCoverage> COVERAGE_SETS = newHashSet();
+    private static long startTime;
 
-    @Before
-    public void setup() {
+    @BeforeClass
+    public static void setup() {
 
         startTime();
 
@@ -54,36 +54,58 @@ public class OptimizerTest {
             // Simulate some costs clustered around a centre that assumes each covered line costs 1, with noise
             int cost = (int) abs((bitSet.cardinality() + COVERED_LINES / 2 * random.nextGaussian()));
 
-            coverageSets.add(new TestWithCoverage("test" + test, bitSet, cost));
+            COVERAGE_SETS.add(new TestWithCoverage("test" + test, bitSet, cost));
         }
 
         stopTime("Setup");
     }
 
     @Test
-    public void simpleTest() {
+    public void testDesiredNumberOfTests() {
 
         startTime();
 
         final int targetTestCount = TEST_COUNT / 5;
-        TestSubsetOptimizerResult result = new GreedyApproximateTestSubsetOptimizer().solve(coverageSets, targetTestCount);
+        TestSubsetOptimizerResult result = new GreedyApproximateTestSubsetOptimizer()
+                                                    .withTargetTestCount(targetTestCount)
+                                                    .solve(COVERAGE_SETS);
 
-        System.out.printf("The best coverage (%g%%) was achieved with tests %s\n",
+        System.out.printf("The best coverage for %d tests was %g%%, and was achieved with tests %s\n",
+                result.getSelections().size(),
                 100 * ((double) result.getCoveredLines()) / COVERED_LINES,
                 result.getSelections());
 
         stopTime("Picking " + targetTestCount + " tests");
     }
 
+    @Test
+    public void testDesiredCoverage() {
+
+        startTime();
+
+        final double targetCoverage = 0.9;
+        TestSubsetOptimizerResult result = new GreedyApproximateTestSubsetOptimizer()
+                                                    .withTargetTestCoverage(targetCoverage)
+                                                    .solve(COVERAGE_SETS);
+
+        System.out.printf("The desired coverage (%g%%) was achieved with %d tests %s\n",
+                100 * ((double) result.getCoveredLines()) / COVERED_LINES,
+                result.getSelections().size(),
+                result.getSelections());
+
+        stopTime("Picking tests with " + targetCoverage + " coverage");
+    }
+
 
     /*
      * Simple timing functions
      */
-    private void startTime() {
+    private static void startTime() {
         startTime =  System.nanoTime();
     }
 
-    private void stopTime(String what) {
+    private static void stopTime(String what) {
         System.out.println(what + " took: " + (System.nanoTime() - startTime) / 1000000 + "ms");
+        System.out.flush();
     }
 }
