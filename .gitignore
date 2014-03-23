@@ -6,3 +6,4 @@
 **/build
 **/target
 examples/maven/dependency-reduced-pom.xml
+out
