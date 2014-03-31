@@ -12,9 +12,10 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
+ * <p>
  * Stores historic 'runs since last failure' counts on the filesystem for
  * persistence between test runs.
- * <p/>
+ * </p>
  * Created by richardnorth on 01/01/2014.
  */
 public class TestHistoryRepository {

@@ -12,7 +12,6 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
 /**
  * Mojo to assemble a TestPackage fat, executable JAR.
- *
  */
 @Mojo(name = "fatjar", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class TestPackageMojo extends AbstractMojo {
@@ -50,6 +49,16 @@ public class TestPackageMojo extends AbstractMojo {
                                         element("manifestEntries",
                                                 element("Main-Class", "org.testpackage.TestPackage"),
                                                 element("TestPackage-Package", packageName)
+                                        )
+                                )
+                        ),
+                        element("filters",
+                                element("filter",
+                                        element("artifact", "*:*"),
+                                        element("excludes",
+                                                element("exclude", "META-INF/*.SF"),
+                                                element("exclude", "META-INF/*.DSA"),
+                                                element("exclude", "META-INF/*.RSA")
                                         )
                                 )
                         )
