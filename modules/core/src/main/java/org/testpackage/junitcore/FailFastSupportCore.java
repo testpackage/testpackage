@@ -7,8 +7,9 @@ import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
 
 /**
+ * <p>
  * Replacement for JUnitCore which provides access to its RunNotifier.
- * <p/>
+ * </p>
  * Created by richardnorth on 01/01/2014.
  */
 public class FailFastSupportCore {
