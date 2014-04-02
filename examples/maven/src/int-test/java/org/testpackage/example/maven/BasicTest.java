@@ -28,27 +28,29 @@ import static org.testpackage.VisibleAssertions.assertTrue;
  */
 public class BasicTest {
 
+    private static final long PAUSE = 1500L;
+
     @Test
     public void testBasicTrueAssertion() throws InterruptedException {
         assertTrue("it should be true", true);
-        Thread.sleep(400L);
+        Thread.sleep(PAUSE);
     }
 
     @Test
     public void testBasicNullEqualsAssertion() throws InterruptedException {
-        Thread.sleep(400L);
+        Thread.sleep(PAUSE);
         assertEquals("it should be equal", null, null);
     }
 
     @Test
     public void testEqualsAssertion() throws InterruptedException {
-        Thread.sleep(400L);
+        Thread.sleep(PAUSE);
         assertEquals("it should be equal", "A", "A");
     }
 
     @Test
     public void testDeliberateError() throws InterruptedException {
-        Thread.sleep(400L);
+        Thread.sleep(PAUSE);
         try {
             int a = 7 / 0;
         } catch (Throwable e) {
@@ -58,7 +60,7 @@ public class BasicTest {
 
     @Test
     public void testDeliberateAssertionFailure() throws InterruptedException {
-        Thread.sleep(400L);
+        Thread.sleep(PAUSE);
         assertEquals("Deliberate assertion failure - it should be equal but is not", 42, 99);
     }
 

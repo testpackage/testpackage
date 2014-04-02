@@ -192,7 +192,7 @@ public class TestPackage {
             throw new TestPackageException("Could not create target directory: " + targetDir.getAbsolutePath());
         }
 
-        ColouredOutputRunListener colouredOutputRunListener = new ColouredOutputRunListener(failFast, verbose, quiet);
+        ColouredOutputRunListener colouredOutputRunListener = new ColouredOutputRunListener(failFast, verbose, quiet, request.getRunner().testCount());
         RunListener antXmlRunListener = new AntJunitXmlReportListener(targetDir, colouredOutputRunListener);
 
         core.addListener(antXmlRunListener);
