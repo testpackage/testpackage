@@ -16,10 +16,12 @@
 
 package org.testpackage;
 
+import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.twitter.common.testing.runner.StreamSource;
+import jline.TerminalFactory;
 import org.fusesource.jansi.Ansi;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
@@ -31,6 +33,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static org.fusesource.jansi.Ansi.ansi;
 import static org.testpackage.AnsiSupport.ansiPrintf;
 
 /**
@@ -47,32 +50,34 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
     private final boolean failFast;
     private final boolean verbose;
     private final boolean quiet;
+    private final int testTotalCount;
+    private final int terminalWidth;
 
     private StreamCapture streamCapture;
     private Description currentDescription;
     private long currentTestStartTime;
+    private int testRunCount = 0;
+    private int testFailureCount = 0;
+    private int newTestFailureCount = 0;
+    private int testIgnoredCount = 0;
     private boolean currentTestDidFail = false;
 
     private Map<Class, String> stdOutStreamStore = Maps.newHashMap();
     private Map<Class, String> stdErrStreamStore = Maps.newHashMap();
 
-    public ColouredOutputRunListener(boolean failFast, boolean verbose, boolean quiet) {
+    public ColouredOutputRunListener(boolean failFast, boolean verbose, boolean quiet, int testTotalCount) {
         this.failFast = failFast;
         this.verbose = verbose;
         this.quiet = quiet;
+        this.testTotalCount = testTotalCount;
+
+        this.terminalWidth = TerminalFactory.get().getWidth();
     }
 
     @Override
     public void testStarted(Description description) throws Exception {
         if (!quiet) {
-            System.out.print(Ansi.ansi().saveCursorPosition());
-            System.out.print(">>  " + description.getTestClass().getSimpleName() + "." + description.getMethodName() + ":");
-            if (verbose) {
-                // Add newline so that tee-d stdout/err appear on the line below. In non-verbose mode we omit
-                //  the newline so that this placeholder can be erased on completion of the test method.
-                System.out.println();
-            }
-            System.out.flush();
+            displayTestMethodPlaceholder(description);
         }
 
         currentTestStartTime = System.currentTimeMillis();
@@ -88,6 +93,7 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
     public void testFailure(Failure failure) throws Exception {
 
         currentTestDidFail = true;
+        testFailureCount++;
 
         streamCapture.restore();
 
@@ -121,6 +127,8 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
         stdOutStreamStore.put(description.getTestClass(), streamCapture.getStdOut());
         stdErrStreamStore.put(description.getTestClass(), streamCapture.getStdErr());
 
+        testRunCount++;
+
         streamCapture.restore();
         if (!currentTestDidFail) {
 
@@ -138,6 +146,11 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
                 System.out.print(streamCapture.getStdErr());
             }
         }
+    }
+
+    @Override
+    public void testIgnored(Description description) throws Exception {
+        testIgnoredCount++;
     }
 
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
@@ -216,9 +229,35 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
         return textWithPossibleNewlines.replaceAll("\\n", "\n      ");
     }
 
+    private void displayTestMethodPlaceholder(Description description) {
+        System.out.print(ansi().saveCursorPosition());
+        final String thisTestDescription = ">>  " + description.getTestClass().getSimpleName() + "." + description.getMethodName();
+
+        final StringBuffer overviewDescription = new StringBuffer();
+        overviewDescription.append("[ ").append(testRunCount).append("/").append(testTotalCount).append(" tests run");
+        if (testIgnoredCount > 0) {
+            overviewDescription.append(", @|yellow ").append(testIgnoredCount).append(" ignored|@");
+        }
+        if (testFailureCount > 0) {
+            overviewDescription.append(", @|red ").append(testFailureCount).append(" failed|@");
+            if (newTestFailureCount > 0) {
+                overviewDescription.append("@|bold,red  (0 new)|@");
+            }
+        }
+        overviewDescription.append(" ] ");
+
+        ansiPrintf(alignLeftRight(thisTestDescription, overviewDescription.toString()));
+        if (verbose) {
+            // Add newline so that tee-d stdout/err appear on the line below. In non-verbose mode we omit
+            //  the newline so that this placeholder can be erased on completion of the test method.
+            System.out.println();
+        }
+        System.out.flush();
+    }
+
     private void replaceTestMethodPlaceholder(boolean success) {
         long elapsedTime = System.currentTimeMillis() - currentTestStartTime;
-        System.out.print(Ansi.ansi().eraseLine(Ansi.Erase.ALL).restorCursorPosition());
+        System.out.print(ansi().eraseLine(Ansi.Erase.ALL).restorCursorPosition());
         String colour;
         String symbol;
         if (success) {
@@ -247,5 +286,15 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
         } else {
             return new byte[0];
         }
+    }
+
+    private String alignLeftRight(final String leftString, final String rightString) {
+
+        String cleansedLeftString = leftString.replaceAll("@\\|[\\w,]+\\s|\\|@", "");
+        String cleansedRightString = rightString.replaceAll("@\\|[\\w,]+\\s|\\|@", "");
+
+        int space = terminalWidth - (cleansedLeftString.length() + cleansedRightString.length());
+
+        return leftString + Strings.repeat(" ", space) + rightString;
     }
 }
