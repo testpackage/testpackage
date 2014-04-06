@@ -9,11 +9,11 @@ public class SimpleTest {
 
     @Test
     public void testTrue2() throws InterruptedException {
-        assert true; Thread.sleep(5000L);
+        assert true; Thread.sleep(500L);
     }
 
     @Test
     public void testTrue1() throws InterruptedException {
-        assert true; Thread.sleep(5000L);
+        assert true; Thread.sleep(500L);
     }
 }

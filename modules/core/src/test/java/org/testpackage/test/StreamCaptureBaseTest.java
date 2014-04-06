@@ -1,7 +1,8 @@
 package org.testpackage.test;
 
-import org.testpackage.streams.StreamCapture;
+import org.junit.After;
 import org.junit.Before;
+import org.testpackage.streams.StreamCapture;
 
 import java.io.IOException;
 
@@ -14,14 +15,24 @@ public abstract class StreamCaptureBaseTest {
 
     @Before
     public void setupStreamCapturing() throws IOException {
-        streamCapture = StreamCapture.grabStreams(true);
+        System.out.println("SC will be grabbed");
+        streamCapture = StreamCapture.grabStreams(false, "StreamCaptureBaseTest");
+    }
+
+    @After
+    public void endStreamCapturing() {
+
+        StreamCapture.restore();
+        System.out.println("SC restored: " + getCapturedStdOut());
     }
 
     protected String getCapturedStdOut() {
+        System.out.flush();
         return streamCapture.getStdOut();
     }
 
     protected String getCapturedStdErr() {
+        System.err.flush();
         return streamCapture.getStdErr();
     }
 
