@@ -16,6 +16,8 @@ dependencies {
     compile group: 'com.google.guava', name: 'guava', version: '15.0'
     compile group: 'org.apache.commons', name: 'commons-io', version: '1.3.2'
     compile group: 'args4j', name: 'args4j', version: '2.0.26'
+    compile group: 'com.googlecode.javaewah', name: 'JavaEWAH', version: '0.8.5'
+    compile group: 'org.jacoco', name:'org.jacoco.core', version:'0.7.0.201403182114'
     compile group: 'jline', name: 'jline', version: '2.11'
 }
 
