@@ -85,7 +85,7 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
 
         // Tee output if not running in verbose mode, so that it is output in realtime
         boolean teeOutput = verbose && !quiet;
-        streamCapture = StreamCapture.grabStreams(teeOutput);
+        streamCapture = StreamCapture.grabStreams(teeOutput, description.getDisplayName());
         currentDescription = description;
     }
 
@@ -95,7 +95,7 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
         currentTestDidFail = true;
         testFailureCount++;
 
-        streamCapture.restore();
+        StreamCapture.restore();
 
         replaceTestMethodPlaceholder(false);
 
@@ -129,8 +129,8 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
 
         testRunCount++;
 
-        streamCapture.restore();
         if (!currentTestDidFail) {
+            StreamCapture.restore();
 
             if (!quiet) {
                 replaceTestMethodPlaceholder(true);

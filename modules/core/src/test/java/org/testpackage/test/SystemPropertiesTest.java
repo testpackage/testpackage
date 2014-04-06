@@ -21,8 +21,7 @@ import static org.testpackage.VisibleAssertions.fail;
 public class SystemPropertiesTest extends StreamCaptureBaseTest {
 
     @Before
-    public void setupStreamCapturing() throws IOException {
-        super.setupStreamCapturing();
+    public void setupPackageName() throws IOException {
         System.setProperty("package", "org.testpackage.runnertest.propertiestests");
     }
 
