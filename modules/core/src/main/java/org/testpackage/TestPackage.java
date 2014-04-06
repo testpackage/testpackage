@@ -43,8 +43,10 @@ import static org.testpackage.AnsiSupport.ansiPrintf;
 import static org.testpackage.AnsiSupport.initialize;
 
 /**
+ * <p>
  * TestPackage main class - should be referenced from a JAR manifest as the Main Class and run from the shell.
  * </p>
+ * <p>
  * See @Option-annotated fields for command line switches.
  * </p>
  * If any command line arguments are passed, these are used as the Java package names which should be searched
@@ -85,11 +87,13 @@ public class TestPackage {
     }
 
     /**
+     * <p>
      * Sets or overrides system properties from the specified file.
-     * <p/>
+     * </p>
+     * <p>
      * This is invoked before TestPackage itself is completely initialised so that, in theory, you could use
      * a file to set system properties for TestPackage itself, rather than passing them all as command line arguments.
-     * <p/>
+     * </p>
      * Using a capitalised 'P' for the alias for consistency with other common Java projects that do this.
      *
      * @param propertiesFile
@@ -192,7 +196,7 @@ public class TestPackage {
             throw new TestPackageException("Could not create target directory: " + targetDir.getAbsolutePath());
         }
 
-        ColouredOutputRunListener colouredOutputRunListener = new ColouredOutputRunListener(failFast, verbose, quiet);
+        ColouredOutputRunListener colouredOutputRunListener = new ColouredOutputRunListener(failFast, verbose, quiet, request.getRunner().testCount());
         RunListener antXmlRunListener = new AntJunitXmlReportListener(targetDir, colouredOutputRunListener);
 
         core.addListener(antXmlRunListener);

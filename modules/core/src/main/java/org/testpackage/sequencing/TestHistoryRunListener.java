@@ -4,8 +4,9 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
 /**
+ * <p>
  * Run listener which notifies a TestHistoryRepository of any failures when they occur.
- * <p/>
+ * </p>
  * Created by richardnorth on 01/01/2014.
  */
 public class TestHistoryRunListener extends RunListener {

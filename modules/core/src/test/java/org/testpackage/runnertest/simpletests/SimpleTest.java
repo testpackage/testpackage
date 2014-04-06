@@ -8,12 +8,12 @@ import org.junit.Test;
 public class SimpleTest {
 
     @Test
-    public void testTrue2() {
-        assert true;
+    public void testTrue2() throws InterruptedException {
+        assert true; Thread.sleep(500L);
     }
 
     @Test
-    public void testTrue1() {
-        assert true;
+    public void testTrue1() throws InterruptedException {
+        assert true; Thread.sleep(500L);
     }
 }

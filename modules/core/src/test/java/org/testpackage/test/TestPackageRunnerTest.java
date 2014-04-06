@@ -17,11 +17,6 @@ import static org.testpackage.VisibleAssertions.assertTrue;
  */
 public class TestPackageRunnerTest extends StreamCaptureBaseTest {
 
-    @Before
-    public void setupStreamCapturing() throws IOException {
-        super.setupStreamCapturing();
-    }
-
     @Test
     public void testSimple() throws IOException {
 
