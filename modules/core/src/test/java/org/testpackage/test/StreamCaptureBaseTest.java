@@ -15,7 +15,7 @@ public abstract class StreamCaptureBaseTest {
 
     @Before
     public void setupStreamCapturing() throws IOException {
-        System.out.println("SC will be grabbed");
+//        System.out.println("SC will be grabbed");
         streamCapture = StreamCapture.grabStreams(false, "StreamCaptureBaseTest");
     }
 
@@ -23,7 +23,7 @@ public abstract class StreamCaptureBaseTest {
     public void endStreamCapturing() {
 
         StreamCapture.restore();
-        System.out.println("SC restored: " + getCapturedStdOut());
+//        System.out.println("SC restored: " + getCapturedStdOut());
     }
 
     protected String getCapturedStdOut() {
