@@ -60,7 +60,7 @@ public class StreamCapture {
 
         chain.push(streamCapture);
 
-        initialSystemOut.println("Pushed to chain, now: " + chain);
+//        initialSystemOut.println("Pushed to chain, now: " + chain);
 
         applyToSystemStreams();
 
@@ -75,7 +75,7 @@ public class StreamCapture {
 
         chain.pop();
 
-        initialSystemOut.println("Popped chain, now: " + chain);
+//        initialSystemOut.println("Popped chain, now: " + chain);
 
         applyToSystemStreams();
     }
