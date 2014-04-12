@@ -6,6 +6,8 @@
 **/build
 **/target
 examples/maven/dependency-reduced-pom.xml
+classes
+.testpackage
 out
 classes
 .testpackage
