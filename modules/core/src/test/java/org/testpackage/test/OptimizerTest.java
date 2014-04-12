@@ -6,7 +6,7 @@ import org.testpackage.optimization.GreedyApproximateTestSubsetOptimizer;
 import org.testpackage.optimization.TestSubsetOptimizerResult;
 import org.testpackage.optimization.TestWithCoverage;
 
-import java.util.BitSet;
+import com.googlecode.javaewah.datastructure.BitSet;
 import java.util.Random;
 import java.util.Set;
 
@@ -45,10 +45,6 @@ public class OptimizerTest {
                 }
                 bitSet.set(coveredLine, nextState);
 
-                // some noise to simulate branches in methods
-                if (random.nextFloat() < 0.05) {
-                    bitSet.flip(coveredLine);
-                }
             }
 
             // Simulate some costs clustered around a centre that assumes each covered line costs 1, with noise
@@ -68,7 +64,7 @@ public class OptimizerTest {
         final int targetTestCount = TEST_COUNT / 5;
         TestSubsetOptimizerResult result = new GreedyApproximateTestSubsetOptimizer()
                                                     .withTargetTestCount(targetTestCount)
-                                                    .solve(COVERAGE_SETS);
+                                                    .solve(COVERAGE_SETS, 0);
 
         System.out.printf("The best coverage for %d tests was %g%%, and was achieved with tests %s\n",
                 result.getSelections().size(),
@@ -86,7 +82,7 @@ public class OptimizerTest {
         final double targetCoverage = 0.9;
         TestSubsetOptimizerResult result = new GreedyApproximateTestSubsetOptimizer()
                                                     .withTargetTestCoverage(targetCoverage)
-                                                    .solve(COVERAGE_SETS);
+                                                    .solve(COVERAGE_SETS, 0);
 
         System.out.printf("The desired coverage (%g%%) was achieved with %d tests %s\n",
                 100 * ((double) result.getCoveredLines()) / COVERED_LINES,
@@ -105,7 +101,7 @@ public class OptimizerTest {
         final int targetCost = 700000;
         TestSubsetOptimizerResult result = new GreedyApproximateTestSubsetOptimizer()
                                                     .withTargetCost(targetCost)
-                                                    .solve(COVERAGE_SETS);
+                                                    .solve(COVERAGE_SETS, 0);
 
         System.out.printf("The best coverage (%g%%) with target cost %d was achieved with %d tests %s\n",
                 100 * ((double) result.getCoveredLines()) / COVERED_LINES,

@@ -7,3 +7,5 @@
 **/target
 examples/maven/dependency-reduced-pom.xml
 out
+classes
+.testpackage

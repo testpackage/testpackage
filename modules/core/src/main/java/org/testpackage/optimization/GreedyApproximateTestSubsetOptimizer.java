@@ -1,6 +1,7 @@
 package org.testpackage.optimization;
 
-import java.util.BitSet;
+import com.googlecode.javaewah.datastructure.BitSet;
+
 import java.util.List;
 import java.util.Set;
 
@@ -15,11 +16,11 @@ public class GreedyApproximateTestSubsetOptimizer {
     private Double targetCoverage;
     private Integer targetCost;
 
-    public TestSubsetOptimizerResult solve(Set<TestWithCoverage> coverageSets) {
+    public TestSubsetOptimizerResult solve(Set<TestWithCoverage> coverageSets, int size) {
 
         List<TestWithCoverage> remainingCandidates = newArrayList(coverageSets);
         List<TestWithCoverage> selections = newArrayList();
-        BitSet covered = new BitSet();
+        BitSet covered = new BitSet(size);
 
         if (targetTestCount != null) {
             solveForTargetTestCount(remainingCandidates, selections, covered);
@@ -67,24 +68,20 @@ public class GreedyApproximateTestSubsetOptimizer {
     private void search(List<TestWithCoverage> remainingCandidates, List<TestWithCoverage> selections, BitSet covered) {
         double bestScore = 0;
         TestWithCoverage bestCandidate = null;
+        int coveredCardinality = covered.cardinality();
 
         // Score each candidate
         for (int j = 0; j < remainingCandidates.size(); j++) {
             final TestWithCoverage candidate = remainingCandidates.get(j);
             BitSet candidateCoverage = candidate.getCoverage();
 
-            // work out which lines of code get freshly covered
-            covered.xor(candidateCoverage);
-
-            // work out the score, the number of newly covered lines
-            double score = ((double) covered.cardinality()) / candidate.getCost();
-
-            // revert covered back to its previous state
-            covered.xor(candidateCoverage);
+            // work out the score, the number of newly covered lines divided by the cost of adding this test
+            double score = (((double) covered.orcardinality(candidateCoverage)) - coveredCardinality) / candidate.getCost();
 
             if (score > bestScore) {
                 bestScore = score;
                 bestCandidate = candidate;
+                coveredCardinality = covered.cardinality();
             }
         }
 

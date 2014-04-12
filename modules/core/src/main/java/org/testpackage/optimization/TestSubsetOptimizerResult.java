@@ -1,6 +1,6 @@
 package org.testpackage.optimization;
 
-import java.util.BitSet;
+import com.googlecode.javaewah.datastructure.BitSet;
 import java.util.List;
 
 /**
