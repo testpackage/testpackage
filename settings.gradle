@@ -1,1 +1,1 @@
-include ':modules:core', ':modules:testpackage-maven-plugin', ':examples:maven', ':examples:coverage'
+include ':modules:testpackage', ':modules:testpackage-maven-plugin', ':examples:maven', ':examples:coverage', ':modules:coverage-jacoco'

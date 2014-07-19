@@ -16,11 +16,18 @@ public class RestServer {
 
     private static RestServerDummyService service;
 
+    private static void sleep(int time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException ignored) { }
+    }
+
     @Path("/testA")
     public static class TestA {
         @GET
         @Produces("text/html")
         public String getMessage() {
+            sleep(300);
             return "A";
         }
     }
@@ -30,6 +37,7 @@ public class RestServer {
         @GET
         @Produces("text/html")
         public String getMessage() {
+            sleep(100);
             service.doSomethingElse();
             return "B" + service.doSomething();
         }
@@ -40,6 +48,8 @@ public class RestServer {
         @GET
         @Produces("text/html")
         public String getMessage() {
+
+            sleep(300);
             return service.doSomething();
         }
     }

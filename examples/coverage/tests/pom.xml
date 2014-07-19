@@ -12,6 +12,11 @@
             <artifactId>testpackage</artifactId>
             <version>0.2.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.testpackage</groupId>
+            <artifactId>coverage-jacoco</artifactId>
+            <version>0.2.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -26,7 +31,7 @@
                             <goal>fatjar</goal>
                         </goals>
                         <configuration>
-                            <package-name>org.testpackage.example.maven</package-name>
+                            <package-name>org.testpackage.example.jacoco</package-name>
                             <flags>-Xmx2G</flags>
                         </configuration>
                     </execution>
