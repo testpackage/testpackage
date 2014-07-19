@@ -26,7 +26,7 @@ public class OutputLevelTest extends StreamCaptureBaseTest {
     public void testQuietLevelBehaviour() throws IOException {
 
         TestPackage testPackage = new TestPackage();
-        testPackage.getConfiguration().quiet = true;
+        testPackage.getConfiguration().setQuiet(true);
         testPackage.run();
 
         String capturedStdOut = getCapturedStdOut();
@@ -50,7 +50,7 @@ public class OutputLevelTest extends StreamCaptureBaseTest {
     public void testVerboseLevelBehaviour() throws IOException {
 
         TestPackage testPackage = new TestPackage();
-        testPackage.getConfiguration().verbose = true;
+        testPackage.getConfiguration().setVerbose(true);
         testPackage.run();
 
         String capturedStdOut = getCapturedStdOut();
@@ -74,8 +74,8 @@ public class OutputLevelTest extends StreamCaptureBaseTest {
     public void testCorrectFailureWhenBothFlagsSet() throws IOException {
 
         TestPackage testPackage = new TestPackage();
-        testPackage.getConfiguration().verbose = true;
-        testPackage.getConfiguration().quiet = true;
+        testPackage.getConfiguration().setVerbose(true);
+        testPackage.getConfiguration().setQuiet(true);
 
         try {
             testPackage.run();

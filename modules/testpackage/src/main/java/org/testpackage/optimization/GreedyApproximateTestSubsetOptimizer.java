@@ -6,9 +6,7 @@ import org.junit.runner.Request;
 import org.junit.runner.manipulation.Filter;
 import org.testpackage.Configuration;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.Math.max;
@@ -25,6 +23,10 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
 
     public GreedyApproximateTestSubsetOptimizer(Configuration configuration) {
         super(configuration);
+
+        if (configuration.getOptimizeTestCoverage() != null) {
+            this.targetCoverage = configuration.getOptimizeTestCoverage();
+        }
     }
 
     @Override
@@ -136,9 +138,9 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
     }
 
     private void search(List<TestWithCoverage> remainingCandidates, List<TestWithCoverage> selections, BitSet covered) {
-        double bestScore = 0;
-        TestWithCoverage bestCandidate = null;
         int coveredCardinality = covered.cardinality();
+
+        PriorityQueue<Selection> candidates = new PriorityQueue<Selection>();
 
         // Score each candidate
         for (int j = 0; j < remainingCandidates.size(); j++) {
@@ -146,14 +148,12 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
             BitSet candidateCoverage = candidate.getCoverage();
 
             // work out the score, the number of newly covered lines divided by the cost of adding this test
-            double score = (((double) covered.orcardinality(candidateCoverage)) - coveredCardinality) / candidate.getCost();
+            double score = (((double) covered.orcardinality(candidateCoverage)) - coveredCardinality);
 
-            if (score > bestScore) {
-                bestScore = score;
-                bestCandidate = candidate;
-                coveredCardinality = covered.cardinality();
-            }
+            candidates.add(new Selection(score, candidate.getCost(), candidate));
         }
+
+        TestWithCoverage bestCandidate = candidates.peek().candidate;
 
         if (bestCandidate != null) {
             // Remove the best candidate from future evaluation and add it to the coverage achieved
@@ -176,5 +176,37 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
     public GreedyApproximateTestSubsetOptimizer withTargetCost(int targetCost) {
         this.targetCost = targetCost;
         return this;
+    }
+
+    private class Selection implements Comparable {
+        public final double score;
+        public final Long cost;
+        public final TestWithCoverage candidate;
+
+        public Selection(double score, Long cost, TestWithCoverage candidate) {
+
+            this.score = score;
+            this.cost = cost;
+            this.candidate = candidate;
+        }
+
+        @Override
+        public int compareTo(Object o) {
+            Selection other = (Selection) o;
+
+            if (this.score > other.score) {
+                return -1;
+            } else if (this.score < other.score) {
+                return 1;
+            } else {
+                if (this.cost < other.cost) {
+                    return -1;
+                } else if (this.cost > other.cost) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        }
     }
 }

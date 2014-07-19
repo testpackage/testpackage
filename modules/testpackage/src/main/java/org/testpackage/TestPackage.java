@@ -118,7 +118,7 @@ public class TestPackage {
             new File(".testpackage").mkdir();
             testHistoryRepository = new TestHistoryRepository(".testpackage/history.txt");
             testCoverageRepository = new TestCoverageRepository(".testpackage/coverage.dat");
-            configuration.testCoverageRepository = testCoverageRepository;
+            configuration.setTestCoverageRepository(testCoverageRepository);
         } catch (IOException e) {
             throw new TestPackageException("Could not create or open test repository file in .testpackage directory!", e);
         } catch (ClassNotFoundException e) {
@@ -128,14 +128,14 @@ public class TestPackage {
 
         getTestPackage();
 
-        if (configuration.numberOfShards > 1 && !configuration.quiet) {
-            ansiPrintf("@|blue Tests will be sharded; this is shard index: %d, number of shards is: %d|@\n", configuration.shardIndex, configuration.numberOfShards);
+        if (configuration.getNumberOfShards() > 1 && !configuration.isQuiet()) {
+            ansiPrintf("@|blue Tests will be sharded; this is shard index: %d, number of shards is: %d|@\n", configuration.getShardIndex(), configuration.getNumberOfShards());
         }
 
-        TestSequencer testSequencer = new TestSequencer(configuration.shardIndex, configuration.numberOfShards);
-        Request request = testSequencer.sequenceTests(testHistoryRepository.getRunsSinceLastFailures(), configuration.testPackageNames.toArray(new String[configuration.testPackageNames.size()]));
+        TestSequencer testSequencer = new TestSequencer(configuration.getShardIndex(), configuration.getNumberOfShards());
+        Request request = testSequencer.sequenceTests(testHistoryRepository.getRunsSinceLastFailures(), configuration.getTestPackageNames().toArray(new String[configuration.getTestPackageNames().size()]));
 
-        request = new GreedyApproximateTestSubsetOptimizer(configuration).withTargetTestCoverage(0.2).filter(request);
+        request = new GreedyApproximateTestSubsetOptimizer(configuration).filter(request);
 
         FailFastSupportCore core = new FailFastSupportCore();
 
@@ -145,7 +145,7 @@ public class TestPackage {
             throw new TestPackageException("Could not create target directory: " + targetDir.getAbsolutePath());
         }
 
-        ColouredOutputRunListener colouredOutputRunListener = new ColouredOutputRunListener(configuration.failFast, configuration.verbose, configuration.quiet, request.getRunner().testCount());
+        ColouredOutputRunListener colouredOutputRunListener = new ColouredOutputRunListener(configuration.isFailFast(), configuration.isVerbose(), configuration.isQuiet(), request.getRunner().testCount());
         RunListener antXmlRunListener = new AntJunitXmlReportListener(targetDir, colouredOutputRunListener);
 
         core.addListener(antXmlRunListener);
@@ -153,7 +153,7 @@ public class TestPackage {
         core.addListener(testHistoryRunListener);
         core.addListener(new PluginFacadeRunListener(this.pluginManager.getPlugins()));
 
-        if (configuration.failFast) {
+        if (configuration.isFailFast()) {
             core.addListener(new FailFastRunListener(core.getNotifier()));
         }
 
@@ -182,19 +182,19 @@ public class TestPackage {
     }
 
     private void validateSettings() {
-        if (configuration.quiet && configuration.verbose) {
+        if (configuration.isQuiet() && configuration.isVerbose()) {
             throw new TestPackageException("Quiet and Verbose flags cannot be used simultaneously");
         }
 
-        if (configuration.shardIndex < 0 || configuration.shardIndex >= configuration.numberOfShards) {
-            throw new TestPackageException("Shard index should be in the range 0.." + (configuration.numberOfShards - 1));
+        if (configuration.getShardIndex() < 0 || configuration.getShardIndex() >= configuration.getNumberOfShards()) {
+            throw new TestPackageException("Shard index should be in the range 0.." + (configuration.getNumberOfShards() - 1));
         }
     }
 
 
     private void getTestPackage() {
 
-        if (configuration.testPackageNames.size() != 0) {
+        if (configuration.getTestPackageNames().size() != 0) {
             // command-line arguments always preferred
             return;
         }
@@ -207,7 +207,7 @@ public class TestPackage {
                 Manifest manifest = new Manifest(url.openStream());
                 String attributes = manifest.getMainAttributes().getValue("TestPackage-Package");
                 if (attributes != null) {
-                    configuration.testPackageNames.add(attributes);
+                    configuration.getTestPackageNames().add(attributes);
                     return;
                 }
             }
@@ -219,10 +219,10 @@ public class TestPackage {
         // Fall back to system property
         String packageNameSystemProperty = System.getProperty("package");
         if (packageNameSystemProperty != null) {
-            configuration.testPackageNames.add(packageNameSystemProperty);
+            configuration.getTestPackageNames().add(packageNameSystemProperty);
         }
 
-        if (configuration.testPackageNames.size() == 0) {
+        if (configuration.getTestPackageNames().size() == 0) {
             throw new TestPackageException("No package names were set for packages to scan for test classes. " +
                     "Either pass a command line argument, set a system property called 'package', " +
                     "or set an attribute in the built test package JAR's MANIFEST named 'TestPackage-Package'.");

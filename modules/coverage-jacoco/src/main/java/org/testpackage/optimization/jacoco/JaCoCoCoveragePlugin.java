@@ -43,7 +43,7 @@ public class JaCoCoCoveragePlugin implements CoveragePlugin {
 
         // Open a socket to the coverage agent:
         try {
-            agentSocket = new Socket(configuration.jaCoCoAgentHostName, configuration.jaCoCoAgentPort);
+            agentSocket = new Socket(configuration.getJaCoCoAgentHostName(), configuration.getJaCoCoAgentPort());
 
             agentWriter = new RemoteControlWriter(agentSocket.getOutputStream());
             agentReader = new RemoteControlReader(agentSocket.getInputStream());
@@ -54,7 +54,7 @@ public class JaCoCoCoveragePlugin implements CoveragePlugin {
                 } catch (IOException ignored) {
                 }
             }
-            throw new FatalPluginException("Unable to connect JaCoCo agent to " + configuration.jaCoCoAgentHostName + ":" + configuration.jaCoCoAgentPort +
+            throw new FatalPluginException("Unable to connect JaCoCo agent to " + configuration.getJaCoCoAgentHostName() + ":" + configuration.getJaCoCoAgentPort() +
                     ". Is the system under test running, and is the JaCoCo agent configured correctly?", e);
         }
 
@@ -84,13 +84,13 @@ public class JaCoCoCoveragePlugin implements CoveragePlugin {
 
             List<ClassCoverage> filteredCoverages = new ArrayList<ClassCoverage>();
             for (ClassCoverage classCoverage : executionData) {
-                if (classCoverage.getClassIdentifier().startsWith(this.configuration.jaCoCoUserPackagePrefix)) {
+                if (classCoverage.getClassIdentifier().startsWith(this.configuration.getJaCoCoUserPackagePrefix().replace('.', '/'))) {
                     //System.out.println(classCoverage.getClassIdentifier() + " " + classCoverage);
 
                     filteredCoverages.add(classCoverage);
                 }
             }
-            configuration.testCoverageRepository.addCoverage(testIdentifier, executionTime, filteredCoverages.toArray(new ClassCoverage[filteredCoverages.size()]));
+            configuration.getTestCoverageRepository().addCoverage(testIdentifier, executionTime, filteredCoverages.toArray(new ClassCoverage[filteredCoverages.size()]));
 
         } catch (IOException e) {
             throw new PluginException("Problem communicating with Java agent", e);

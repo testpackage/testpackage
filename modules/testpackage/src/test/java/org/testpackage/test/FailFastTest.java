@@ -38,7 +38,7 @@ public class FailFastTest extends StreamCaptureBaseTest {
     public void testOnlyFailingTestRunWithFlag() throws IOException {
 
         TestPackage testPackage = new TestPackage();
-        testPackage.getConfiguration().failFast = true;
+        testPackage.getConfiguration().setFailFast(true);
         int exitCode = testPackage.run();
 
         String capturedStdOut = getCapturedStdOut();

@@ -13,7 +13,7 @@ public class BaseOptimizer {
 
     public BaseOptimizer(Configuration configuration) {
 
-        this.testCoverageRepository = configuration.testCoverageRepository;
+        this.testCoverageRepository = configuration.getTestCoverageRepository();
     }
 
     public void addCoverageSetsForRootDescription(Description description, Set<TestWithCoverage> coverageSets) {

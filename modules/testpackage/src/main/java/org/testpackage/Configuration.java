@@ -1,5 +1,6 @@
 package org.testpackage;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
@@ -12,6 +13,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author richardnorth
@@ -21,42 +24,42 @@ public class Configuration {
     private static final Logger LOGGER = Logger.getLogger(Configuration.class.getSimpleName());
 
     @Option(name = "--failfast", aliases = "-ff", usage = "Fail Fast: Causes test run to be aborted at the first test failure")
-    public boolean failFast = false;
+    private boolean failFast = false;
 
     @Option(name = "--quiet", aliases = "-q", usage = "Quiet mode: suppress all output except for test result and counts of pass/failed/ignored tests")
-    public boolean quiet = false;
+    private boolean quiet = false;
 
     @Option(name = "--verbose", aliases = "-v", usage = "Verbose mode: display all test output, even for passing tests")
-    public boolean verbose = false;
+    private boolean verbose = false;
 
     @Option(name = "--shard", usage = "The index of this test shard (default: 0)")
-    public int shardIndex = 0;
+    private int shardIndex = 0;
 
     @Option(name = "--numShards", usage = "The total number of shards that tests should be distributed across (default: 1)")
-    public int numberOfShards = 1;
+    private int numberOfShards = 1;
 
     @Option(name = "--jacoco-host", usage = "The hostname of a JaCoCo agent running within the system under test (Java only, default: localhost")
-    public String jaCoCoAgentHostName = "localhost";
+    private String jaCoCoAgentHostName = "localhost";
 
     @Option(name = "--jacoco-port", usage = "The port number of a JaCoCo agent running within the system under test (Java only, default: 6300")
-    public int jaCoCoAgentPort = 6300;
+    private int jaCoCoAgentPort = 6300;
 
     @Option(name = "--optimize-coverage", usage = "The target test coverage to optimize towards if coverage data is available (e.g. 80%)")
-    public String optimizeTestCoverage;
+    private String optimizeTestCoverage;
 
     @Option(name = "--optimize-time", usage = "The test execution time to optimize towards if coverage data is available (e.g. 5m, 2m30s)")
-    public String optimizeTestRuntime;
+    private String optimizeTestRuntime;
 
     @Option(name = "--optimize-count", usage = "The number of tests to optimize towards if coverage data is available (e.g. 20)")
-    public int optimizeTestCount;
+    private int optimizeTestCount;
 
     @Option(name = "--jacoco-user-package-prefix", usage = "The root java package name for classes we want to optimize coverage for")
-    public String jaCoCoUserPackagePrefix = "";
+    private String jaCoCoUserPackagePrefix = "";
 
 
     @Argument
-    public List<String> testPackageNames = Lists.newArrayList();
-    public TestCoverageRepository testCoverageRepository;
+    private List<String> testPackageNames = Lists.newArrayList();
+    private TestCoverageRepository testCoverageRepository;
 
     /**
      * <p>
@@ -112,5 +115,97 @@ public class Configuration {
                 }
             }
         }
+    }
+
+    public boolean isFailFast() {
+        return failFast;
+    }
+
+    public boolean isQuiet() {
+        return quiet;
+    }
+
+
+    public boolean isVerbose() {
+        return verbose;
+    }
+
+
+    public int getShardIndex() {
+        return shardIndex;
+    }
+
+
+    public int getNumberOfShards() {
+        return numberOfShards;
+    }
+
+
+    public String getJaCoCoAgentHostName() {
+        return jaCoCoAgentHostName;
+    }
+
+    public int getJaCoCoAgentPort() {
+        return jaCoCoAgentPort;
+    }
+
+    public Double getOptimizeTestCoverage() {
+
+        Double result = null;
+        if (!Strings.isNullOrEmpty(this.optimizeTestCoverage)) {
+            final Pattern regex = Pattern.compile("([0-9\\.]+)%?");
+            final Matcher matcher = regex.matcher(this.optimizeTestCoverage);
+            if (matcher.matches()) {
+                try {
+                    result = Double.parseDouble(matcher.group(1)) / 100;
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+
+        return result;
+    }
+
+    public String getOptimizeTestRuntime() {
+        return optimizeTestRuntime;
+    }
+
+    public int getOptimizeTestCount() {
+        return optimizeTestCount;
+    }
+
+    public String getJaCoCoUserPackagePrefix() {
+        return jaCoCoUserPackagePrefix;
+    }
+
+    public List<String> getTestPackageNames() {
+        return testPackageNames;
+    }
+
+    public TestCoverageRepository getTestCoverageRepository() {
+        return testCoverageRepository;
+    }
+
+    public void setTestCoverageRepository(TestCoverageRepository testCoverageRepository) {
+        this.testCoverageRepository = testCoverageRepository;
+    }
+
+    public void setFailFast(boolean failFast) {
+        this.failFast = failFast;
+    }
+
+    public void setQuiet(boolean quiet) {
+        this.quiet = quiet;
+    }
+
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
+    }
+
+    public void setShardIndex(int shardIndex) {
+        this.shardIndex = shardIndex;
+    }
+
+    public void setNumberOfShards(int numberOfShards) {
+        this.numberOfShards = numberOfShards;
     }
 }

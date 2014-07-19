@@ -32,8 +32,8 @@ public class ShardingTest extends StreamCaptureBaseTest {
 
     private int runShardedTest(int numShards) throws IOException {
         TestPackage testPackage = new TestPackage();
-        testPackage.getConfiguration().shardIndex = 0;
-        testPackage.getConfiguration().numberOfShards = numShards;
+        testPackage.getConfiguration().setShardIndex(0);
+        testPackage.getConfiguration().setNumberOfShards(numShards);
         testPackage.run();
 
         String capturedStdOut = getCapturedStdOut();

@@ -9,6 +9,6 @@ import org.testpackage.pluginsupport.Plugin;
 public class DummyPlugin extends AbstractPlugin implements Plugin {
 
     public boolean getVerbose() {
-        return this.configuration.verbose;
+        return this.configuration.isVerbose();
     }
 }

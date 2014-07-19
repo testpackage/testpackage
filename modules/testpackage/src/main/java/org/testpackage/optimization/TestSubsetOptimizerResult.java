@@ -44,6 +44,9 @@ public class TestSubsetOptimizerResult {
     }
 
     public String describe() {
-        return String.format("%d tests with %dms expected execution time", this.selectedTestNames.size(), this.cost);
+        return String.format("%d tests with %2.1f%% coverage and %dms expected execution time",
+                this.selectedTestNames.size(),
+                ((double) this.covered.cardinality() / this.covered.size()) * 100,
+                this.cost);
     }
 }
