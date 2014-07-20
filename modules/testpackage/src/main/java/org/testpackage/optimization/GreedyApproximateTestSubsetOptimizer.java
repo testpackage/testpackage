@@ -196,20 +196,17 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
 
         @Override
         public int compareTo(Object o) {
-            Selection other = (Selection) o;
+            Selection that = (Selection) o;
 
-            if (this.score > other.score) {
+            double thisValue = this.score / this.cost;
+            double thatValue = that.score / that.cost;
+
+            if (thisValue > thatValue) {
                 return -1;
-            } else if (this.score < other.score) {
+            } else if (thatValue < thisValue) {
                 return 1;
             } else {
-                if (this.cost < other.cost) {
-                    return -1;
-                } else if (this.cost > other.cost) {
-                    return 1;
-                } else {
-                    return 0;
-                }
+                return 0;
             }
         }
     }
