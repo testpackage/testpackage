@@ -105,7 +105,7 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
             throw new IllegalStateException("A target test count or coverage must be set");
         }
 
-        return new TestSubsetOptimizerResult(selections, covered);
+        return new TestSubsetOptimizerResult(selections, covered, this.testCoverageRepository.getNumProbePoints());
     }
 
     private void solveForTargetCost(List<TestWithCoverage> remainingCandidates, List<TestWithCoverage> selections, BitSet covered) {
@@ -127,7 +127,7 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
         while (coverage < targetCoverage && !remainingCandidates.isEmpty()) {
 
             search(remainingCandidates, selections, covered);
-            coverage = ((double) covered.cardinality()) / covered.size();
+            coverage = ((double) covered.cardinality()) / testCoverageRepository.getNumProbePoints();
         }
     }
 

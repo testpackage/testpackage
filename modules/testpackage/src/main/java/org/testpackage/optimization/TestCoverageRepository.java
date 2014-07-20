@@ -1,10 +1,13 @@
 package org.testpackage.optimization;
 
 import com.google.common.collect.Maps;
+import com.googlecode.javaewah.IntIterator;
 import com.googlecode.javaewah.datastructure.BitSet;
 
 import java.io.*;
 import java.util.Map;
+
+import static java.lang.Math.max;
 
 /**
  * @author richardnorth
@@ -19,6 +22,7 @@ public class TestCoverageRepository {
     private Map<String, BitSet> testCoverages = Maps.newHashMap();
     private Map<String, Long> testExecutionTimes = Maps.newHashMap();
     private boolean empty = true;
+    private long numProbePoints;
 
     public TestCoverageRepository(String absolutePath) throws ClassNotFoundException, IOException {
 
@@ -40,6 +44,8 @@ public class TestCoverageRepository {
 
                     Long executionTime = objectInputStream.readLong();
                     this.testExecutionTimes.put(testIdentifier, executionTime);
+
+                    updateMaxProbePointCount(coverageData);
                 }
 
             } finally {
@@ -47,13 +53,13 @@ public class TestCoverageRepository {
             }
         }
 
-//        System.out.println("Loaded coverage data");
+        System.out.println("Loaded coverage data");
         for (Map.Entry<String, BitSet> entry : testCoverages.entrySet()) {
-//            System.out.printf("%s [", entry.getKey());
+            System.out.printf("%s [", entry.getKey());
             for (int i = 0; i < entry.getValue().size(); i++) {
-//                System.out.print(entry.getValue().get(i) ? "X" : " ");
+                System.out.print(entry.getValue().get(i) ? "X" : " ");
             }
-//            System.out.println("]");
+            System.out.println("]");
 
             if (entry.getValue().cardinality() > 0) {
                 this.empty = false;
@@ -84,6 +90,16 @@ public class TestCoverageRepository {
             }
             testCoverages.put(testIdentifier, bitSet);
             testExecutionTimes.put(testIdentifier, executionTime);
+
+            // Update our measure of how many probe points there are (i.e. how many points would be 100% coverage)
+            updateMaxProbePointCount(bitSet);
+        }
+    }
+
+    private void updateMaxProbePointCount(BitSet bitSet) {
+        final IntIterator iterator = bitSet.intIterator();
+        while(iterator.hasNext()) {
+            this.numProbePoints = max(this.numProbePoints, iterator.next());
         }
     }
 
@@ -122,6 +138,10 @@ public class TestCoverageRepository {
 
     public boolean isEmpty() {
         return this.empty;
+    }
+
+    public long getNumProbePoints() {
+        return numProbePoints;
     }
 
     private static class ClassProperties implements Serializable {

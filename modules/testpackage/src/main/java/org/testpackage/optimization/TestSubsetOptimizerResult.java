@@ -12,13 +12,15 @@ import java.util.Set;
 public class TestSubsetOptimizerResult {
     private final List<TestWithCoverage> selections;
     private final BitSet covered;
+    private final long numProbePoints;
     private final Set<String> selectedTestNames;
     private Long cost = 0L;
 
-    public TestSubsetOptimizerResult(List<TestWithCoverage> selections, BitSet covered) {
+    public TestSubsetOptimizerResult(List<TestWithCoverage> selections, BitSet covered, long numProbePoints) {
 
         this.selections = selections;
         this.covered = covered;
+        this.numProbePoints = numProbePoints;
         this.selectedTestNames = Sets.newHashSet();
 
         for (TestWithCoverage testWithCoverage : selections) {
@@ -46,7 +48,7 @@ public class TestSubsetOptimizerResult {
     public String describe() {
         return String.format("%d tests with %2.1f%% coverage and %dms expected execution time",
                 this.selectedTestNames.size(),
-                ((double) this.covered.cardinality() / this.covered.size()) * 100,
+                ((double) this.covered.cardinality() / numProbePoints) * 100,
                 this.cost);
     }
 }
