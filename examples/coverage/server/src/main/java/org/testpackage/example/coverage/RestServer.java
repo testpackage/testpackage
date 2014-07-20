@@ -27,7 +27,7 @@ public class RestServer {
         @GET
         @Produces("text/html")
         public String getMessage() {
-            sleep(300);
+            sleep(3000);
             return "A";
         }
     }
@@ -37,7 +37,7 @@ public class RestServer {
         @GET
         @Produces("text/html")
         public String getMessage() {
-            sleep(100);
+            sleep(3000);
             service.doSomethingElse();
             return "B" + service.doSomething();
         }
@@ -49,7 +49,7 @@ public class RestServer {
         @Produces("text/html")
         public String getMessage() {
 
-            sleep(300);
+            sleep(3000);
             return service.doSomething();
         }
     }

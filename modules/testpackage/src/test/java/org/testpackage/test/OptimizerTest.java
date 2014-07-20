@@ -1,12 +1,12 @@
 package org.testpackage.test;
 
+import com.googlecode.javaewah.datastructure.BitSet;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.testpackage.optimization.GreedyApproximateTestSubsetOptimizer;
 import org.testpackage.optimization.TestSubsetOptimizerResult;
 import org.testpackage.optimization.TestWithCoverage;
 
-import com.googlecode.javaewah.datastructure.BitSet;
 import java.util.Random;
 import java.util.Set;
 
@@ -19,7 +19,7 @@ import static java.lang.Math.abs;
 public class OptimizerTest {
 
     private static final int TEST_COUNT = 100;
-    private static final int COVERED_LINES = 1000000;
+    private static final long COVERED_LINES = 1000000;
     private static final Set<TestWithCoverage> COVERAGE_SETS = newHashSet();
     private static long startTime;
 
@@ -30,7 +30,7 @@ public class OptimizerTest {
 
         for (int test = 0; test < TEST_COUNT; test++) {
 
-            final BitSet bitSet = new BitSet(COVERED_LINES);
+            final BitSet bitSet = new BitSet((int) COVERED_LINES);
 
             final Random random = new Random(test);
 
@@ -50,7 +50,7 @@ public class OptimizerTest {
             // Simulate some costs clustered around a centre that assumes each covered line costs 1, with noise
             int cost = (int) abs((bitSet.cardinality() + COVERED_LINES / 2 * random.nextGaussian()));
 
-            COVERAGE_SETS.add(new TestWithCoverage("test" + test, bitSet, (long) cost));
+            COVERAGE_SETS.add(new TestWithCoverage("test" + test, bitSet, COVERED_LINES, (long) cost));
         }
 
         stopTime("Setup");

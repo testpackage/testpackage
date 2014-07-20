@@ -34,6 +34,7 @@ public class TestCoverageRepository {
                 this.classProperties = (Map<String, ClassProperties>) objectInputStream.readObject();
                 this.size = objectInputStream.readInt();
                 int coverageCount = objectInputStream.readInt();
+                this.numProbePoints = objectInputStream.readLong();
 
                 for (int i = 0; i < coverageCount; i++) {
                     String testIdentifier = (String) objectInputStream.readObject();
@@ -103,7 +104,7 @@ public class TestCoverageRepository {
         }
     }
 
-    public ClassCoverage getCoverage(String testIdentifier) {
+    public TestWithCoverage getCoverage(String testIdentifier) {
 
         // Create a new bitset of the full size so that all outputs are of the same size no matter
         //  which order tests were added in
@@ -114,7 +115,7 @@ public class TestCoverageRepository {
             result.or(probePoints);
         }
 
-        return new ClassCoverage("", result, size, testExecutionTimes.get(testIdentifier));
+        return new TestWithCoverage(testIdentifier, result, numProbePoints, testExecutionTimes.get(testIdentifier));
     }
 
     public void save() throws IOException {
@@ -124,6 +125,7 @@ public class TestCoverageRepository {
             objectOutputStream.writeObject(this.classProperties);
             objectOutputStream.writeInt(this.size);
             objectOutputStream.writeInt(this.testCoverages.size());
+            objectOutputStream.writeLong(this.numProbePoints);
 
             for (Map.Entry<String, BitSet> entry : this.testCoverages.entrySet()) {
                 objectOutputStream.writeObject(entry.getKey());

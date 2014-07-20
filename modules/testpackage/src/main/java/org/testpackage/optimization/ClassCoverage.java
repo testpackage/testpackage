@@ -31,26 +31,12 @@ public class ClassCoverage {
         return probePointCount;
     }
 
-    public static String coverageAsString(ClassCoverage coverage) {
-        final BitSet bitset = coverage.getProbePoints();
-        StringBuffer stringBuffer = new StringBuffer();
-        for (int i = 0; i < coverage.getProbePointCount(); i++) {
-            stringBuffer.append(bitset.get(i) ? "X" : " ");
-        }
-        return stringBuffer.toString();
-    }
-
     public static BitSet coverageFromString(String stringRepresentation) {
         final BitSet bitset = new BitSet(stringRepresentation.length());
         for (int i = 0; i < stringRepresentation.length(); i++) {
             bitset.set(i, stringRepresentation.charAt(i) != ' ');
         }
         return bitset;
-    }
-
-    @Override
-    public String toString() {
-        return "[" + coverageAsString(this) + "]";
     }
 
     @Override

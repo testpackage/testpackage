@@ -4,13 +4,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.testpackage.optimization.ClassCoverage;
 import org.testpackage.optimization.TestCoverageRepository;
+import org.testpackage.optimization.TestWithCoverage;
 
 import java.io.File;
 import java.io.IOException;
 
 import static org.testpackage.VisibleAssertions.assertEquals;
-import static org.testpackage.optimization.ClassCoverage.coverageAsString;
 import static org.testpackage.optimization.ClassCoverage.coverageFromString;
+import static org.testpackage.optimization.TestWithCoverage.coverageAsString;
 
 /**
  * @author richardnorth
@@ -46,13 +47,13 @@ public class TestCoverageRepositoryTest {
                 new ClassCoverage("class4", coverageFromString("XXX"), 3, 1L)
                 );
 
-        final ClassCoverage testCoverageA = repository.getCoverage("testA");
+        final TestWithCoverage testCoverageA = repository.getCoverage("testA");
         assertEquals("expected coverage", " XX X       ", coverageAsString(testCoverageA));
 
-        final ClassCoverage testCoverageB = repository.getCoverage("testB");
+        final TestWithCoverage testCoverageB = repository.getCoverage("testB");
         assertEquals("expected coverage", " XX   XXX   ", coverageAsString(testCoverageB));
 
-        final ClassCoverage testCoverageC = repository.getCoverage("testC");
+        final TestWithCoverage testCoverageC = repository.getCoverage("testC");
         assertEquals("expected coverage", "         XXX", coverageAsString(testCoverageC));
 
         repository.save();

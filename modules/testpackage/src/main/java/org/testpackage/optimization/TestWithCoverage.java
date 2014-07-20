@@ -11,11 +11,22 @@ public class TestWithCoverage {
     private BitSet coverage;
     private Long cost;
     private double individualCoverage;
+    private Long numProbePoints;
 
-    public TestWithCoverage(String id, BitSet coverage, Long cost) {
+    public TestWithCoverage(String id, BitSet coverage, Long numProbePoints, Long cost) {
         this.id = id;
         this.coverage = coverage;
         this.cost = cost;
+        this.numProbePoints = numProbePoints;
+    }
+
+    public static String coverageAsString(TestWithCoverage coverage) {
+        final BitSet bitset = coverage.getCoverage();
+        StringBuffer stringBuffer = new StringBuffer();
+        for (int i = 0; i < coverage.getNumProbePoints(); i++) {
+            stringBuffer.append(bitset.get(i) ? "X" : " ");
+        }
+        return stringBuffer.toString();
     }
 
     public String getId() {
@@ -79,5 +90,13 @@ public class TestWithCoverage {
         sb.append(']');
 
         return sb.toString();
+    }
+
+    public Long getNumProbePoints() {
+        return numProbePoints;
+    }
+
+    public void setNumProbePoints(Long numProbePoints) {
+        this.numProbePoints = numProbePoints;
     }
 }

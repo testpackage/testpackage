@@ -18,8 +18,8 @@ public class BaseOptimizer {
 
     public void addCoverageSetsForRootDescription(Description description, Set<TestWithCoverage> coverageSets) {
         if (description.isTest()) {
-            final ClassCoverage coverage = testCoverageRepository.getCoverage(description.getDisplayName());
-            coverageSets.add(new TestWithCoverage(description.getDisplayName(), coverage.getProbePoints(), coverage.getExecutionTime()));
+            final TestWithCoverage coverage = testCoverageRepository.getCoverage(description.getDisplayName());
+            coverageSets.add(coverage);
         } else {
             for (Description childDescription : description.getChildren()) {
                 addCoverageSetsForRootDescription(childDescription, coverageSets);

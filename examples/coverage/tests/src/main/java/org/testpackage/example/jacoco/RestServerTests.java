@@ -30,6 +30,6 @@ public class RestServerTests {
     private void hitUrl(String url) throws IOException {
         final InputStream connection = new URL("http://localhost:5555" + url).openStream();
         final String content = new String(ByteStreams.toByteArray(connection));
-        System.out.println(content);
+        //System.out.println(content);
     }
 }
