@@ -165,8 +165,33 @@ public class Configuration {
         return result;
     }
 
-    public String getOptimizeTestRuntime() {
-        return optimizeTestRuntime;
+    public Integer getOptimizeTestRuntimeMillis() {
+        Double result = null;
+        if (!Strings.isNullOrEmpty(this.optimizeTestRuntime)) {
+            double amount = 0.0;
+            final Pattern regex = Pattern.compile("([0-9\\.]+)(h|m|min(s?)|s|ms)");
+            final Matcher matcher = regex.matcher(this.optimizeTestRuntime);
+            if (matcher.matches()) {
+                try {
+                    amount = Double.parseDouble(matcher.group(1));
+                    final String unitString = matcher.group(2);
+                    if ("h".equals(unitString)) {
+                        result = amount * 60 * 60 * 1000;
+                    } else if (!"ms".equals(unitString) && unitString != null && unitString.startsWith("m")) {
+                        result = amount * 60 * 1000;
+                    } else if ("s".equals(unitString)) {
+                        result = amount * 1000;
+                    } else {
+                        result = amount;
+                    }
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+        if (result != null) {
+            return result.intValue();
+        }
+
+        return null;
     }
 
     public int getOptimizeTestCount() {

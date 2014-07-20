@@ -26,6 +26,8 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
 
         if (configuration.getOptimizeTestCoverage() != null) {
             this.targetCoverage = configuration.getOptimizeTestCoverage();
+        } else if (configuration.getOptimizeTestRuntimeMillis() != null) {
+            this.targetCost = configuration.getOptimizeTestRuntimeMillis();
         }
     }
 
@@ -83,7 +85,7 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
         } else if (targetCoverage != null) {
             return String.format("quickest execution time for at least %2.1f%% test coverage", targetCoverage * 100);
         } else if (targetCost != null) {
-            return String.format("best test coverage for maximum execution time of %ds", targetCost);
+            return String.format("best test coverage for maximum execution time of %2.1fs", ((double)targetCost / 1000));
         } else {
             throw new IllegalStateException("A target test count or coverage must be set");
         }
@@ -111,12 +113,14 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
     private void solveForTargetCost(List<TestWithCoverage> remainingCandidates, List<TestWithCoverage> selections, BitSet covered) {
         int costSoFar = 0;
         while (!remainingCandidates.isEmpty()) {
+            BitSet coveredBefore = covered.clone();
             search(remainingCandidates, selections, covered);
 
             costSoFar += selections.get(selections.size() - 1).getCost();
             if (costSoFar > targetCost) {
+                costSoFar -= selections.get(selections.size() - 1).getCost();
                 selections.remove(selections.size() - 1);
-                break;
+                covered.and(coveredBefore);
             }
         }
 
