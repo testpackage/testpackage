@@ -1,5 +1,6 @@
 package org.testpackage.pluginsupport;
 
+import org.junit.runner.Request;
 import org.testpackage.Configuration;
 
 /**
@@ -10,7 +11,7 @@ public class AbstractPlugin implements Plugin {
     protected Configuration configuration;
 
     @Override
-    public void configure(Configuration configuration) {
+    public void configure(Configuration configuration) throws PluginException {
         this.configuration = configuration;
     }
 
@@ -20,12 +21,17 @@ public class AbstractPlugin implements Plugin {
     }
 
     @Override
-    public void beforeTest(String testIdentifier) {
+    public void beforeTest(String testIdentifier) throws PluginException {
 
     }
 
     @Override
-    public void afterTest(String testIdentifier) {
+    public void afterTest(String testIdentifier) throws PluginException {
 
+    }
+
+    @Override
+    public Request filterTestRequest(Request request) {
+        return request;
     }
 }

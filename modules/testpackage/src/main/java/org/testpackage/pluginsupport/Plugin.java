@@ -1,5 +1,6 @@
 package org.testpackage.pluginsupport;
 
+import org.junit.runner.Request;
 import org.testpackage.Configuration;
 
 /**
@@ -13,4 +14,6 @@ public interface Plugin {
     void beforeTest(String testIdentifier) throws PluginException;
 
     void afterTest(String testIdentifier) throws PluginException;
+
+    Request filterTestRequest(Request request);
 }

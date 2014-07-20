@@ -26,8 +26,8 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.ExampleMode;
 import org.testpackage.failfast.FailFastRunListener;
 import org.testpackage.junitcore.FailFastSupportCore;
-import org.testpackage.optimization.GreedyApproximateTestSubsetOptimizer;
 import org.testpackage.optimization.TestCoverageRepository;
+import org.testpackage.pluginsupport.Plugin;
 import org.testpackage.pluginsupport.PluginException;
 import org.testpackage.pluginsupport.PluginFacadeRunListener;
 import org.testpackage.pluginsupport.PluginManager;
@@ -130,7 +130,9 @@ public class TestPackage {
         TestSequencer testSequencer = new TestSequencer(configuration.getShardIndex(), configuration.getNumberOfShards());
         Request request = testSequencer.sequenceTests(testHistoryRepository.getRunsSinceLastFailures(), configuration.getTestPackageNames().toArray(new String[configuration.getTestPackageNames().size()]));
 
-        request = new GreedyApproximateTestSubsetOptimizer(configuration).filter(request);
+        for (Plugin plugin : this.pluginManager.getPlugins()) {
+            request = plugin.filterTestRequest(request);
+        }
 
         FailFastSupportCore core = new FailFastSupportCore();
 

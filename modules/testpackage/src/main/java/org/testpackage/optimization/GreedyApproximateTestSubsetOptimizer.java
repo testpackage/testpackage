@@ -5,8 +5,12 @@ import org.junit.runner.Description;
 import org.junit.runner.Request;
 import org.junit.runner.manipulation.Filter;
 import org.testpackage.Configuration;
+import org.testpackage.pluginsupport.PluginException;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Set;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.Math.max;
@@ -22,8 +26,9 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
     private Integer targetCost;
     private boolean disabled = false;
 
-    public GreedyApproximateTestSubsetOptimizer(Configuration configuration) {
-        super(configuration);
+    @Override
+    public void configure(Configuration configuration) throws PluginException {
+        super.configure(configuration);
 
         if (configuration.getOptimizeTestCoverage() != null) {
             this.targetCoverage = configuration.getOptimizeTestCoverage();
@@ -35,7 +40,7 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
     }
 
     @Override
-    public Request filter(Request request) {
+    public Request filterTestRequest(Request request) {
 
         if (disabled) {
             return request;

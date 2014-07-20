@@ -2,17 +2,20 @@ package org.testpackage.optimization;
 
 import org.junit.runner.Description;
 import org.testpackage.Configuration;
+import org.testpackage.pluginsupport.AbstractPlugin;
+import org.testpackage.pluginsupport.PluginException;
 
 import java.util.Set;
 
 /**
  * @author richardnorth
  */
-public class BaseOptimizer {
-    protected final TestCoverageRepository testCoverageRepository;
+public class BaseOptimizer extends AbstractPlugin {
+    protected TestCoverageRepository testCoverageRepository;
 
-    public BaseOptimizer(Configuration configuration) {
-
+    @Override
+    public void configure(Configuration configuration) throws PluginException {
+        super.configure(configuration);
         this.testCoverageRepository = configuration.getTestCoverageRepository();
     }
 

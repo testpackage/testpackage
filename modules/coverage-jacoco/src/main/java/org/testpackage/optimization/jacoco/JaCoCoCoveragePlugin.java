@@ -12,6 +12,7 @@ import org.jacoco.core.runtime.RemoteControlWriter;
 import org.testpackage.Configuration;
 import org.testpackage.optimization.ClassCoverage;
 import org.testpackage.optimization.CoveragePlugin;
+import org.testpackage.pluginsupport.AbstractPlugin;
 import org.testpackage.pluginsupport.FatalPluginException;
 import org.testpackage.pluginsupport.PluginException;
 
@@ -27,7 +28,7 @@ import static org.testpackage.AnsiSupport.ansiPrintf;
 /**
  * @author richardnorth
  */
-public class JaCoCoCoveragePlugin implements CoveragePlugin {
+public class JaCoCoCoveragePlugin extends AbstractPlugin implements CoveragePlugin {
 
     Map<String, Long> testStartTimes = Maps.newHashMap();
 
