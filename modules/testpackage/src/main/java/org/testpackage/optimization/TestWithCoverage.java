@@ -62,4 +62,22 @@ public class TestWithCoverage {
         sb.append("%}");
         return sb.toString();
     }
+
+    public String coverageAsString(int stringLength, long numProbePoints) {
+        StringBuffer sb = new StringBuffer("[");
+        final int chunkSize = (int) (numProbePoints / (stringLength - 2));
+        for (int i=0; i < stringLength-2; i++) {
+            int chunkStart = i * chunkSize;
+            int chunkEnd = (i+1) * chunkSize;
+
+            if (coverage.nextSetBit(chunkStart) < chunkEnd) {
+                sb.append('#');
+            } else {
+                sb.append(' ');
+            }
+        }
+        sb.append(']');
+
+        return sb.toString();
+    }
 }

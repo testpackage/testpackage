@@ -10,8 +10,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.jar.Manifest;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,7 +56,7 @@ public class Configuration {
     @Option(name = "--optimize-count", usage = "The number of tests to optimize towards if coverage data is available (e.g. 20)")
     private int optimizeTestCount;
 
-    @Option(name = "--jacoco-user-package-prefix", usage = "The root java package name for classes we want to optimize coverage for")
+    @Option(name = "--jacoco-user-package-prefix", usage = "The root java package name for classes we want to optimize coverage for. If none is specified, TestPackage will attempt to guess")
     private String jaCoCoUserPackagePrefix = "";
 
 
@@ -158,7 +161,8 @@ public class Configuration {
             if (matcher.matches()) {
                 try {
                     result = Double.parseDouble(matcher.group(1)) / 100;
-                } catch (NumberFormatException ignored) {}
+                } catch (NumberFormatException ignored) {
+                }
             }
         }
 
@@ -184,7 +188,8 @@ public class Configuration {
                     } else {
                         result = amount;
                     }
-                } catch (NumberFormatException ignored) {}
+                } catch (NumberFormatException ignored) {
+                }
             }
         }
         if (result != null) {
@@ -199,10 +204,56 @@ public class Configuration {
     }
 
     public String getJaCoCoUserPackagePrefix() {
+
+        if ("".equals(jaCoCoUserPackagePrefix)) {
+            // try to guess what package name to use based on the test class package prefix
+            final String firstTestPackageName = this.getTestPackageNames().get(0);
+            final int beginningChunkLength = firstTestPackageName.indexOf('.', 6);
+            jaCoCoUserPackagePrefix = firstTestPackageName.substring(0, beginningChunkLength);
+
+            AnsiSupport.ansiPrintf("@|yellow No user package prefix was specified for recording test coverage. " +
+                    "Guessing that coverage for classes under '|@@|bold,yellow %s|@@|yellow ' should be recorded - if this is " +
+                    "incorrect please run again using the --jacoco-user-package-prefix setting.|@\n", jaCoCoUserPackagePrefix);
+        }
+
         return jaCoCoUserPackagePrefix;
     }
 
     public List<String> getTestPackageNames() {
+        if (testPackageNames.size() != 0) {
+            // command-line arguments always preferred
+            return testPackageNames;
+        }
+
+        // Check the JAR manifest
+        try {
+            Enumeration<URL> resources = TestPackage.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
+            while (resources.hasMoreElements()) {
+                URL url = resources.nextElement();
+                Manifest manifest = new Manifest(url.openStream());
+                String attributes = manifest.getMainAttributes().getValue("TestPackage-Package");
+                if (attributes != null) {
+                    testPackageNames.add(attributes);
+                    return testPackageNames;
+                }
+            }
+
+        } catch (IOException e) {
+            throw new TestPackageException("Error loading MANIFEST.MF", e);
+        }
+
+        // Fall back to system property
+        String packageNameSystemProperty = System.getProperty("package");
+        if (packageNameSystemProperty != null) {
+            testPackageNames.add(packageNameSystemProperty);
+        }
+
+        if (testPackageNames.size() == 0) {
+            throw new TestPackageException("No package names were set for packages to scan for test classes. " +
+                    "Either pass a command line argument, set a system property called 'package', " +
+                    "or set an attribute in the built test package JAR's MANIFEST named 'TestPackage-Package'.");
+        }
+
         return testPackageNames;
     }
 

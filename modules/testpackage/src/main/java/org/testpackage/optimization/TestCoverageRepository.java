@@ -53,13 +53,13 @@ public class TestCoverageRepository {
             }
         }
 
-        System.out.println("Loaded coverage data");
+        //System.out.println("Loaded coverage data");
         for (Map.Entry<String, BitSet> entry : testCoverages.entrySet()) {
-            System.out.printf("%s [", entry.getKey());
+//            System.out.printf("%s [", entry.getKey());
             for (int i = 0; i < entry.getValue().size(); i++) {
-                System.out.print(entry.getValue().get(i) ? "X" : " ");
+//                System.out.print(entry.getValue().get(i) ? "X" : " ");
             }
-            System.out.println("]");
+//            System.out.println("]");
 
             if (entry.getValue().cardinality() > 0) {
                 this.empty = false;

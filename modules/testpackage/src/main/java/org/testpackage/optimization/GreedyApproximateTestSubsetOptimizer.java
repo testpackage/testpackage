@@ -20,6 +20,7 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
     private Integer targetTestCount;
     private Double targetCoverage;
     private Integer targetCost;
+    private boolean disabled = false;
 
     public GreedyApproximateTestSubsetOptimizer(Configuration configuration) {
         super(configuration);
@@ -28,11 +29,17 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
             this.targetCoverage = configuration.getOptimizeTestCoverage();
         } else if (configuration.getOptimizeTestRuntimeMillis() != null) {
             this.targetCost = configuration.getOptimizeTestRuntimeMillis();
+        } else {
+            this.disabled = true;
         }
     }
 
     @Override
     public Request filter(Request request) {
+
+        if (disabled) {
+            return request;
+        }
 
         ansiPrintf("@|blue Attempting to select a subset of tests that achieve %s|@\n", describeOptimizationGoal());
 
@@ -64,7 +71,15 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
 
         final TestSubsetOptimizerResult optimizerResult = this.solve(coverageSets, maxSize);
 
-        ansiPrintf("@|blue Optimizer complete - plan is %s|@\n", optimizerResult.describe());
+        ansiPrintf("@|blue Optimizer complete - plan is %s:|@\n", optimizerResult.describe());
+        for (TestWithCoverage selection : optimizerResult.getSelections()) {
+            ansiPrintf("  %30s %2.1f%% %s (%dms)\n",
+                            selection.getId(),
+                            ((double)selection.getCoverage().cardinality() / testCoverageRepository.getNumProbePoints()) * 100,
+                            selection.coverageAsString(20, testCoverageRepository.getNumProbePoints()),
+                            selection.getCost());
+        }
+        ansiPrintf("\n\n");
 
         return request.filterWith(new Filter() {
             @Override

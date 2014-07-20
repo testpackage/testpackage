@@ -22,6 +22,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static org.testpackage.AnsiSupport.ansiPrintf;
+
 /**
  * @author richardnorth
  */
@@ -58,6 +60,10 @@ public class JaCoCoCoveragePlugin implements CoveragePlugin {
                     ". Is the system under test running, and is the JaCoCo agent configured correctly?", e);
         }
 
+        ansiPrintf("@|blue Connected to JaCoCo agent at %s:%s. Test coverage will be recorded for classes under package '%s'|@\n",
+                configuration.getJaCoCoAgentHostName(),
+                configuration.getJaCoCoAgentPort(),
+                configuration.getJaCoCoUserPackagePrefix());
         active = true;
     }
 

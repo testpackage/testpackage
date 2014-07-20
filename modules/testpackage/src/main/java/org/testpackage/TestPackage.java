@@ -36,9 +36,6 @@ import org.testpackage.sequencing.TestHistoryRunListener;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.jar.Manifest;
 import java.util.logging.Logger;
 
 import static org.testpackage.AnsiSupport.ansiPrintf;
@@ -76,6 +73,9 @@ public class TestPackage {
 
     private int doMain(String[] args) throws IOException {
 
+        ansiPrintf("TestPackage standalone test runner initializing\n");
+        ansiPrintf("  http://testpackage.org - Version %s\n", "0.2");
+
         CmdLineParser cmdLineParser = new CmdLineParser(configuration);
         try {
             cmdLineParser.parseArgument(args);
@@ -107,9 +107,6 @@ public class TestPackage {
 
     public int run() throws IOException {
 
-        ansiPrintf("TestPackage standalone test runner initializing\n");
-        ansiPrintf("  http://testpackage.org - Version %s\n", "0.1");
-
         validateSettings();
 
         TestHistoryRepository testHistoryRepository;
@@ -125,8 +122,6 @@ public class TestPackage {
             throw new TestPackageException("Could not open existing coverage data", e);
         }
         TestHistoryRunListener testHistoryRunListener = new TestHistoryRunListener(testHistoryRepository);
-
-        getTestPackage();
 
         if (configuration.getNumberOfShards() > 1 && !configuration.isQuiet()) {
             ansiPrintf("@|blue Tests will be sharded; this is shard index: %d, number of shards is: %d|@\n", configuration.getShardIndex(), configuration.getNumberOfShards());
@@ -191,43 +186,6 @@ public class TestPackage {
         }
     }
 
-
-    private void getTestPackage() {
-
-        if (configuration.getTestPackageNames().size() != 0) {
-            // command-line arguments always preferred
-            return;
-        }
-
-        // Check the JAR manifest
-        try {
-            Enumeration<URL> resources = TestPackage.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
-            while (resources.hasMoreElements()) {
-                URL url = resources.nextElement();
-                Manifest manifest = new Manifest(url.openStream());
-                String attributes = manifest.getMainAttributes().getValue("TestPackage-Package");
-                if (attributes != null) {
-                    configuration.getTestPackageNames().add(attributes);
-                    return;
-                }
-            }
-
-        } catch (IOException e) {
-            throw new TestPackageException("Error loading MANIFEST.MF", e);
-        }
-
-        // Fall back to system property
-        String packageNameSystemProperty = System.getProperty("package");
-        if (packageNameSystemProperty != null) {
-            configuration.getTestPackageNames().add(packageNameSystemProperty);
-        }
-
-        if (configuration.getTestPackageNames().size() == 0) {
-            throw new TestPackageException("No package names were set for packages to scan for test classes. " +
-                    "Either pass a command line argument, set a system property called 'package', " +
-                    "or set an attribute in the built test package JAR's MANIFEST named 'TestPackage-Package'.");
-        }
-    }
 
     public Configuration getConfiguration() {
         return configuration;
