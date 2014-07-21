@@ -29,6 +29,7 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.testpackage.pluginsupport.Plugin;
 import org.testpackage.streams.StreamCapture;
+import org.testpackage.util.Throwables2;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -55,6 +56,7 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
     private final boolean quiet;
     private final int testTotalCount;
     private final Collection<? extends Plugin> plugins;
+    private final Configuration configuration;
     private final int terminalWidth;
 
     private StreamCapture streamCapture;
@@ -69,12 +71,13 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
     private Map<Class, String> stdOutStreamStore = Maps.newHashMap();
     private Map<Class, String> stdErrStreamStore = Maps.newHashMap();
 
-    public ColouredOutputRunListener(boolean failFast, boolean verbose, boolean quiet, int testTotalCount, Collection<? extends Plugin> plugins) {
+    public ColouredOutputRunListener(boolean failFast, boolean verbose, boolean quiet, int testTotalCount, Collection<? extends Plugin> plugins, Configuration configuration) {
         this.failFast = failFast;
         this.verbose = verbose;
         this.quiet = quiet;
         this.testTotalCount = testTotalCount;
         this.plugins = plugins;
+        this.configuration = configuration;
 
         this.terminalWidth = TerminalFactory.get().getWidth();
     }
@@ -215,13 +218,20 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
         Throwable exception = failure.getException();
         Throwable rootCause = Throwables.getRootCause(exception);
 
+        final StackTraceElement lastResponsibleCause = Throwables2.getLastResponsibleCause(exception, configuration.getTestPackageNames());
+
         if (exception.equals(rootCause)) {
-            System.out.printf("        At %s\n\n", rootCause.getStackTrace()[0]);
+            System.out.printf("             At %s\n", rootCause.getStackTrace()[0]);
         } else {
-            System.out.printf("        At %s\n", exception.getStackTrace()[0]);
-            ansiPrintf("      Root cause: @|yellow %s: %s|@\n", rootCause.getClass().getSimpleName(), indentNewlines(rootCause.getMessage()));
-            System.out.printf("        At %s\n\n", rootCause.getStackTrace()[0]);
+            System.out.printf("             At %s\n", exception.getStackTrace()[0]);
+                   ansiPrintf("               Root cause: @|yellow %s: %s|@\n", rootCause.getClass().getSimpleName(), indentNewlines(rootCause.getMessage()));
+            System.out.printf("             At %s\n", rootCause.getStackTrace()[0]);
         }
+
+        if (lastResponsibleCause != null) {
+            System.out.printf("        Suspect %s\n\n", lastResponsibleCause);
+        }
+
         System.out.flush();
     }
 

@@ -5,6 +5,7 @@ import org.junit.runner.Description;
 import org.junit.runner.Request;
 import org.junit.runner.manipulation.Filter;
 import org.testpackage.Configuration;
+import org.testpackage.output.SimpleLogger;
 import org.testpackage.output.StringRepresentations;
 import org.testpackage.pluginsupport.PluginException;
 
@@ -21,6 +22,8 @@ import static org.testpackage.AnsiSupport.ansiPrintf;
  * @author richardnorth
  */
 public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implements Optimizer {
+
+    private static final SimpleLogger LOG = SimpleLogger.getLogger(GreedyApproximateTestSubsetOptimizer.class);
 
     private Integer targetTestCount;
     private Double targetCoverage;
@@ -47,11 +50,11 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
             return request;
         }
 
-        ansiPrintf("@|blue Attempting to select a subset of tests that achieve %s|@\n", describeOptimizationGoal());
+        LOG.info("Attempting to select a subset of tests that achieve %s", describeOptimizationGoal());
 
         if (getTestCoverageRepository().isEmpty()) {
-            ansiPrintf("@|yellow No coverage data found - test coverage cannot be optimized on this run|@\n");
-            ansiPrintf("@|yellow    No coverage data was found in the .testpackage folder|@\n");
+            LOG.warn("No coverage data found - test coverage cannot be optimized on this run");
+            LOG.warn("  (No coverage data was found in the .testpackage folder)");
             return request;
         }
 
@@ -66,10 +69,10 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
         }
 
         if (maxCoverage == 0) {
-            ansiPrintf("@|yellow No coverage data found - test coverage cannot be optimized on this run|@\n");
-            ansiPrintf("@|yellow    All test methods identified have 0%% coverage:|@\n");
+            LOG.warn("No coverage data found - test coverage cannot be optimized on this run");
+            LOG.warn("   All test methods identified have 0%% coverage:");
             for (TestWithCoverage coverage : coverageSets) {
-                ansiPrintf("     %s @|yellow (%2.1f %%)|@\n", coverage.getId(), coverage.getIndividualCoverage() * 100);
+                ansiPrintf("             %s @|yellow (%2.1f %%)|@\n", coverage.getId(), coverage.getIndividualCoverage() * 100);
             }
             return request;
         }
@@ -77,7 +80,7 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
 
         final TestSubsetOptimizerResult optimizerResult = this.solve(coverageSets, maxSize);
 
-        ansiPrintf("@|blue Optimizer complete - plan is %s:|@\n", optimizerResult.describe());
+        LOG.success("Optimizer complete - plan is %s:", optimizerResult.describe());
         for (TestWithCoverage selection : optimizerResult.getSelections()) {
             ansiPrintf("    %-30s (%d ms)     %s %2.1f%%\n",
                             selection.getId(),

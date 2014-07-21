@@ -143,7 +143,7 @@ public class TestPackage {
         }
 
         ColouredOutputRunListener colouredOutputRunListener = new ColouredOutputRunListener(configuration.isFailFast(),
-                configuration.isVerbose(), configuration.isQuiet(), request.getRunner().testCount(), pluginManager.getPlugins());
+                configuration.isVerbose(), configuration.isQuiet(), request.getRunner().testCount(), pluginManager.getPlugins(), configuration);
         RunListener antXmlRunListener = new AntJunitXmlReportListener(targetDir, colouredOutputRunListener);
 
         core.addListener(antXmlRunListener);

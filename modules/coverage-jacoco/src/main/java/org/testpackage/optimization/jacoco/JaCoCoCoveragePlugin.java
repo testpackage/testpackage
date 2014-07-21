@@ -13,8 +13,8 @@ import org.jacoco.core.runtime.RemoteControlWriter;
 import org.testpackage.Configuration;
 import org.testpackage.optimization.ClassCoverage;
 import org.testpackage.optimization.CoveragePlugin;
+import org.testpackage.output.SimpleLogger;
 import org.testpackage.pluginsupport.AbstractPlugin;
-import org.testpackage.pluginsupport.FatalPluginException;
 import org.testpackage.pluginsupport.PluginException;
 
 import java.io.IOException;
@@ -24,12 +24,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static org.testpackage.AnsiSupport.ansiPrintf;
-
 /**
  * @author richardnorth
  */
 public class JaCoCoCoveragePlugin extends AbstractPlugin implements CoveragePlugin {
+
+    private static final SimpleLogger LOG = SimpleLogger.getLogger(JaCoCoCoveragePlugin.class);
 
     Map<String, Long> testStartTimes = Maps.newHashMap();
 
@@ -53,6 +53,13 @@ public class JaCoCoCoveragePlugin extends AbstractPlugin implements CoveragePlug
 
             agentWriter = new RemoteControlWriter(agentSocket.getOutputStream());
             agentReader = new RemoteControlReader(agentSocket.getInputStream());
+
+            LOG.success("Connected to JaCoCo agent at %s:%s. Test coverage will be recorded for classes under package '%s'",
+                    configuration.getJaCoCoAgentHostName(),
+                    configuration.getJaCoCoAgentPort(),
+                    configuration.getJaCoCoUserPackagePrefix());
+            active = true;
+
         } catch (IOException e) {
             if (agentSocket != null) {
                 try {
@@ -60,15 +67,13 @@ public class JaCoCoCoveragePlugin extends AbstractPlugin implements CoveragePlug
                 } catch (IOException ignored) {
                 }
             }
-            throw new FatalPluginException("Unable to connect JaCoCo agent to " + configuration.getJaCoCoAgentHostName() + ":" + configuration.getJaCoCoAgentPort() +
-                    ". Is the system under test running, and is the JaCoCo agent configured correctly?", e);
-        }
 
-        ansiPrintf("@|blue Connected to JaCoCo agent at %s:%s. Test coverage will be recorded for classes under package '%s'|@\n",
-                configuration.getJaCoCoAgentHostName(),
-                configuration.getJaCoCoAgentPort(),
-                configuration.getJaCoCoUserPackagePrefix());
-        active = true;
+            LOG.warn("Unable to connect JaCoCo agent to %s:%s. " +
+                    "Is the system under test running, and is the JaCoCo agent configured correctly?",
+                    e,
+                    configuration.getJaCoCoAgentHostName(),
+                    configuration.getJaCoCoAgentPort());
+        }
     }
 
     @Override
@@ -79,11 +84,19 @@ public class JaCoCoCoveragePlugin extends AbstractPlugin implements CoveragePlug
     @Override
     public void beforeTest(String testIdentifier) throws PluginException {
 
+        if (!active) {
+            return;
+        }
+
         testStartTimes.put(testIdentifier, System.currentTimeMillis());
     }
 
     @Override
     public void afterTest(String testIdentifier) throws PluginException {
+
+        if (!active) {
+            return;
+        }
 
         // calculate execution time
         long executionTime = System.currentTimeMillis() - testStartTimes.get(testIdentifier);
@@ -115,6 +128,10 @@ public class JaCoCoCoveragePlugin extends AbstractPlugin implements CoveragePlug
 
     @Override
     public String messageAfterTest(String testIdentifier) {
+
+        if (!active) {
+            return "";
+        }
 
         if (this.cumulativeCoverageBitSet == null) {
             this.cumulativeCoverageBitSet = new BitSet((int) configuration.getTestCoverageRepository().getNumProbePoints());

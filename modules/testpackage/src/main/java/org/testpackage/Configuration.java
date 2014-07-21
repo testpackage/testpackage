@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
 import org.testpackage.optimization.TestCoverageRepository;
+import org.testpackage.output.SimpleLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,7 +16,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.jar.Manifest;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  */
 public class Configuration {
 
-    private static final Logger LOGGER = Logger.getLogger(Configuration.class.getSimpleName());
+    private static final SimpleLogger LOGGER = SimpleLogger.getLogger(Configuration.class);
 
     @Option(name = "--failfast", aliases = "-ff", usage = "Fail Fast: Causes test run to be aborted at the first test failure")
     private boolean failFast = false;
@@ -89,11 +89,11 @@ public class Configuration {
             final Properties properties = new Properties();
 
             if (propertiesFile.getName().toLowerCase().endsWith(".xml")) {
-                LOGGER.finest("Attempting to read properties file with XML format");
+                LOGGER.debug("Attempting to read properties file with XML format");
                 properties.loadFromXML(propertiesStream);
 
             } else {
-                LOGGER.finest("Attempting to read properties file with simple format");
+                LOGGER.debug("Attempting to read properties file with simple format");
                 properties.load(propertiesStream);
             }
 
@@ -211,9 +211,9 @@ public class Configuration {
             final int beginningChunkLength = firstTestPackageName.indexOf('.', 6);
             jaCoCoUserPackagePrefix = firstTestPackageName.substring(0, beginningChunkLength);
 
-            AnsiSupport.ansiPrintf("@|yellow No user package prefix was specified for recording test coverage. " +
-                    "Guessing that coverage for classes under '|@@|bold,yellow %s|@@|yellow ' should be recorded - if this is " +
-                    "incorrect please run again using the --jacoco-user-package-prefix setting.|@\n", jaCoCoUserPackagePrefix);
+            LOGGER.warn("No user package prefix was specified for recording test coverage. " +
+                    "Guessing that coverage for classes under '%s' should be recorded - if this is " +
+                    "incorrect please run again using the --jacoco-user-package-prefix setting.", jaCoCoUserPackagePrefix);
         }
 
         return jaCoCoUserPackagePrefix;

@@ -339,6 +339,12 @@ public class AntJunitXmlReportListener extends RunListener {
         Description description = failure.getDescription();
         TestSuite suite = suites.get(description.getTestClass());
         TestCase testCase = cases.get(description);
+
+        if (testCase == null || suite == null) {
+            // This must be a test framework failure - we can't handle here
+            return;
+        }
+
         if (Util.isAssertionFailure(failure)) {
             testCase.setFailure(exception);
             suite.incrementFailures();
