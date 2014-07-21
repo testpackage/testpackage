@@ -1,5 +1,6 @@
 package org.testpackage.optimization.jacoco;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractFuture;
 import com.googlecode.javaewah.datastructure.BitSet;
@@ -39,6 +40,8 @@ public class JaCoCoCoveragePlugin extends AbstractPlugin implements CoveragePlug
     private final Set<String> knownClasses = new HashSet<String>();
     private RemoteControlWriter agentWriter;
     private RemoteControlReader agentReader;
+    private String cumulativeCoveragePictogram;
+    private BitSet cumulativeCoverageBitSet;
 
     @Override
     public void configure(Configuration configuration) throws PluginException {
@@ -108,6 +111,47 @@ public class JaCoCoCoveragePlugin extends AbstractPlugin implements CoveragePlug
         } catch (TimeoutException e) {
             throw new PluginException("Exception in beforeTest", e);
         }
+    }
+
+    @Override
+    public String messageAfterTest(String testIdentifier) {
+
+        if (this.cumulativeCoverageBitSet == null) {
+            this.cumulativeCoverageBitSet = new BitSet((int) configuration.getTestCoverageRepository().getNumProbePoints());
+        }
+
+        if (this.cumulativeCoveragePictogram == null) {
+            this.cumulativeCoveragePictogram = "[" + Strings.repeat(" ", 18) + "]";
+        }
+        final String thisTestCoveragePictogram = configuration.getTestCoverageRepository().getCoverage(testIdentifier).coverageAsString(20, configuration.getTestCoverageRepository().getNumProbePoints());
+
+        StringBuffer colouredOutput = new StringBuffer("    ");
+        StringBuffer updatedCumulativeCoveragePictogram = new StringBuffer();
+
+        for (int i = 0; i < this.cumulativeCoveragePictogram.length(); i++) {
+            final char cumulativeCoverageChar = this.cumulativeCoveragePictogram.charAt(i);
+            if (cumulativeCoverageChar != ' ') {
+                colouredOutput.append("@|white,faint ").append(cumulativeCoverageChar).append("|@");
+                updatedCumulativeCoveragePictogram.append(cumulativeCoverageChar);
+            } else if (thisTestCoveragePictogram.charAt(i) != ' ') {
+                colouredOutput.append("@|green ").append(thisTestCoveragePictogram.charAt(i)).append("|@");
+                updatedCumulativeCoveragePictogram.append(thisTestCoveragePictogram.charAt(i));
+            } else {
+                colouredOutput.append(" ");
+                updatedCumulativeCoveragePictogram.append(" ");
+            }
+        }
+
+        this.cumulativeCoveragePictogram = updatedCumulativeCoveragePictogram.toString();
+
+        BitSet thisTestCoverageBitSet = configuration.getTestCoverageRepository().getCoverage(testIdentifier).getCoverage();
+        int newPoints = thisTestCoverageBitSet.andNotcardinality(this.cumulativeCoverageBitSet);
+        this.cumulativeCoverageBitSet.or(thisTestCoverageBitSet);
+
+        colouredOutput.append(" ").append(String.format("%2.1f", 100.0f * this.cumulativeCoverageBitSet.cardinality() / configuration.getTestCoverageRepository().getNumProbePoints())).append("%%");
+        colouredOutput.append(" (@|green +").append(String.format("%2.1f", 100.0f * newPoints / configuration.getTestCoverageRepository().getNumProbePoints())).append("%%|@)");
+
+        return colouredOutput.toString();
     }
 
     private class JaCoCoDumpFuture extends AbstractFuture<Set<ClassCoverage>> implements IExecutionDataVisitor, ISessionInfoVisitor {

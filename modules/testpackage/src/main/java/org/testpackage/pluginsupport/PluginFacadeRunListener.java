@@ -2,6 +2,7 @@ package org.testpackage.pluginsupport;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunListener;
+import org.testpackage.output.StringRepresentations;
 
 import java.util.Collection;
 
@@ -19,7 +20,7 @@ public class PluginFacadeRunListener extends RunListener {
     public void testStarted(Description description) throws Exception {
         for (Plugin plugin : plugins) {
             if (plugin.isActive()) {
-                plugin.beforeTest(description.getDisplayName());
+                plugin.beforeTest(StringRepresentations.testName(description));
             }
         }
     }
@@ -28,7 +29,7 @@ public class PluginFacadeRunListener extends RunListener {
     public void testFinished(Description description) throws Exception {
         for (Plugin plugin : plugins) {
             if (plugin.isActive()) {
-                plugin.afterTest(description.getDisplayName());
+                plugin.afterTest(StringRepresentations.testName(description));
             }
         }
     }

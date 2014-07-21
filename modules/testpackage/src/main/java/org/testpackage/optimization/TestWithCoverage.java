@@ -82,7 +82,7 @@ public class TestWithCoverage {
             int chunkEnd = (i+1) * chunkSize;
 
             if (coverage.nextSetBit(chunkStart) < chunkEnd) {
-                sb.append('#');
+                sb.append('\u2592');
             } else {
                 sb.append(' ');
             }

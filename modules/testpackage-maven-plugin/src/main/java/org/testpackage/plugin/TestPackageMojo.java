@@ -32,8 +32,6 @@ public class TestPackageMojo extends AbstractMojo {
     private BuildPluginManager pluginManager;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        getLog().info("Hello world");
-
         getLog().info("Dependencies: " + mavenProject.getDependencies());
 
         executeMojo(
@@ -50,7 +48,8 @@ public class TestPackageMojo extends AbstractMojo {
                                                 element("Main-Class", "org.testpackage.TestPackage"),
                                                 element("TestPackage-Package", packageName)
                                         )
-                                )
+                                ),
+                                element("transformer", attribute("implementation", "org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"))
                         ),
                         element("filters",
                                 element("filter",

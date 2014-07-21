@@ -34,4 +34,14 @@ public class AbstractPlugin implements Plugin {
     public Request filterTestRequest(Request request) {
         return request;
     }
+
+    @Override
+    public String messageDuringTest(String testIdentifier) {
+        return "";
+    }
+
+    @Override
+    public String messageAfterTest(String testIdentifier) {
+        return "";
+    }
 }

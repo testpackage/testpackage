@@ -62,7 +62,7 @@ public class OptimizerTest {
         startTime();
 
         final int targetTestCount = TEST_COUNT / 5;
-        TestSubsetOptimizerResult result = new GreedyApproximateTestSubsetOptimizer(null)
+        TestSubsetOptimizerResult result = new GreedyApproximateTestSubsetOptimizer()
                                                     .withTargetTestCount(targetTestCount)
                                                     .solve(COVERAGE_SETS, 0);
 
@@ -80,7 +80,7 @@ public class OptimizerTest {
         startTime();
 
         final double targetCoverage = 0.9;
-        TestSubsetOptimizerResult result = new GreedyApproximateTestSubsetOptimizer(null)
+        TestSubsetOptimizerResult result = new GreedyApproximateTestSubsetOptimizer()
                                                     .withTargetTestCoverage(targetCoverage)
                                                     .solve(COVERAGE_SETS, 0);
 
@@ -99,7 +99,7 @@ public class OptimizerTest {
 
         final double targetCoverage = 0.9;
         final int targetCost = 700000;
-        TestSubsetOptimizerResult result = new GreedyApproximateTestSubsetOptimizer(null)
+        TestSubsetOptimizerResult result = new GreedyApproximateTestSubsetOptimizer()
                                                     .withTargetCost(targetCost)
                                                     .solve(COVERAGE_SETS, 0);
 

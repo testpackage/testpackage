@@ -27,14 +27,17 @@ import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
+import org.testpackage.pluginsupport.Plugin;
 import org.testpackage.streams.StreamCapture;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import static org.fusesource.jansi.Ansi.ansi;
 import static org.testpackage.AnsiSupport.ansiPrintf;
+import static org.testpackage.output.StringRepresentations.testName;
 
 /**
  * A JUnit run listener which generates user-facing output on System.out to indicate progress of a test run.
@@ -51,6 +54,7 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
     private final boolean verbose;
     private final boolean quiet;
     private final int testTotalCount;
+    private final Collection<? extends Plugin> plugins;
     private final int terminalWidth;
 
     private StreamCapture streamCapture;
@@ -65,11 +69,12 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
     private Map<Class, String> stdOutStreamStore = Maps.newHashMap();
     private Map<Class, String> stdErrStreamStore = Maps.newHashMap();
 
-    public ColouredOutputRunListener(boolean failFast, boolean verbose, boolean quiet, int testTotalCount) {
+    public ColouredOutputRunListener(boolean failFast, boolean verbose, boolean quiet, int testTotalCount, Collection<? extends Plugin> plugins) {
         this.failFast = failFast;
         this.verbose = verbose;
         this.quiet = quiet;
         this.testTotalCount = testTotalCount;
+        this.plugins = plugins;
 
         this.terminalWidth = TerminalFactory.get().getWidth();
     }
@@ -231,7 +236,15 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
 
     private void displayTestMethodPlaceholder(Description description) {
         System.out.print(ansi().saveCursorPosition());
-        final String thisTestDescription = ">>  " + description.getTestClass().getSimpleName() + "." + description.getMethodName();
+        final StringBuffer thisTestDescription = new StringBuffer();
+        thisTestDescription.append(">>  ");
+        thisTestDescription.append(description.getTestClass().getSimpleName());
+        thisTestDescription.append(".");
+        thisTestDescription.append(description.getMethodName());
+
+        for (Plugin plugin : plugins) {
+            thisTestDescription.append(plugin.messageDuringTest(description.toString()));
+        }
 
         final StringBuffer overviewDescription = new StringBuffer();
         overviewDescription.append("[ ").append(testRunCount).append("/").append(testTotalCount).append(" tests run");
@@ -246,7 +259,7 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
         }
         overviewDescription.append(" ] ");
 
-        ansiPrintf(alignLeftRight(thisTestDescription, overviewDescription.toString()));
+        ansiPrintf(alignLeftRight(thisTestDescription.toString(), overviewDescription.toString()));
         if (verbose) {
             // Add newline so that tee-d stdout/err appear on the line below. In non-verbose mode we omit
             //  the newline so that this placeholder can be erased on completion of the test method.
@@ -267,7 +280,25 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
             colour = "red";
             symbol = CROSS_MARK;
         }
-        ansiPrintf(" @|" + colour + " %s  %s.%s|@ @|blue (%d ms)|@\n", symbol, currentDescription.getTestClass().getSimpleName(), currentDescription.getMethodName(), elapsedTime);
+
+        final StringBuffer sb = new StringBuffer();
+        sb.append(" @|")
+                .append(colour)
+                .append(" ")
+                .append(symbol)
+                .append("  ")
+                .append(testName(currentDescription, 30))
+                .append("|@ @|blue (")
+                .append(elapsedTime)
+                .append(" ms)|@ ");
+
+        for (Plugin plugin : plugins) {
+            sb.append(plugin.messageAfterTest(testName(currentDescription)));
+        }
+
+        sb.append("\n");
+
+        ansiPrintf(sb.toString());
     }
 
     @Override

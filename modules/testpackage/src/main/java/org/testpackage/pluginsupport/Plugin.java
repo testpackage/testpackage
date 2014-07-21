@@ -16,4 +16,8 @@ public interface Plugin {
     void afterTest(String testIdentifier) throws PluginException;
 
     Request filterTestRequest(Request request);
+
+    String messageDuringTest(String testIdentifier);
+
+    String messageAfterTest(String testIdentifier);
 }

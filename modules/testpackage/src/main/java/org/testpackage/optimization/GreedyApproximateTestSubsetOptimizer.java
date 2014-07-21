@@ -5,6 +5,7 @@ import org.junit.runner.Description;
 import org.junit.runner.Request;
 import org.junit.runner.manipulation.Filter;
 import org.testpackage.Configuration;
+import org.testpackage.output.StringRepresentations;
 import org.testpackage.pluginsupport.PluginException;
 
 import java.util.HashSet;
@@ -48,7 +49,7 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
 
         ansiPrintf("@|blue Attempting to select a subset of tests that achieve %s|@\n", describeOptimizationGoal());
 
-        if (testCoverageRepository.isEmpty()) {
+        if (getTestCoverageRepository().isEmpty()) {
             ansiPrintf("@|yellow No coverage data found - test coverage cannot be optimized on this run|@\n");
             ansiPrintf("@|yellow    No coverage data was found in the .testpackage folder|@\n");
             return request;
@@ -78,18 +79,20 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
 
         ansiPrintf("@|blue Optimizer complete - plan is %s:|@\n", optimizerResult.describe());
         for (TestWithCoverage selection : optimizerResult.getSelections()) {
-            ansiPrintf("  %30s %2.1f%% %s (%dms)\n",
+            ansiPrintf("    %-30s (%d ms)     %s %2.1f%%\n",
                             selection.getId(),
-                            ((double)selection.getCoverage().cardinality() / testCoverageRepository.getNumProbePoints()) * 100,
-                            selection.coverageAsString(20, testCoverageRepository.getNumProbePoints()),
-                            selection.getCost());
+                            selection.getCost(),
+                            selection.coverageAsString(20, getTestCoverageRepository().getNumProbePoints()),
+                            ((double)selection.getCoverage().cardinality() / getTestCoverageRepository().getNumProbePoints()) * 100
+
+                            );
         }
         ansiPrintf("\n\n");
 
         return request.filterWith(new Filter() {
             @Override
             public boolean shouldRun(Description description) {
-               return !description.isTest() || optimizerResult.containsTestName(description.getDisplayName());
+               return !description.isTest() || optimizerResult.containsTestName(StringRepresentations.testName(description));
             }
 
             @Override
@@ -127,7 +130,7 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
             throw new IllegalStateException("A target test count or coverage must be set");
         }
 
-        return new TestSubsetOptimizerResult(selections, covered, this.testCoverageRepository.getNumProbePoints());
+        return new TestSubsetOptimizerResult(selections, covered, this.getTestCoverageRepository().getNumProbePoints());
     }
 
     private void solveForTargetCost(List<TestWithCoverage> remainingCandidates, List<TestWithCoverage> selections, BitSet covered) {
@@ -151,7 +154,7 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
         while (coverage < targetCoverage && !remainingCandidates.isEmpty()) {
 
             search(remainingCandidates, selections, covered);
-            coverage = ((double) covered.cardinality()) / testCoverageRepository.getNumProbePoints();
+            coverage = ((double) covered.cardinality()) / getTestCoverageRepository().getNumProbePoints();
         }
     }
 
