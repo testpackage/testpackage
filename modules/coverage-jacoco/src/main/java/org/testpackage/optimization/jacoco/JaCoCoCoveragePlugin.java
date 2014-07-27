@@ -13,7 +13,7 @@ import org.jacoco.core.runtime.RemoteControlWriter;
 import org.testpackage.Configuration;
 import org.testpackage.optimization.ClassCoverage;
 import org.testpackage.optimization.CoveragePlugin;
-import org.testpackage.output.SimpleLogger;
+import org.testpackage.output.logging.SimpleLogger;
 import org.testpackage.pluginsupport.AbstractPlugin;
 import org.testpackage.pluginsupport.PluginException;
 
@@ -54,7 +54,7 @@ public class JaCoCoCoveragePlugin extends AbstractPlugin implements CoveragePlug
             agentWriter = new RemoteControlWriter(agentSocket.getOutputStream());
             agentReader = new RemoteControlReader(agentSocket.getInputStream());
 
-            LOG.success("Connected to JaCoCo agent at %s:%s. Test coverage will be recorded for classes under package '%s'",
+            LOG.complete("Connected to JaCoCo agent at %s:%s. Test coverage will be recorded for classes under package '%s'",
                     configuration.getJaCoCoAgentHostName(),
                     configuration.getJaCoCoAgentPort(),
                     configuration.getJaCoCoUserPackagePrefix());

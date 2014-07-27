@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
 import org.testpackage.optimization.TestCoverageRepository;
-import org.testpackage.output.SimpleLogger;
+import org.testpackage.output.logging.SimpleLogger;
 
 import java.io.File;
 import java.io.FileInputStream;

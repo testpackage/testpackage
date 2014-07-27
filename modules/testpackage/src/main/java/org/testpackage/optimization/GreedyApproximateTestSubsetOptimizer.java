@@ -5,8 +5,8 @@ import org.junit.runner.Description;
 import org.junit.runner.Request;
 import org.junit.runner.manipulation.Filter;
 import org.testpackage.Configuration;
-import org.testpackage.output.SimpleLogger;
 import org.testpackage.output.StringRepresentations;
+import org.testpackage.output.logging.SimpleLogger;
 import org.testpackage.pluginsupport.PluginException;
 
 import java.util.HashSet;
@@ -80,7 +80,7 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
 
         final TestSubsetOptimizerResult optimizerResult = this.solve(coverageSets, maxSize);
 
-        LOG.success("Optimizer complete - plan is %s:", optimizerResult.describe());
+        LOG.complete("Optimizer complete - plan is %s:", optimizerResult.describe());
         for (TestWithCoverage selection : optimizerResult.getSelections()) {
             ansiPrintf("    %-30s (%d ms)     %s %2.1f%%\n",
                             selection.getId(),

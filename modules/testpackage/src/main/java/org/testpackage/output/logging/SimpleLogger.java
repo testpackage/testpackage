@@ -1,4 +1,4 @@
-package org.testpackage.output;
+package org.testpackage.output.logging;
 
 import org.testpackage.AnsiSupport;
 
@@ -6,6 +6,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
+ * A very simplistic logger without any dependencies on any specific (real) logging framework.
+ *
+ * Intended to be lightweight rather than configurable or complete.
+ *
  * @author richardnorth
  */
 public class SimpleLogger {
@@ -38,12 +42,12 @@ public class SimpleLogger {
         AnsiSupport.ansiPrintf(line, messageParams);
     }
 
-    public void success(String message, Object... messageParams) {
-        log(Level.SUCCESS, message, null, messageParams);
+    public void complete(String message, Object... messageParams) {
+        log(Level.COMPLETE, message, null, messageParams);
     }
 
-    public void debug(String message, Object... messageParams) {
-        log(Level.DEBUG, message, null, messageParams);
+    public void info(String message, Object... messageParams) {
+        log(Level.INFO, message, null, messageParams);
     }
 
     public void warn(String message, Object... messageParams) {
@@ -54,7 +58,15 @@ public class SimpleLogger {
         log(Level.WARN, message, e, messageParams);
     }
 
-    public void info(String message, Object... messageParams) {
-        log(Level.INFO, message, null, messageParams);
+    public void debug(String message, Object... messageParams) {
+        log(Level.DEBUG, message, null, messageParams);
+    }
+
+    public void error(String message, Object... messageParams) {
+        log(Level.ERROR, message, null, messageParams);
+    }
+
+    public void error(String message, Throwable e, Object... messageParams) {
+        log(Level.ERROR, message, e, messageParams);
     }
 }
