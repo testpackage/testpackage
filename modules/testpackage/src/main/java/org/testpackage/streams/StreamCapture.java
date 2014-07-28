@@ -14,13 +14,11 @@ public class StreamCapture {
     private static Stack<StreamCapture> chain = new Stack<StreamCapture>();
     private static RedirectableOutputStream redirectableSystemOut;
     private static RedirectableOutputStream redirectableSystemErr;
-    private static PrintStream initialSystemOut;
-    private static PrintStream initialSystemErr;
 
     static {
         // The base filter instance should always tee output to System out/err
-        initialSystemOut = System.out;
-        initialSystemErr = System.err;
+        PrintStream initialSystemOut = System.out;
+        PrintStream initialSystemErr = System.err;
         chain.push(new StreamCapture(initialSystemOut, initialSystemErr, "Root"));
 
         // Intercept all future output to System out/err so that we can redirect to the topmost filter instance later

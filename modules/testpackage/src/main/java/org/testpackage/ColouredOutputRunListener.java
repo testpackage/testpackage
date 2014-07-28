@@ -64,7 +64,6 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
     private long currentTestStartTime;
     private int testRunCount = 0;
     private int testFailureCount = 0;
-    private int newTestFailureCount = 0;
     private int testIgnoredCount = 0;
     private boolean currentTestDidFail = false;
 
@@ -212,6 +211,7 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
         System.out.flush();
     }
 
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     private void reportFailure(Failure failure) {
         ansiPrintf("    @|red %s|@:\n", failure.getDescription());
         ansiPrintf("      @|yellow %s: %s|@\n", failure.getException().getClass().getSimpleName(), indentNewlines(failure.getMessage()));
@@ -246,7 +246,7 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
 
     private void displayTestMethodPlaceholder(Description description) {
         System.out.print(ansi().saveCursorPosition());
-        final StringBuffer thisTestDescription = new StringBuffer();
+        final StringBuilder thisTestDescription = new StringBuilder();
         thisTestDescription.append(">>  ");
         thisTestDescription.append(description.getTestClass().getSimpleName());
         thisTestDescription.append(".");
@@ -256,16 +256,19 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
             thisTestDescription.append(plugin.messageDuringTest(description.toString()));
         }
 
-        final StringBuffer overviewDescription = new StringBuffer();
+        final StringBuilder overviewDescription = new StringBuilder();
         overviewDescription.append("[ ").append(testRunCount).append("/").append(testTotalCount).append(" tests run");
         if (testIgnoredCount > 0) {
             overviewDescription.append(", @|yellow ").append(testIgnoredCount).append(" ignored|@");
         }
         if (testFailureCount > 0) {
             overviewDescription.append(", @|red ").append(testFailureCount).append(" failed|@");
-            if (newTestFailureCount > 0) {
-                overviewDescription.append("@|bold,red  (0 new)|@");
-            }
+
+            // TODO: implement count of new failures
+//            int newTestFailureCount = 0;
+//            if (newTestFailureCount > 0) {
+//                overviewDescription.append("@|bold,red  (0 new)|@");
+//            }
         }
         overviewDescription.append(" ] ");
 
@@ -291,7 +294,7 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
             symbol = CROSS_MARK;
         }
 
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         sb.append(" @|")
                 .append(colour)
                 .append(" ")

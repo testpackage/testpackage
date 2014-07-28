@@ -172,7 +172,7 @@ public class Configuration {
     public Integer getOptimizeTestRuntimeMillis() {
         Double result = null;
         if (!Strings.isNullOrEmpty(this.optimizeTestRuntime)) {
-            double amount = 0.0;
+            double amount;
             final Pattern regex = Pattern.compile("([0-9\\.]+)(h|m|min(s?)|s|ms)");
             final Matcher matcher = regex.matcher(this.optimizeTestRuntime);
             if (matcher.matches()) {

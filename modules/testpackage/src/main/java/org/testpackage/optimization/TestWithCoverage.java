@@ -10,7 +10,6 @@ public class TestWithCoverage {
     private String id;
     private BitSet coverage;
     private Long cost;
-    private double individualCoverage;
     private Long numProbePoints;
 
     public TestWithCoverage(String id, BitSet coverage, Long numProbePoints, Long cost) {
@@ -22,7 +21,7 @@ public class TestWithCoverage {
 
     public static String coverageAsString(TestWithCoverage coverage) {
         final BitSet bitset = coverage.getCoverage();
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
         for (int i = 0; i < coverage.getNumProbePoints(); i++) {
             stringBuffer.append(bitset.get(i) ? "X" : " ");
         }
@@ -42,10 +41,7 @@ public class TestWithCoverage {
     }
 
     public double getIndividualCoverage() {
-        if (individualCoverage == 0) {
-            individualCoverage = ((double) coverage.cardinality()) / coverage.size();
-        }
-        return individualCoverage;
+        return ((double) coverage.cardinality()) / coverage.size();
     }
 
     @Override
@@ -55,9 +51,8 @@ public class TestWithCoverage {
 
         TestWithCoverage that = (TestWithCoverage) o;
 
-        if (!id.equals(that.id)) return false;
+        return id.equals(that.id);
 
-        return true;
     }
 
     @Override
@@ -67,15 +62,12 @@ public class TestWithCoverage {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("TestWithCoverage{");
-        sb.append("id='").append(id).append('\'');
-        sb.append(", individualCoverage=").append(getIndividualCoverage() * 100);
-        sb.append("%}");
-        return sb.toString();
+        return "TestWithCoverage{" + "id='" + id + '\'' +
+                ", individualCoverage=" + getIndividualCoverage() * 100 + "%}";
     }
 
     public String coverageAsString(int stringLength, long numProbePoints) {
-        StringBuffer sb = new StringBuffer("[");
+        StringBuilder sb = new StringBuilder("[");
         final int chunkSize = (int) (numProbePoints / (stringLength - 2));
         for (int i=0; i < stringLength-2; i++) {
             int chunkStart = i * chunkSize;

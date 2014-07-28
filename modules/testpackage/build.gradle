@@ -6,9 +6,6 @@ modifyPom {
     project project.pomProject
 }
 
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
-
 dependencies {
     compile group: 'junit', name: 'junit', version: '4.11'
     compile 'org.hamcrest:hamcrest-core:1.3'

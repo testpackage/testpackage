@@ -6,9 +6,6 @@ modifyPom {
     project project.pomProject
 }
 
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
-
 jar.baseName = 'coverage-jacoco'
 
 dependencies {

@@ -62,9 +62,7 @@ public class TestSequencer {
         Request unprioritised = Request.classes(shardFilteredTestClasses.toArray(new Class[shardFilteredTestClasses.size()]));
 
         // Re-sort according to test priority (run recently-failed tests first)
-        Request sortedRequest = unprioritised.sortWith(new RecentFailurePrioritisationRequestComparator(runsSinceLastFailures));
-
-        return sortedRequest;
+        return unprioritised.sortWith(new RecentFailurePrioritisationRequestComparator(runsSinceLastFailures));
     }
 
 }

@@ -142,8 +142,8 @@ public class JaCoCoCoveragePlugin extends AbstractPlugin implements CoveragePlug
         }
         final String thisTestCoveragePictogram = configuration.getTestCoverageRepository().getCoverage(testIdentifier).coverageAsString(20, configuration.getTestCoverageRepository().getNumProbePoints());
 
-        StringBuffer colouredOutput = new StringBuffer("    ");
-        StringBuffer updatedCumulativeCoveragePictogram = new StringBuffer();
+        StringBuilder colouredOutput = new StringBuilder("    ");
+        StringBuilder updatedCumulativeCoveragePictogram = new StringBuilder();
 
         for (int i = 0; i < this.cumulativeCoveragePictogram.length(); i++) {
             final char cumulativeCoverageChar = this.cumulativeCoveragePictogram.charAt(i);

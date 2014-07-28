@@ -29,15 +29,8 @@ public class SimpleLogger {
 
     private void log(Level level, String message, Throwable e, Object[] messageParams) {
 
-        final String line = new StringBuilder()
-                .append(this.dateFormatter.format(new Date()))
-                .append(" @|")
-                .append(level.jansiCode)
-                .append(" ")
-                .append(level.label)
-                .append(": ")
-                .append(message)
-                .append("|@\n").toString();
+        final String line = this.dateFormatter.format(new Date()) +
+                            " @|" + level.jansiCode + " " + level.label + ": " + message + "|@\n";
 
         AnsiSupport.ansiPrintf(line, messageParams);
     }

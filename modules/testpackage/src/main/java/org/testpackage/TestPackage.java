@@ -58,7 +58,6 @@ public class TestPackage {
 
     private static final Logger LOGGER = Logger.getLogger(TestPackage.class.getSimpleName());
 
-    private PluginManager pluginManager;
     private Configuration configuration = new Configuration();
 
     public static void main(String[] args) throws IOException {
@@ -102,8 +101,9 @@ public class TestPackage {
 
         validateSettings();
 
+        PluginManager pluginManager;
         try {
-            this.pluginManager = new PluginManager(configuration);
+            pluginManager = new PluginManager(configuration);
         } catch (PluginException e) {
             System.err.println("Error initializing TestPackage plugin: " + e.getMessage());
             return -1;
@@ -130,7 +130,7 @@ public class TestPackage {
         TestSequencer testSequencer = new TestSequencer(configuration.getShardIndex(), configuration.getNumberOfShards());
         Request request = testSequencer.sequenceTests(testHistoryRepository.getRunsSinceLastFailures(), configuration.getTestPackageNames().toArray(new String[configuration.getTestPackageNames().size()]));
 
-        for (Plugin plugin : this.pluginManager.getPlugins()) {
+        for (Plugin plugin : pluginManager.getPlugins()) {
             request = plugin.filterTestRequest(request);
         }
 
@@ -149,7 +149,7 @@ public class TestPackage {
         core.addListener(antXmlRunListener);
         core.addListener(colouredOutputRunListener);
         core.addListener(testHistoryRunListener);
-        core.addListener(new PluginFacadeRunListener(this.pluginManager.getPlugins()));
+        core.addListener(new PluginFacadeRunListener(pluginManager.getPlugins()));
 
         if (configuration.isFailFast()) {
             core.addListener(new FailFastRunListener(core.getNotifier()));
@@ -169,7 +169,6 @@ public class TestPackage {
 
         int failureCount = result.getFailureCount();
         int testCount = result.getRunCount();
-        int passed = testCount - failureCount;
         if (failureCount > 0) {
             ansiPrintf("@|red FAILED|@\n");
             return 1;

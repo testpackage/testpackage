@@ -16,7 +16,7 @@ public class TestCoverageRepository {
 
     private final File backingFile;
 
-    private Map<String, ClassProperties> classProperties = Maps.newHashMap();
+    private final Map<String, ClassProperties> classProperties = Maps.newHashMap();
     private int size = 0;
 
     private Map<String, BitSet> testCoverages = Maps.newHashMap();
@@ -31,7 +31,8 @@ public class TestCoverageRepository {
         if (backingFile.exists()) {
             ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(absolutePath));
             try {
-                this.classProperties = (Map<String, ClassProperties>) objectInputStream.readObject();
+                this.classProperties.clear();
+                this.classProperties.putAll((Map<String, ClassProperties>) objectInputStream.readObject());
                 this.size = objectInputStream.readInt();
                 int coverageCount = objectInputStream.readInt();
                 this.numProbePoints = objectInputStream.readLong();
@@ -59,14 +60,9 @@ public class TestCoverageRepository {
 
         //System.out.println("Loaded coverage data");
         for (Map.Entry<String, BitSet> entry : testCoverages.entrySet()) {
-//            System.out.printf("%s [", entry.getKey());
-            for (int i = 0; i < entry.getValue().size(); i++) {
-//                System.out.print(entry.getValue().get(i) ? "X" : " ");
-            }
-//            System.out.println("]");
-
             if (entry.getValue().cardinality() > 0) {
                 this.empty = false;
+                break;
             }
         }
     }

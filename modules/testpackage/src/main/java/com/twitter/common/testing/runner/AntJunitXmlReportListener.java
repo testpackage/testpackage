@@ -45,6 +45,7 @@ public class AntJunitXmlReportListener extends RunListener {
             stacktrace = null;
         }
 
+        @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
         Exception(Failure failure) {
             message = failure.getMessage();
             type = failure.getException().getClass().getName();
@@ -370,15 +371,24 @@ public class AntJunitXmlReportListener extends RunListener {
                 suite.setOut(new String(streamSource.readOut(testClass), Charsets.UTF_8));
                 suite.setErr(new String(streamSource.readErr(testClass), Charsets.UTF_8));
 
-                Writer xmlOut = new FileWriter(new File(outdir, String.format("TEST-%s.xml", suite.name)));
+                Writer xmlOut = null;
+                try {
+                    xmlOut = new FileWriter(new File(outdir, String.format("TEST-%s.xml", suite.name)));
 
-                // Only output valid XML1.0 characters - JAXB does not handle this.
-                JAXB.marshal(suite, new XmlWriter(xmlOut) {
-                    @Override
-                    protected void handleInvalid(int c) throws IOException {
-                        out.write(' ');
+                    // Only output valid XML1.0 characters - JAXB does not handle this.
+                    JAXB.marshal(suite, new XmlWriter(xmlOut) {
+                        @Override
+                        protected void handleInvalid(int c) throws IOException {
+                            out.write(' ');
+                        }
+                    });
+                } finally {
+                    if (xmlOut != null) {
+                        xmlOut.close();
                     }
-                });
+                }
+
+
             }
         }
     }

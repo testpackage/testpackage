@@ -41,6 +41,7 @@ final class Util {
      * @param failure The failure to test.
      * @return {@code true} if the failure was from an incorrect assertion, {@code false} otherwise.
      */
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     static boolean isAssertionFailure(Failure failure) {
         return failure.getException() instanceof AssertionError;
     }

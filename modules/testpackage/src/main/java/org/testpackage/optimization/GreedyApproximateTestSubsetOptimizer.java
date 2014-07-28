@@ -173,8 +173,7 @@ public class GreedyApproximateTestSubsetOptimizer extends BaseOptimizer implemen
         PriorityQueue<Selection> candidates = new PriorityQueue<Selection>();
 
         // Score each candidate
-        for (int j = 0; j < remainingCandidates.size(); j++) {
-            final TestWithCoverage candidate = remainingCandidates.get(j);
+        for (final TestWithCoverage candidate : remainingCandidates) {
             BitSet candidateCoverage = candidate.getCoverage();
 
             // work out the score, the number of newly covered lines divided by the cost of adding this test
