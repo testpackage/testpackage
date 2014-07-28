@@ -95,19 +95,19 @@ public class TestPackage {
             return -1;
         }
 
-        try {
-            this.pluginManager = new PluginManager(configuration);
-        } catch (PluginException e) {
-            System.err.println("Error initializing TestPackage plugin: " + e.getMessage());
-            return -1;
-        }
-
         return run();
     }
 
     public int run() throws IOException {
 
         validateSettings();
+
+        try {
+            this.pluginManager = new PluginManager(configuration);
+        } catch (PluginException e) {
+            System.err.println("Error initializing TestPackage plugin: " + e.getMessage());
+            return -1;
+        }
 
         TestHistoryRepository testHistoryRepository;
         TestCoverageRepository testCoverageRepository;

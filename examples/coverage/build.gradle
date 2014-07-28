@@ -1,0 +1,41 @@
+apply plugin:'maven'
+
+description 'Coverage proritization example'
+
+task buildExamples(type: Exec, dependsOn: [':modules:testpackage:install', ':modules:coverage-jacoco:install', ':modules:testpackage-maven-plugin:install']) {
+
+    commandLine './test.sh'
+    standardOutput = new ByteArrayOutputStream()
+    ignoreExitValue = true
+
+
+    doLast {
+        assert execResult.exitValue == 0
+        String stdout = standardOutput.toString()
+
+        println stdout
+
+
+        String[] runs = stdout.split("@@@")
+
+        assert runs[1].contains("3 passed")
+        assert runs[1].contains("Guessing that coverage for classes under 'org.testpackage' should be recorded")
+        assert runs[1].contains('Connected to JaCoCo agent at localhost:6300')
+
+        assert runs[2].contains("Optimizer complete - plan is 3 tests with 76.9% coverage")
+        assert runs[2].contains("3 passed")
+
+        assert runs[3].contains("Optimizer complete - plan is 1 tests with 53.8% coverage")
+        assert runs[3].contains("1 passed")
+
+        assert runs[4].contains("Optimizer complete - plan is 2 tests with 61.5% coverage")
+        assert runs[4].contains("2 passed")
+
+        assert runs[5].contains("Optimizer complete - plan is 3 tests with 69.2% coverage")
+        assert runs[5].contains("3 passed")
+    }
+}
+
+task check(dependsOn: buildExamples) {
+
+}

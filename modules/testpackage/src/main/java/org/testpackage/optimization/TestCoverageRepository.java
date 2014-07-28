@@ -49,6 +49,9 @@ public class TestCoverageRepository {
                     updateMaxProbePointCount(coverageData);
                 }
 
+            } catch (IOException e) {
+                // some problem parsing the repository. Delete it and continue initalization.
+                backingFile.delete();
             } finally {
                 objectInputStream.close();
             }
@@ -115,7 +118,7 @@ public class TestCoverageRepository {
             result.or(probePoints);
         }
 
-        return new TestWithCoverage(testIdentifier, result, numProbePoints, testExecutionTimes.get(testIdentifier));
+        return new TestWithCoverage(testIdentifier, result, (long) size, testExecutionTimes.get(testIdentifier));
     }
 
     public void save() throws IOException {
@@ -125,7 +128,7 @@ public class TestCoverageRepository {
             objectOutputStream.writeObject(this.classProperties);
             objectOutputStream.writeInt(this.size);
             objectOutputStream.writeInt(this.testCoverages.size());
-            objectOutputStream.writeLong(this.numProbePoints);
+            objectOutputStream.writeLong(this.size);
 
             for (Map.Entry<String, BitSet> entry : this.testCoverages.entrySet()) {
                 objectOutputStream.writeObject(entry.getKey());
@@ -143,7 +146,7 @@ public class TestCoverageRepository {
     }
 
     public long getNumProbePoints() {
-        return numProbePoints;
+        return size;
     }
 
     private static class ClassProperties implements Serializable {

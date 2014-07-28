@@ -32,8 +32,6 @@ public class RestServerDummyService {
     public void doSomethingElse() {
         if (1 + 1 == 3) {
             throw new IllegalStateException();
-        } else {
-            System.out.println("reached line in RestServerDummyService.doSomethingElse()");
         }
     }
 }

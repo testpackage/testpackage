@@ -1,17 +1,23 @@
 package org.testpackage.test;
 
 import com.googlecode.javaewah.datastructure.BitSet;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.testpackage.Configuration;
 import org.testpackage.optimization.GreedyApproximateTestSubsetOptimizer;
+import org.testpackage.optimization.TestCoverageRepository;
 import org.testpackage.optimization.TestSubsetOptimizerResult;
 import org.testpackage.optimization.TestWithCoverage;
+import org.testpackage.pluginsupport.PluginException;
 
 import java.util.Random;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Math.abs;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author richardnorth
@@ -22,9 +28,12 @@ public class OptimizerTest {
     private static final long COVERED_LINES = 1000000;
     private static final Set<TestWithCoverage> COVERAGE_SETS = newHashSet();
     private static long startTime;
+    private GreedyApproximateTestSubsetOptimizer optimizer;
+
+    private TestCoverageRepository mockTestCoverageRepository;
 
     @BeforeClass
-    public static void setup() {
+    public static void setupClass() {
 
         startTime();
 
@@ -56,13 +65,27 @@ public class OptimizerTest {
         stopTime("Setup");
     }
 
+    @Before
+    public void setup() throws PluginException {
+
+        optimizer = new GreedyApproximateTestSubsetOptimizer();
+        final Configuration configuration = new Configuration();
+
+        mockTestCoverageRepository = mock(TestCoverageRepository.class);
+        configuration.setTestCoverageRepository(mockTestCoverageRepository);
+
+        optimizer.configure(configuration);
+
+        when(mockTestCoverageRepository.getNumProbePoints()).thenReturn(COVERED_LINES);
+    }
+
     @Test
     public void testDesiredNumberOfTests() {
 
         startTime();
 
         final int targetTestCount = TEST_COUNT / 5;
-        TestSubsetOptimizerResult result = new GreedyApproximateTestSubsetOptimizer()
+        TestSubsetOptimizerResult result = optimizer
                                                     .withTargetTestCount(targetTestCount)
                                                     .solve(COVERAGE_SETS, 0);
 
@@ -80,7 +103,7 @@ public class OptimizerTest {
         startTime();
 
         final double targetCoverage = 0.9;
-        TestSubsetOptimizerResult result = new GreedyApproximateTestSubsetOptimizer()
+        TestSubsetOptimizerResult result = optimizer
                                                     .withTargetTestCoverage(targetCoverage)
                                                     .solve(COVERAGE_SETS, 0);
 
@@ -99,7 +122,7 @@ public class OptimizerTest {
 
         final double targetCoverage = 0.9;
         final int targetCost = 700000;
-        TestSubsetOptimizerResult result = new GreedyApproximateTestSubsetOptimizer()
+        TestSubsetOptimizerResult result = optimizer
                                                     .withTargetCost(targetCost)
                                                     .solve(COVERAGE_SETS, 0);
 
