@@ -26,7 +26,7 @@ public class TestHistoryRepository {
 
     /**
      * @param path relative or absolute path of the backing file where the historic data should be stored
-     * @throws IOException
+     * @throws IOException any exception loading the repository from disk.
      */
     public TestHistoryRepository(String path) throws IOException {
         backingFile = new File(path);
@@ -66,7 +66,7 @@ public class TestHistoryRepository {
     /**
      * Save the current state of historic data to the repository's backing file.
      *
-     * @throws IOException
+     * @throws IOException any exception failing to write the repository to disk.
      */
     public void save() throws IOException {
 

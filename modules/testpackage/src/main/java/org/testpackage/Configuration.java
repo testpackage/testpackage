@@ -74,7 +74,7 @@ public class Configuration {
      * </p>
      * Using a capitalised 'P' for the alias for consistency with other common Java projects that do this.
      *
-     * @param propertiesFile
+     * @param propertiesFile a Properties file which should be loaded
      */
     @Option(name = "--propertiesfile", aliases = "-P", usage = "Properties File: Sets or overrides system properties from a file")
     public void setPropertiesFile(File propertiesFile) {
