@@ -11,6 +11,8 @@ buildscript {
 
 allprojects {
 
+    apply plugin: 'idea'
+
     group = 'org.testpackage'
     version = '0.2.0'
 

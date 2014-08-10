@@ -1,0 +1,22 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'nexus'
+
+modifyPom {
+    project project.pomProject
+}
+
+jar.baseName = 'coverage-jacoco'
+
+dependencies {
+    compile project(":modules:testpackage")
+    compile group: 'com.google.guava', name: 'guava', version: '15.0'
+    compile group: 'com.googlecode.javaewah', name: 'JavaEWAH', version: '0.8.5'
+    compile group: 'org.jacoco', name:'org.jacoco.core', version:'0.7.0.201403182114'
+}
+
+test {
+    filter {
+        includeTestsMatching 'org.testpackage.test.*'
+    }
+}

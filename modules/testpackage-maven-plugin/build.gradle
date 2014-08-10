@@ -7,9 +7,6 @@ modifyPom {
     project project.pomProject
 }
 
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
-
 dependencies {
     compile group: 'org.twdata.maven', name: 'mojo-executor', version: '2.2.0'
     compile group: 'org.apache.maven', name: 'maven-plugin-api', version: '2.0'
