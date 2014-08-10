@@ -12,6 +12,7 @@ buildscript {
 allprojects {
 
     apply plugin: 'idea'
+    apply plugin: 'signing'
 
     group = 'org.testpackage'
     version = '0.3.0'
