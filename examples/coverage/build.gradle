@@ -2,20 +2,16 @@ apply plugin:'maven'
 
 description 'Coverage proritization example'
 
-task buildExamples(type: Exec, dependsOn: [':modules:testpackage:install', ':modules:coverage-jacoco:install', ':modules:testpackage-maven-plugin:install']) {
-
+task check(type: Exec, dependsOn: [':modules:testpackage:install', ':modules:coverage-jacoco:install', ':modules:testpackage-maven-plugin:install']) {
     commandLine './test.sh'
     standardOutput = new ByteArrayOutputStream()
     ignoreExitValue = true
-
 
     doLast {
         assert execResult.exitValue == 0
         String stdout = standardOutput.toString()
 
         println stdout
-
-
         String[] runs = stdout.split("@@@")
 
         assert runs[1].contains("3 passed")
@@ -34,8 +30,4 @@ task buildExamples(type: Exec, dependsOn: [':modules:testpackage:install', ':mod
         assert runs[5].contains("Optimizer complete - plan is 3 tests with 69.2% coverage")
         assert runs[5].contains("3 passed")
     }
-}
-
-task check(dependsOn: buildExamples) {
-
 }

@@ -6,16 +6,14 @@ import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
 import org.testpackage.optimization.TestCoverageRepository;
 import org.testpackage.output.logging.SimpleLogger;
+import org.testpackage.util.Metadata;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
-import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -226,20 +224,9 @@ public class Configuration {
         }
 
         // Check the JAR manifest
-        try {
-            Enumeration<URL> resources = TestPackage.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
-            while (resources.hasMoreElements()) {
-                URL url = resources.nextElement();
-                Manifest manifest = new Manifest(url.openStream());
-                String attributes = manifest.getMainAttributes().getValue("TestPackage-Package");
-                if (attributes != null) {
-                    testPackageNames.add(attributes);
-                    return testPackageNames;
-                }
-            }
-
-        } catch (IOException e) {
-            throw new TestPackageException("Error loading MANIFEST.MF", e);
+        testPackageNames.addAll(Metadata.getAllMainAttributes("TestPackage-Package"));
+        if (testPackageNames.size() > 0) {
+            return testPackageNames;
         }
 
         // Fall back to system property
