@@ -23,3 +23,9 @@ test {
         includeTestsMatching 'org.testpackage.test.*'
     }
 }
+
+processResources {
+    filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+        "testpackage.version": project.version
+    ]
+}

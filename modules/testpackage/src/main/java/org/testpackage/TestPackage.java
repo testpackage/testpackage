@@ -33,6 +33,7 @@ import org.testpackage.pluginsupport.PluginFacadeRunListener;
 import org.testpackage.pluginsupport.PluginManager;
 import org.testpackage.sequencing.TestHistoryRepository;
 import org.testpackage.sequencing.TestHistoryRunListener;
+import org.testpackage.util.Metadata;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,7 +74,8 @@ public class TestPackage {
     private int doMain(String[] args) throws IOException {
 
         ansiPrintf("TestPackage standalone test runner initializing\n");
-        ansiPrintf("  http://testpackage.org - Version %s\n", "0.2");
+        String version = Metadata.getClasspathResourceProperty("testpackage-version.properties", "testpackage.version");
+        ansiPrintf("  http://testpackage.org - Version %s\n", version);
 
         CmdLineParser cmdLineParser = new CmdLineParser(configuration);
         try {
