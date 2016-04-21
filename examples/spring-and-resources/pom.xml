@@ -33,18 +33,63 @@
 
     <build>
         <plugins>
+            <!--<plugin>-->
+                <!--<groupId>org.testpackage</groupId>-->
+                <!--<artifactId>testpackage-maven-plugin</artifactId>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<phase>package</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>fatjar</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<package-name>org.testpackage.example.spring</package-name>-->
+                            <!--<flags>-Xmx2G</flags>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
+
             <plugin>
-                <groupId>org.testpackage</groupId>
-                <artifactId>testpackage-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <!-- TestPackage needs this so that it can locate tests -->
+                            <TestPackage-Package>org.testpackage.example.spring</TestPackage-Package>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- Use Spring Boot maven plugin to produce a fat jar rather than shade -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>1.3.3.RELEASE</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
                         <goals>
-                            <goal>fatjar</goal>
+                            <goal>repackage</goal>
                         </goals>
                         <configuration>
-                            <package-name>org.testpackage.example.spring</package-name>
-                            <flags>-Xmx2G</flags>
+                            <layout>JAR</layout>
+                            <executable>true</executable>
+                            <mainClass>org.testpackage.TestPackage</mainClass>
+
+                            <!-- The below doesn't help to bring the Spring test dependencies into the fat jar... -->
+
+                            <!--<includes>-->
+                                <!--<include>-->
+                                    <!--<groupId>org.springframework.boot</groupId>-->
+                                    <!--<artifactId>spring-boot-starter-test</artifactId>-->
+                                <!--</include>-->
+                                <!--<include>-->
+                                    <!--<groupId>org.springframework</groupId>-->
+                                    <!--<artifactId>spring-test</artifactId>-->
+                                <!--</include>-->
+                            <!--</includes>-->
                         </configuration>
                     </execution>
                 </executions>
