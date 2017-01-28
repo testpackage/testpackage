@@ -337,8 +337,13 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
         String cleansedLeftString = leftString.replaceAll("@\\|[\\w,]+\\s|\\|@", "");
         String cleansedRightString = rightString.replaceAll("@\\|[\\w,]+\\s|\\|@", "");
 
-        int space = terminalWidth - (cleansedLeftString.length() + cleansedRightString.length());
-
-        return leftString + Strings.repeat(" ", space) + rightString;
+        int spaces = 0;
+        if (terminalWidth > 0) {
+            // Leftover after left and right string together wraps the terminal
+            int leftoverFromLeftAndRight = (cleansedLeftString.length() + cleansedRightString.length()) % terminalWidth;
+            // Get the number of spaces to fill the rest of the terminal
+            spaces = terminalWidth - leftoverFromLeftAndRight;
+        }
+        return leftString + Strings.repeat(" ", spaces) + rightString;
     }
 }
