@@ -71,7 +71,9 @@ public class StreamCapture {
         System.out.flush();
         System.err.flush();
 
-        chain.pop();
+        if (chain.size() > 0) {
+            chain.pop();
+        }
 
 //        initialSystemOut.println("Popped chain, now: " + chain);
 
@@ -91,8 +93,10 @@ public class StreamCapture {
         /*
          * Point our redirectable streams at the topmost filter in the chain.
          */
-        redirectableSystemOut.setOutputStream(chain.peek().out);
-        redirectableSystemErr.setOutputStream(chain.peek().err);
+        if (chain.size() > 0) {
+            redirectableSystemOut.setOutputStream(chain.peek().out);
+            redirectableSystemErr.setOutputStream(chain.peek().err);
+        }
     }
 
     public String getStdOut() {
@@ -113,5 +117,9 @@ public class StreamCapture {
         sb.append(", out=").append(out);
         sb.append('}');
         return sb.toString();
+    }
+
+    public static int depth() {
+        return chain.size();
     }
 }

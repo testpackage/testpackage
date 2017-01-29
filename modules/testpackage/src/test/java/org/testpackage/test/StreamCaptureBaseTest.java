@@ -1,6 +1,7 @@
 package org.testpackage.test;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.testpackage.streams.StreamCapture;
 
@@ -24,6 +25,11 @@ public abstract class StreamCaptureBaseTest {
 
         StreamCapture.restore();
 //        System.out.println("SC restored: " + getCapturedStdOut());
+    }
+
+    @AfterClass
+    public static void outputEvents() {
+        ///System.err.println(EventDebugger.events);
     }
 
     protected String getCapturedStdOut() {

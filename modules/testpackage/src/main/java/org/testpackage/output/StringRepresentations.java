@@ -7,6 +7,10 @@ import org.junit.runner.Description;
  */
 public class StringRepresentations {
     public static String testName(Description description) {
+        if (! description.isTest() && description.isSuite() && description.getChildren().size() > 0) {
+            final Description firstDescription = description.getChildren().get(0);
+            return firstDescription.getClassName();
+        }
         return description.getTestClass().getSimpleName() + "." + description.getMethodName();
     }
 

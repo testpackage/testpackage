@@ -27,6 +27,7 @@ import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
+import org.testpackage.debugging.EventDebugger;
 import org.testpackage.pluginsupport.Plugin;
 import org.testpackage.streams.StreamCapture;
 import org.testpackage.util.Throwables2;
@@ -65,6 +66,7 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
     private int testRunCount = 0;
     private int testFailureCount = 0;
     private int testIgnoredCount = 0;
+    private int testAssumptionFailedCount = 0;
     private boolean currentTestDidFail = false;
 
     private Map<Class, String> stdOutStreamStore = Maps.newHashMap();
@@ -82,7 +84,19 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
     }
 
     @Override
+    public void testRunStarted(final Description description) throws Exception {
+        EventDebugger.add("testRunStarted: " + description);
+
+        super.testRunStarted(description);
+
+        currentDescription = description;
+        currentTestDidFail = false;
+    }
+
+    @Override
     public void testStarted(Description description) throws Exception {
+        EventDebugger.add("testStarted: " + description);
+
         if (!quiet) {
             displayTestMethodPlaceholder(description);
         }
@@ -98,24 +112,14 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
 
     @Override
     public void testFailure(Failure failure) throws Exception {
+        EventDebugger.add("testFailure: " + failure.getDescription());
 
         currentTestDidFail = true;
         testFailureCount++;
 
-        StreamCapture.restore();
-
-        replaceTestMethodPlaceholder(false);
-
-        if (!quiet && !verbose && streamCapture.getStdOut().length() > 0) {
-            System.out.println("    STDOUT:");
-            System.out.print(streamCapture.getStdOut());
-        }
-
-        if (!quiet && !verbose && streamCapture.getStdErr().length() > 0) {
-            System.out.println("\n    STDERR:");
-            System.out.print(streamCapture.getStdErr());
-        }
-
+//        if (failure.getDescription().equals(currentDescription)) {
+//            StreamCapture.restore();
+//        }
 
         if (failFast) {
             System.out.flush();
@@ -130,14 +134,16 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
 
     @Override
     public void testFinished(Description description) throws Exception {
+        EventDebugger.add("testFinished: " + description);
 
         stdOutStreamStore.put(description.getTestClass(), streamCapture.getStdOut());
         stdErrStreamStore.put(description.getTestClass(), streamCapture.getStdErr());
 
-        testRunCount++;
+        StreamCapture.restore();
 
         if (!currentTestDidFail) {
-            StreamCapture.restore();
+
+            testRunCount++;
 
             if (!quiet) {
                 replaceTestMethodPlaceholder(true);
@@ -152,22 +158,46 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
                 System.out.println("\n    STDERR:");
                 System.out.print(streamCapture.getStdErr());
             }
+        } else {
+            replaceTestMethodPlaceholder(false);
+
+            if (!quiet && !verbose && streamCapture.getStdOut().length() > 0) {
+                System.out.println("    STDOUT:");
+                System.out.print(streamCapture.getStdOut());
+            }
+
+            if (!quiet && !verbose && streamCapture.getStdErr().length() > 0) {
+                System.out.println("\n    STDERR:");
+                System.out.print(streamCapture.getStdErr());
+            }
         }
     }
 
     @Override
+    public void testAssumptionFailure(final Failure failure) {
+        EventDebugger.add("testAssumptionFailure: " + failure.getDescription());
+
+        currentTestDidFail = false;
+        testAssumptionFailedCount++;
+    }
+
+    @Override
     public void testIgnored(Description description) throws Exception {
+        EventDebugger.add("testIgnored: " + description);
+
         testIgnoredCount++;
     }
+
 
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Override
     public void testRunFinished(Result result) throws Exception {
+        EventDebugger.add("testRunFinished: " + result);
 
-        int failureCount = result.getFailureCount();
-        int testCount = result.getRunCount();
-        int ignoredCount = result.getIgnoreCount();
-        int passed = testCount - failureCount;
+        int failureCount = this.testFailureCount;
+        int ignoredCount = this.testIgnoredCount;
+        int assumptionFailedCount = this.testAssumptionFailedCount;
+        int passed = this.testRunCount - assumptionFailedCount;
         List<Failure> failures = Lists.newArrayList();
 
         failures.addAll(result.getFailures());
@@ -198,7 +228,14 @@ public class ColouredOutputRunListener extends RunListener implements StreamSour
             ignoredStatement = "0 ignored\n";
         }
 
-        ansiPrintf("*** " + passedStatement + ", " + failedStatement + ", " + ignoredStatement, passed, failureCount, ignoredCount);
+        String assumptionStatement;
+        if (this.testAssumptionFailedCount > 0) {
+            assumptionStatement = ", @|blue %d assumption(s) failed|@";
+        } else {
+            assumptionStatement = "";
+        }
+
+        ansiPrintf("*** " + passedStatement + ", " + failedStatement + ", " + ignoredStatement + assumptionStatement, passed, failureCount, ignoredCount, assumptionFailedCount);
 
         if (failureCount > 0 && !quiet) {
             System.out.println();
