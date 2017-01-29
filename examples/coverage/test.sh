@@ -4,8 +4,9 @@ cd server
 mvn clean package
 
 # Run a standalone web app server
-java -javaagent:$(pwd)/ext/jacocoagent.jar=output=tcpserver -jar target/server-1.0-SNAPSHOT.jar &
+java "-javaagent:$(pwd)/ext/jacocoagent.jar=output=tcpserver" -jar target/server-1.0-SNAPSHOT.jar &
 SERVER_PID=$!
+sleep 30
 
 cd ../tests
 # Build TestPackage test JAR

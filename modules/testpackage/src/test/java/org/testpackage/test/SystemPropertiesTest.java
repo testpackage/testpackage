@@ -7,6 +7,7 @@ import org.testpackage.TestPackageException;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import static org.testpackage.VisibleAssertions.assertEquals;
 import static org.testpackage.VisibleAssertions.assertTrue;
@@ -31,8 +32,8 @@ public class SystemPropertiesTest extends StreamCaptureBaseTest {
      * @throws IOException
      */
     @Test
-    public void testSetProperties_SimpleFormat() throws IOException {
-        final File propertiesFile = new File(SystemPropertiesTest.class.getResource("/example-props.properties").getPath());
+    public void testSetProperties_SimpleFormat() throws IOException, URISyntaxException {
+        final File propertiesFile = new File(SystemPropertiesTest.class.getResource("/example-props.properties").toURI());
 
         final TestPackage testPackage = new TestPackage();
         testPackage.getConfiguration().setPropertiesFile(propertiesFile);
@@ -52,8 +53,8 @@ public class SystemPropertiesTest extends StreamCaptureBaseTest {
      * @throws IOException
      */
     @Test
-    public void testSetProperties_XmlFormat() throws IOException {
-        final File propertiesFile = new File(SystemPropertiesTest.class.getResource("/example-props.xml").getPath());
+    public void testSetProperties_XmlFormat() throws IOException, URISyntaxException {
+        final File propertiesFile = new File(SystemPropertiesTest.class.getResource("/example-props.xml").toURI());
 
         final TestPackage testPackage = new TestPackage();
         testPackage.getConfiguration().setPropertiesFile(propertiesFile);
