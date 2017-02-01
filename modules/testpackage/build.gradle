@@ -14,6 +14,7 @@ dependencies {
     compile group: 'args4j', name: 'args4j', version: '2.0.26'
     compile group: 'com.googlecode.javaewah', name: 'JavaEWAH', version: '0.8.5'
     compile group: 'jline', name: 'jline', version: '2.11'
+    compile 'org.rnorth.visible-assertions:visible-assertions:1.0.5'
 
     testCompile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
 }

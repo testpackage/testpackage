@@ -9,8 +9,9 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
-import static org.testpackage.VisibleAssertions.assertEquals;
-import static org.testpackage.VisibleAssertions.assertTrue;
+import static org.rnorth.visibleassertions.VisibleAssertions.assertEquals;
+import static org.rnorth.visibleassertions.VisibleAssertions.assertTrue;
+
 
 /**
  * Created by richardnorth on 20/12/2013.

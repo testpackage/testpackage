@@ -7,9 +7,7 @@ import org.testpackage.TestPackageException;
 
 import java.io.IOException;
 
-import static org.testpackage.VisibleAssertions.assertEquals;
-import static org.testpackage.VisibleAssertions.assertTrue;
-import static org.testpackage.VisibleAssertions.fail;
+import static org.rnorth.visibleassertions.VisibleAssertions.*;
 
 /**
  * Created by richardnorth on 01/01/2014.
@@ -31,17 +29,17 @@ public class OutputLevelTest extends StreamCaptureBaseTest {
 
         String capturedStdOut = getCapturedStdOut();
 
-        assertTrue("Passing test method names are not shown in standard out", !capturedStdOut.contains("SimpleTest.passing"));
+        assertFalse("Passing test method names are not shown in standard out", capturedStdOut.contains("SimpleTest.passing"));
         assertTrue("Failing test method names are shown in standard out", capturedStdOut.contains("SimpleTest.failing"));
 
-        assertTrue("Passing test method stdout is not shown in standard out", !capturedStdOut.contains("Stdout for passing test"));
-        assertTrue("Failing test method stdout is not shown in standard out", !capturedStdOut.contains("Stdout for failing test"));
+        assertFalse("Passing test method stdout is not shown in standard out", capturedStdOut.contains("Stdout for passing test"));
+        assertFalse("Failing test method stdout is not shown in standard out", capturedStdOut.contains("Stdout for failing test"));
 
         assertTrue("Test summary is shown in standard out", capturedStdOut.contains("*** TESTS COMPLETE"));
         assertTrue("Test summary is shown in standard out", capturedStdOut.contains("*** 1 passed"));
 
-        assertTrue("Failures listing is not shown in standard out", !capturedStdOut.contains("Failures:"));
-        assertTrue("Failures listing is not shown in standard out", !capturedStdOut.contains("failing(org.testpackage.runnertest.outputleveltests.SimpleTest)"));
+        assertFalse("Failures listing is not shown in standard out", capturedStdOut.contains("Failures:"));
+        assertFalse("Failures listing is not shown in standard out", capturedStdOut.contains("failing(org.testpackage.runnertest.outputleveltests.SimpleTest)"));
 
         assertTrue("Final test result is shown in standard out", capturedStdOut.contains("FAILED"));
     }

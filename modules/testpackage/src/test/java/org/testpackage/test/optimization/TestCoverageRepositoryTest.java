@@ -9,7 +9,7 @@ import org.testpackage.optimization.TestWithCoverage;
 import java.io.File;
 import java.io.IOException;
 
-import static org.testpackage.VisibleAssertions.assertEquals;
+import static org.rnorth.visibleassertions.VisibleAssertions.assertEquals;
 import static org.testpackage.optimization.ClassCoverage.coverageFromString;
 import static org.testpackage.optimization.TestWithCoverage.coverageAsString;
 
