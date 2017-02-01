@@ -9,6 +9,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.reflect.Modifier.isAbstract;
+import static java.lang.reflect.Modifier.isPublic;
+
 /**
  * Created by richardnorth on 20/12/2013.
  */
@@ -45,7 +48,12 @@ public class TestSequencer {
         for (String testPackageName : testPackageNames) {
             ClassPath classpath = ClassPath.from(TestPackage.class.getClassLoader());
             for (ClassPath.ClassInfo classInfo : classpath.getTopLevelClasses(testPackageName)) {
-                testClasses.add(classInfo.load());
+                final Class<?> theClass = classInfo.load();
+
+                final int modifiers = theClass.getModifiers();
+                if (! isAbstract(modifiers) && isPublic(modifiers)) {
+                    testClasses.add(theClass);
+                }
             }
         }
 
