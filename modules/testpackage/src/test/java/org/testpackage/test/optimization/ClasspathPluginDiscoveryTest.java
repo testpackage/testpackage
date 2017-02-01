@@ -8,7 +8,8 @@ import org.testpackage.pluginsupport.PluginManager;
 
 import java.util.Collection;
 
-import static org.testpackage.VisibleAssertions.fail;
+import static org.rnorth.visibleassertions.VisibleAssertions.fail;
+
 
 /**
  * @author richardnorth

@@ -15,8 +15,10 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
-import static org.testpackage.VisibleAssertions.assertEquals;
-import static org.testpackage.VisibleAssertions.assertTrue;
+import static org.rnorth.visibleassertions.VisibleAssertions.assertEquals;
+import static org.rnorth.visibleassertions.VisibleAssertions.assertFalse;
+import static org.rnorth.visibleassertions.VisibleAssertions.assertTrue;
+
 
 /**
  * Created by richardnorth on 20/12/2013.
@@ -69,7 +71,7 @@ public class TestSequencerTest {
             final ArrayList<Description> testChildren = request.getRunner().getDescription().getChildren();
             final Class<?> testClass = testChildren.get(0).getTestClass();
             assertEquals("each shard has the right number of test classes", 1, testChildren.size());
-            assertTrue("sharded tests are not duplicated", !seenTestClasses.contains(testClass));
+            assertFalse("sharded tests are not duplicated", seenTestClasses.contains(testClass));
 
             seenTestClasses.add(testClass);
         }
@@ -86,6 +88,6 @@ public class TestSequencerTest {
         assertEquals("sharding does not prevent tests from being prioritised", "testA(" + SHARDING_TESTS_PACKAGE + ".FirstTest)", request.getRunner().getDescription().getChildren().get(0).getChildren().get(1).getDisplayName());
 
         request = new TestSequencer(7, 10).sequenceTests(SHARDING_TESTS_PACKAGE);
-        assertTrue("when there are not enough tests, there is no error", !request.getRunner().getDescription().getChildren().toString().contains("initializationError"));
+        assertFalse("when there are not enough tests, there is no error", request.getRunner().getDescription().getChildren().toString().contains("initializationError"));
     }
 }

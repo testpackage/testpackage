@@ -6,8 +6,9 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.testpackage.VisibleAssertions.assertEquals;
-import static org.testpackage.VisibleAssertions.assertTrue;
+import static org.rnorth.visibleassertions.VisibleAssertions.assertEquals;
+import static org.rnorth.visibleassertions.VisibleAssertions.assertTrue;
+
 
 /**
  * Created by richardnorth on 01/01/2014.

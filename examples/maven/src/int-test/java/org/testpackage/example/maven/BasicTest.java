@@ -18,8 +18,8 @@ package org.testpackage.example.maven;
 
 import org.junit.Test;
 
-import static org.testpackage.VisibleAssertions.assertEquals;
-import static org.testpackage.VisibleAssertions.assertTrue;
+import static org.rnorth.visibleassertions.VisibleAssertions.assertEquals;
+import static org.rnorth.visibleassertions.VisibleAssertions.assertTrue;
 
 /**
  * Basic test class to demonstrate passing and failing tests.

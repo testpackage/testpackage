@@ -6,7 +6,9 @@ import org.testpackage.TestPackage;
 
 import java.io.IOException;
 
-import static org.testpackage.VisibleAssertions.assertTrue;
+import static org.rnorth.visibleassertions.VisibleAssertions.assertFalse;
+import static org.rnorth.visibleassertions.VisibleAssertions.assertTrue;
+
 
 /**
  * Created by rnorth on 28/01/2017.
@@ -28,7 +30,7 @@ public class ClassTypeTests extends StreamCaptureBaseTest {
 
         String capturedStdOut = getCapturedStdOut();
         assertTrue("The runnable test class is run", capturedStdOut.contains("✔  NormalTest.shouldBeRun"));
-        assertTrue("Non-runnable test classes are not run", ! capturedStdOut.contains("shouldNotBeRun"));
+        assertFalse("Non-runnable test classes are not run", capturedStdOut.contains("shouldNotBeRun"));
     }
 
 }

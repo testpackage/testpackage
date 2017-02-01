@@ -6,7 +6,9 @@ import org.testpackage.TestPackage;
 
 import java.io.IOException;
 
-import static org.testpackage.VisibleAssertions.assertTrue;
+import static org.rnorth.visibleassertions.VisibleAssertions.assertFalse;
+import static org.rnorth.visibleassertions.VisibleAssertions.assertTrue;
+
 
 /**
  * Created by rnorth on 28/01/2017.
@@ -29,8 +31,8 @@ public class OutcomeAccountingTest extends StreamCaptureBaseTest {
         String capturedStdOut = getCapturedStdOut();
         assertTrue("The failing setup method is indicated as the cause", capturedStdOut.contains("Suspect org.testpackage.runnertest.outcomeaccounting.TestWithFailingBeforeClassTest.setup"));
         assertTrue("The failing setup method is indicated as the cause", capturedStdOut.contains("Suspect org.testpackage.runnertest.outcomeaccounting.TestWithFailingBeforeMethodTest.setup"));
-        assertTrue("There is no NullPointerException", !capturedStdOut.contains("NullPointerException"));
-        assertTrue("There is no EmptyStackException", !capturedStdOut.contains("EmptyStackException"));
+        assertFalse("There is no NullPointerException", capturedStdOut.contains("NullPointerException"));
+        assertFalse("There is no EmptyStackException", capturedStdOut.contains("EmptyStackException"));
 
 
         assertTrue("The correct number of passes is shown", capturedStdOut.contains("1 passed"));
