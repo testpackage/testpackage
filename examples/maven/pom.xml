@@ -10,7 +10,7 @@
         <dependency>
             <groupId>org.testpackage</groupId>
             <artifactId>testpackage</artifactId>
-            <version>0.3.1</version>
+            <version>0.4.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
@@ -51,6 +51,24 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <executions>
+                    <execution>
+                        <id>run-test-script</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>./test.sh</executable>
+                </configuration>
             </plugin>
         </plugins>
     </build>
