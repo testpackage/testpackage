@@ -4,7 +4,7 @@
 
     <groupId>org.testpackage</groupId>
     <artifactId>testpackage-parent-pom</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
 
     <packaging>pom</packaging>
@@ -54,6 +54,13 @@
                 </configuration>
             </plugin>
             <plugin>
+                <artifactId>maven-scm-plugin</artifactId>
+                <version>1.9.4</version>
+                <configuration>
+                    <tag>${project.version}</tag>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>2.4</version>
                 <executions>
@@ -89,16 +96,16 @@
     </build>
 
     <scm>
-        <connection>scm:git:https://github.com/rnorth/${project.artifactId}.git</connection>
-        <developerConnection>scm:git:git@github.com:rnorth/${project.artifactId}.git</developerConnection>
-        <url>https://github.com/rnorth/${project.artifactId}</url>
+        <connection>scm:git:https://github.com/testpackage/testpackage.git</connection>
+        <developerConnection>scm:git:git@github.com:testpackage/testpackage.git</developerConnection>
+        <url>https://github.com/testpackage/testpackage</url>
         <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
         <repository>
             <id>bintray</id>
-            <url>https://api.bintray.com/maven/richnorth/maven/${project.artifactId}</url>
+            <url>https://api.bintray.com/maven/richnorth/maven/testpackage</url>
         </repository>
     </distributionManagement>
 </project>

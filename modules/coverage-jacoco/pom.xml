@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.testpackage</groupId>
         <artifactId>testpackage-parent-pom</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>1.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
