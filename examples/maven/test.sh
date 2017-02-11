@@ -7,7 +7,7 @@ mvn package
 # Run a standalone web app server
 exec 5>&1
 set +e
-RUN=$(java -jar target/maven-example-1.0-SNAPSHOT.jar |tee /dev/fd/5)
+RUN=$(java -jar target/maven-example.jar |tee /dev/fd/5)
 set -e
 
 set +x

@@ -4,21 +4,29 @@
 
     <groupId>org.testpackage.examples</groupId>
     <artifactId>maven-example</artifactId>
-    <version>1.0-SNAPSHOT</version>
+
+    <parent>
+        <groupId>org.testpackage</groupId>
+        <artifactId>testpackage-parent-pom</artifactId>
+        <version>0.4.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
 
     <dependencies>
         <dependency>
             <groupId>org.testpackage</groupId>
             <artifactId>testpackage</artifactId>
-            <version>0.4.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
     <build>
+        <finalName>maven-example</finalName>
         <plugins>
             <plugin>
                 <groupId>org.testpackage</groupId>
                 <artifactId>testpackage-maven-plugin</artifactId>
+                <version>${project.version}</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
